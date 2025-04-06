@@ -129,7 +129,7 @@ class PantallaInicio extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
                   Text(
-                    "CONTINUAR", // Texto del botón
+                    "Continuar", // Texto del botón
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(width: 7), // Espacio entre el texto y el ícono

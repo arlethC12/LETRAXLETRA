@@ -93,7 +93,7 @@ class HomeScreen extends StatelessWidget {
                 );
               },
               label: const Text(
-                'Regístrate',
+                'Registrate',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -117,7 +117,7 @@ class HomeScreen extends StatelessWidget {
                 // Implementa navegación para "Inicia Sesión"
               },
               label: const Text(
-                'Inicia Sesión',
+                'Inicia Sesíon',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,

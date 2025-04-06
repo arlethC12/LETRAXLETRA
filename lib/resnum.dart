@@ -114,7 +114,7 @@ class MyHomePage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: const [
                   Text(
-                    'CONTINUAR',
+                    'Continuar',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(width: 8), // Espaciado entre texto y flecha.

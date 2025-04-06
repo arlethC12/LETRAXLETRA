@@ -143,7 +143,7 @@ class Resga extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: const [
                     Text(
-                      "CONTINUAR", // Texto del botón.
+                      "Continuar", // Texto del botón.
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

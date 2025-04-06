@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async'; // Importación necesaria para usar Timer
+import 'niveles.dart'; // Importa la pantalla de niveles
 
 void main() {
   runApp(MyApp());
@@ -138,6 +139,12 @@ class _LoadingScreenState extends State<LoadingScreen> {
           setState(() {
             _progress = 1.0; // Asegura que la barra se llene completamente
           });
+
+          // Redirige automáticamente a niveles.dart
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Niveles()),
+          );
         }
       });
     });
@@ -202,11 +209,22 @@ class _LoadingScreenState extends State<LoadingScreen> {
             SizedBox(height: 20.0),
             Image.asset(loadingImages[currentImageIndex], height: 200.0),
             SizedBox(height: 20.0),
-            LinearProgressIndicator(
-              value: _progress,
-              backgroundColor: Color.fromARGB(255, 255, 175, 55),
-              valueColor: AlwaysStoppedAnimation<Color>(
-                Color.fromARGB(255, 252, 237, 36),
+            Container(
+              width: 300.0, // Ajusta el ancho del óvalo
+              height: 25.0, // Ajusta la altura del óvalo
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 255, 175, 55), // Color de fondo
+                borderRadius: BorderRadius.circular(15.0), // Bordes redondeados
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15.0), // Bordes redondeados
+                child: LinearProgressIndicator(
+                  value: _progress,
+                  backgroundColor: Colors.grey[300], // Fondo de barra
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Colors.white,
+                  ), // Barra de progreso
+                ),
               ),
             ),
             SizedBox(height: 35.0),
