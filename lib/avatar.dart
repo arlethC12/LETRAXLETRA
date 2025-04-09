@@ -1,6 +1,7 @@
+// 👇👇👇 Importaciones al inicio
 import 'package:flutter/material.dart';
-import 'dart:async'; // Importación necesaria para usar Timer
-import 'niveles.dart'; // Importa la pantalla de niveles
+import 'dart:async';
+import 'niveles.dart'; // Asegúrate que Niveles reciba imagePath como parámetro
 
 void main() {
   runApp(MyApp());
@@ -38,7 +39,7 @@ class CharacterSelectionScreen extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context); // Regresa a la pantalla anterior
+            Navigator.pop(context);
           },
         ),
         backgroundColor: Colors.white,
@@ -51,9 +52,7 @@ class CharacterSelectionScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.volume_up, color: Colors.black),
-            onPressed: () {
-              // Acción del icono de altavoz
-            },
+            onPressed: () {},
           ),
         ],
         bottom: PreferredSize(
@@ -61,7 +60,7 @@ class CharacterSelectionScreen extends StatelessWidget {
           child: SizedBox(
             height: 10.0,
             child: LinearProgressIndicator(
-              value: 10, // Barra de progreso (cambiar según sea necesario)
+              value: 10,
               backgroundColor: Colors.grey[350],
               valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow),
             ),
@@ -72,15 +71,14 @@ class CharacterSelectionScreen extends StatelessWidget {
         padding: EdgeInsets.all(16.0),
         child: GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, // Número de columnas
-            crossAxisSpacing: 18.0, // Espaciado horizontal
-            mainAxisSpacing: 18.0, // Espaciado vertical
+            crossAxisCount: 3,
+            crossAxisSpacing: 18.0,
+            mainAxisSpacing: 18.0,
           ),
           itemCount: characterImages.length,
           itemBuilder: (context, index) {
             return GestureDetector(
               onTap: () {
-                // Redirige a la pantalla de carga con la imagen seleccionada
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -128,22 +126,25 @@ class _LoadingScreenState extends State<LoadingScreen> {
     _startLoading();
   }
 
-  // Simula una barra de carga progresiva y cambia las imágenes
   void _startLoading() {
     Timer.periodic(Duration(milliseconds: 500), (timer) {
       setState(() {
-        _progress += 0.2; // Incrementa el progreso
+        _progress += 0.2;
         currentImageIndex = (currentImageIndex + 1) % loadingImages.length;
         if (_progress >= 1.0) {
-          timer.cancel(); // Detiene la animación al completar
-          setState(() {
-            _progress = 1.0; // Asegura que la barra se llene completamente
-          });
+          timer.cancel();
+          _progress = 1.0;
 
-          // Redirige automáticamente a niveles.dart
+          // ✅ PASAMOS LA IMAGEN SELECCIONADA A NIVELES
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => Niveles()),
+            MaterialPageRoute(
+              builder:
+                  (context) => Niveles(
+                    characterImagePath: widget.imagePath,
+                    username: 'Invitado', // o cualquier texto por defecto
+                  ),
+            ),
           );
         }
       });
@@ -153,17 +154,11 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(
-        255,
-        255,
-        197,
-        36,
-      ), // Fondo amarillo claro
+      backgroundColor: Color.fromARGB(255, 255, 197, 36),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Muestra "Bienvenido" solo mientras está cargando
             if (_progress < 1.0)
               Text(
                 "Bienvenido",
@@ -173,8 +168,6 @@ class _LoadingScreenState extends State<LoadingScreen> {
                   color: Colors.black,
                 ),
               ),
-
-            // Muestra "LETRA X LETRA" cuando la carga ha terminado
             if (_progress >= 1.0)
               Text.rich(
                 TextSpan(
@@ -210,20 +203,18 @@ class _LoadingScreenState extends State<LoadingScreen> {
             Image.asset(loadingImages[currentImageIndex], height: 200.0),
             SizedBox(height: 20.0),
             Container(
-              width: 300.0, // Ajusta el ancho del óvalo
-              height: 25.0, // Ajusta la altura del óvalo
+              width: 300.0,
+              height: 25.0,
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 255, 175, 55), // Color de fondo
-                borderRadius: BorderRadius.circular(15.0), // Bordes redondeados
+                color: Color.fromARGB(255, 255, 175, 55),
+                borderRadius: BorderRadius.circular(15.0),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(15.0), // Bordes redondeados
+                borderRadius: BorderRadius.circular(15.0),
                 child: LinearProgressIndicator(
                   value: _progress,
-                  backgroundColor: Colors.grey[300], // Fondo de barra
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Colors.white,
-                  ), // Barra de progreso
+                  backgroundColor: Colors.grey[300],
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               ),
             ),

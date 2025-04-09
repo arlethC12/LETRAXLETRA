@@ -32,6 +32,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_tts: ^4.2.2  # Verifica la última
+  font_awesome_flutter: ^10.5.0
   
   
 
@@ -107,11 +108,16 @@ flutter:
     - assets/car2.jpg
     - assets/car3.jpg
     - assets/car4.jpg
-    - assets/grado1.jpg
-    - assets/grado2.jpg
-    - assets/grado3.jpg
-    - assets/grado4.jpg
+    - assets/grado1.png
+    - assets/grado2.png
+    - assets/grado3.png
+    - assets/grado4.png
+    - assets/boca.jpg
+    - assets/candado.png
+    - assets/micro.jpg
+    - assets/nota.jpg
     - assets/audios/Regis.mp3
+    - assets/audios/dinombre.mp3
   
    
 

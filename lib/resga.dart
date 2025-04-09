@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'resnum.dart'; // Importa el archivo resnum.dart para la navegación.
 
 void main() {
-  runApp(const Resga()); // Inicia la aplicación ejecutando la clase Resga.
+  runApp(const Resga());
 }
 
 class Resga extends StatelessWidget {
@@ -11,157 +11,110 @@ class Resga extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner:
-          false, // Elimina el banner de depuración en la esquina superior derecha.
+      debugShowCheckedModeBanner: false, // Elimina el banner de depuración.
       home: Scaffold(
-        backgroundColor:
-            Colors.white, // Establece el fondo blanco de la aplicación.
+        backgroundColor: Colors.white, // Fondo blanco de la app.
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(
-            60,
-          ), // Ajusta la altura del AppBar a 60 píxeles.
+          preferredSize: const Size.fromHeight(60), // Altura del AppBar.
           child: AppBar(
-            backgroundColor:
-                Colors.transparent, // Hace que el AppBar sea transparente.
-            elevation: 0, // Elimina la sombra del AppBar.
+            backgroundColor: Colors.transparent, // Fondo transparente.
+            elevation: 0, // Sin sombra.
             leading: IconButton(
               icon: const Icon(
                 Icons.arrow_back,
                 color: Colors.black,
-                size: 37, // Ajusta el tamaño de la flecha de retroceso.
+                size: 37, // Tamaño del ícono.
               ),
               onPressed: () {
-                Navigator.pop(
-                  context,
-                ); // Regresa a la pantalla anterior cuando se presiona el botón.
+                Navigator.pop(context); // Navega hacia atrás.
               },
             ),
             flexibleSpace: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 LinearProgressIndicator(
-                  value:
-                      0.75, // Indica un progreso del 75% en la barra de progreso.
-                  backgroundColor:
-                      Colors
-                          .grey
-                          .shade300, // Establece el color de fondo de la barra de progreso.
+                  value: 0.75, // Progreso del 75%.
+                  backgroundColor: Colors.grey.shade300,
                   valueColor: const AlwaysStoppedAnimation<Color>(
                     Colors.yellow,
-                  ), // Establece el color amarillo para la barra de progreso.
-                  minHeight:
-                      10, // Ajusta la altura de la barra de progreso a 10 píxeles.
+                  ),
+                  minHeight: 10, // Altura de la barra de progreso.
                 ),
               ],
             ),
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(
-            16.0,
-          ), // Agrega un margen interno de 16 píxeles alrededor del contenido.
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Spacer(), // Agrega un espacio flexible para centrar los elementos.
-              Image.asset(
-                'assets/añojaguar.jpg', // Imagen del jaguar, asegurarse de que el archivo esté en la carpeta assets.
-                height: 250, // Ajusta la altura de la imagen a 250 píxeles.
-              ),
-              const SizedBox(
-                height: 20,
-              ), // Agrega un espacio entre la imagen y el ícono.
-              const Icon(
-                Icons.volume_up,
-                size: 30,
-                color: Colors.black,
-              ), // Ícono de bocina para reproducción de audio.
-              const SizedBox(height: 20), // Espacio entre el ícono y el texto.
-              const Text(
-                '¿Cuántos años tienes?', // Texto que pregunta la edad del usuario.
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ), // Aplica un estilo negrita y tamaño de fuente 24.
-              ),
-              const SizedBox(
-                height: 10,
-              ), // Agrega un espacio entre el texto y el campo de entrada.
-              TextField(
-                decoration: InputDecoration(
-                  hintText:
-                      '6', // Texto de ejemplo dentro del campo de entrada.
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(
-                      8.0,
-                    ), // Bordes redondeados para el campo de entrada.
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 15,
-                    horizontal: 10,
-                  ),
-                  suffixIcon: const Icon(
-                    Icons.mic,
-                    color: Colors.black,
-                  ), // Ícono de micrófono agregado al campo de entrada.
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(
+                  height: 50,
+                ), // Agrega espacio superior para la imagen.
+                Image.asset(
+                  'assets/añojaguar.jpg',
+                  height: 250, // Altura de la imagen.
                 ),
-                keyboardType:
-                    TextInputType
-                        .number, // Define el teclado numérico para la entrada de datos.
-              ),
-              const SizedBox(
-                height: 40,
-              ), // Espacio entre el campo de entrada y el botón.
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) =>
-                              MyHomePage(), // Navega a la pantalla definida en resnum.dart.
+                const SizedBox(height: 20),
+                const Icon(Icons.volume_up, size: 30, color: Colors.black),
+                const SizedBox(height: 20),
+                const Text(
+                  '¿Cuántos años tienes?',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: '6',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      Colors
-                          .yellow, // Establece el fondo del botón en color amarillo.
-                  foregroundColor:
-                      Colors.black, // Establece el color del texto en negro.
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 15,
+                      horizontal: 10,
+                    ),
+                    suffixIcon: const Icon(Icons.mic, color: Colors.black),
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                      10,
-                    ), // Bordes redondeados para el botón.
-                  ),
+                  keyboardType: TextInputType.number,
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Text(
-                      "Continuar", // Texto del botón.
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                const SizedBox(height: 40),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyHomePage()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.yellow,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Text(
+                        "Continuar",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      width: 9,
-                    ), // Espacio entre el texto y el ícono de flecha.
-                    Icon(
-                      Icons.arrow_forward,
-                      size: 24,
-                      color: Colors.black,
-                    ), // Ícono de flecha hacia adelante.
-                  ],
+                      SizedBox(width: 9),
+                      Icon(Icons.arrow_forward, size: 24, color: Colors.black),
+                    ],
+                  ),
                 ),
-              ),
-              const Spacer(), // Agrega espacio al final para centrar los elementos.
-            ],
+              ],
+            ),
           ),
         ),
       ),

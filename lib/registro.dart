@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart'; // Importa el paquete Flutter para construir la UI
-import 'resga.dart'; // Importa la pantalla Resga (ajusta la ruta según sea necesario)
+import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'resga.dart';
 
 void main() {
-  runApp(const MiApp()); // Inicia la aplicación ejecutando MiApp
+  runApp(const MiApp());
 }
 
 class MiApp extends StatelessWidget {
@@ -11,9 +12,8 @@ class MiApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home:
-          const PantallaInicio(), // Define PantallaInicio como la pantalla principal
-      debugShowCheckedModeBanner: false, // Oculta la etiqueta "Debug"
+      home: const PantallaInicio(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -23,121 +23,125 @@ class PantallaInicio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final player = AudioPlayer();
+
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60), // Ajusta la altura del AppBar
+        preferredSize: const Size.fromHeight(60),
         child: AppBar(
           leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-              size: 37, // Flecha de regreso
-            ),
+            icon: const Icon(Icons.arrow_back, color: Colors.black, size: 37),
             onPressed: () {
-              Navigator.pop(context); // Regresa a la pantalla anterior
+              Navigator.pop(context);
             },
           ),
           flexibleSpace: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               LinearProgressIndicator(
-                value: 0.5, // Representa el progreso (50%)
-                backgroundColor:
-                    Colors.grey.shade300, // Color del fondo de la barra
-                valueColor: const AlwaysStoppedAnimation<Color>(
-                  Colors.yellow,
-                ), // Color amarillo para el progreso
-                minHeight: 10, // Altura de la barra de progreso
+                value: 0.5,
+                backgroundColor: Colors.grey.shade300,
+                valueColor: const AlwaysStoppedAnimation<Color>(Colors.yellow),
+                minHeight: 10,
               ),
             ],
           ),
           backgroundColor: Colors.transparent,
-          elevation: 0, // Sin sombra
+          elevation: 0,
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0), // Margen alrededor del contenido
-        child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment
-                  .stretch, // Alinea los elementos al ancho completo
-          children: [
-            const Spacer(), // Espacio flexible para centrar los elementos
-            Center(
-              child: Image.asset(
-                'assets/nombre.jpg', // Imagen ubicada en la carpeta assets
-                width: 320,
-                height: 320,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
+              Center(
+                child: Image.asset(
+                  'assets/nombre.jpg',
+                  width: 320,
+                  height: 300,
+                ),
               ),
-            ),
-            const SizedBox(height: 10), // Espacio entre elementos
-            Center(
-              child: Icon(
-                Icons.volume_up, // Ícono de bocina
-                color: Colors.black,
-                size: 30,
+              const SizedBox(height: 5),
+              IconButton(
+                icon: const Icon(
+                  Icons.volume_up,
+                  color: Colors.black,
+                  size: 30,
+                ),
+                onPressed: () async {
+                  try {
+                    await player.play(AssetSource('audios/dinombre.mp3'));
+                  } catch (e) {
+                    print("Error al reproducir audio: $e");
+                  }
+                },
               ),
-            ),
-            const SizedBox(height: 8),
-            const Center(
-              child: Text(
-                "¿Cuál es tu nombre?", // Pregunta para el usuario
+              const SizedBox(height: 8),
+              const Text(
+                "¿Cuál es tu nombre?",
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              decoration: InputDecoration(
-                hintText: "Tu nombre es...", // Texto de sugerencia en el campo
-                suffixIcon: const Icon(
-                  Icons.mic, // Ícono de micrófono para entrada por voz
-                  color: Colors.black,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    10,
-                  ), // Bordes redondeados para el campo
-                ),
-              ),
-            ),
-            const Spacer(), // Espacio flexible para centrar los elementos
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow, // Color de fondo amarillo
-                foregroundColor: Colors.black, // Texto en color negro
-                padding: const EdgeInsets.symmetric(
-                  vertical: 16, // Altura del botón
-                  horizontal: 30, // Anchura del botón
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10), // Bordes redondeados
-                ),
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Resga(), // Navega a la pantalla Resga
+              const SizedBox(height: 20),
+              TextField(
+                decoration: InputDecoration(
+                  hintText: "Tu nombre es...",
+                  suffixIcon: const Icon(Icons.mic, color: Colors.black),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                );
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Text(
-                    "Continuar", // Texto del botón
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(width: 7), // Espacio entre el texto y el ícono
-                  Icon(Icons.arrow_forward, size: 24), // Ícono de flecha
-                ],
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 30),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.yellow, // Color amarillo
+                  foregroundColor: Colors.black, // Texto e ícono en negro
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 16, // Altura del botón
+                    horizontal: 20, // Espaciado interno
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      10,
+                    ), // Bordes redondeados
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Resga(),
+                    ), // Navegar a otra pantalla
+                  );
+                },
+                child: Row(
+                  mainAxisSize:
+                      MainAxisSize.min, // Ajusta el tamaño al contenido
+                  children: const [
+                    Text(
+                      "Continuar",
+                      style: TextStyle(
+                        fontSize: 18, // Tamaño del texto
+                        fontWeight: FontWeight.bold, // Negritas
+                      ),
+                    ),
+                    SizedBox(width: 8), // Espacio entre el texto y el icono
+                    Icon(
+                      Icons.arrow_forward, // Ícono de flecha
+                      color: Colors.black,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );

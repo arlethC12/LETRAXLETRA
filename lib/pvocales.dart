@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
-import 'dart:async'; // Importar dart:async para usar Completer
+import 'dart:async';
 import 'dart:math' as math;
 
 void main() {
@@ -29,27 +29,19 @@ class _VowelsScreenState extends State<VowelsScreen> {
   }
 
   Future<void> _loadImage() async {
-    try {
-      final imageProvider = AssetImage('assets/footprint.png');
-      final completer =
-          Completer<ui.Image>(); // Ahora Completer debería estar definido
-      final imageStream = imageProvider.resolve(ImageConfiguration());
-      ImageStreamListener? imageStreamListener;
-      imageStreamListener = ImageStreamListener(
-        (ImageInfo info, bool synchronousCall) {
-          completer.complete(info.image);
-          imageStream.removeListener(imageStreamListener!);
-        },
-        onError: (exception, stackTrace) {
-          completer.completeError(exception, stackTrace);
-        },
-      );
-      imageStream.addListener(imageStreamListener);
-      _footprintImage = await completer.future;
-      setState(() {});
-    } catch (e) {
-      print('Error loading image: $e');
-    }
+    final imageProvider = AssetImage('assets/footprint.png');
+    final completer = Completer<ui.Image>();
+    final imageStream = imageProvider.resolve(ImageConfiguration());
+    ImageStreamListener? listener;
+
+    listener = ImageStreamListener((ImageInfo info, bool _) {
+      completer.complete(info.image);
+      imageStream.removeListener(listener!);
+    });
+
+    imageStream.addListener(listener);
+    _footprintImage = await completer.future;
+    setState(() {});
   }
 
   @override
@@ -59,104 +51,69 @@ class _VowelsScreenState extends State<VowelsScreen> {
       appBar: AppBar(
         backgroundColor: Colors.yellow,
         title: Text(
-          'VOCALES',
+          'Unidad 1, Sección 1 - Vocales',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         leading: Icon(Icons.arrow_back, color: Colors.black),
       ),
       body: Stack(
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SizedBox(height: 20),
-              Stack(
-                children: [
-                  Positioned(
-                    left: 50,
-                    top: 20,
-                    child: _buildLetter('A', Colors.red),
-                  ),
-                  Positioned(
-                    right: 50,
-                    top: 100,
-                    child: _buildLetter('E', Colors.green),
-                  ),
-                  Positioned(
-                    left: 50,
-                    top: 200,
-                    child: _buildLetter('O', Colors.orange),
-                  ),
-                  Positioned(
-                    left: 50,
-                    top: 300,
-                    child: _buildLetter('U', Colors.yellow),
-                  ),
-                  Positioned(
-                    right: 50,
-                    top: 0,
-                    child: Image.asset(
-                      'assets/tiger.png',
-                      width: 100,
-                      height: 100,
-                    ),
-                  ),
-                  Positioned(left: 20, top: 50, child: _buildStars()),
-                  Positioned(right: 20, top: 150, child: _buildStars()),
-                  Positioned(left: 20, top: 250, child: _buildStars()),
-                  Positioned(left: 20, top: 350, child: _buildStars()),
-                  if (_footprintImage != null)
-                    CustomPaint(
-                      size: Size(double.infinity, 400),
-                      painter: FootprintsPainter(_footprintImage!),
-                    ),
-                ],
-              ),
-              Spacer(),
-              Container(
-                color: Colors.yellow,
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Icon(Icons.mic, size: 40, color: Colors.black),
-                    Icon(Icons.book, size: 40, color: Colors.black),
-                    Icon(Icons.home, size: 40, color: Colors.black),
-                    Icon(Icons.brush, size: 40, color: Colors.black),
-                    Icon(Icons.videogame_asset, size: 40, color: Colors.black),
-                  ],
-                ),
-              ),
-            ],
-          ),
+          _buildCrownAndVowels(),
+          if (_footprintImage != null)
+            CustomPaint(
+              size: Size(double.infinity, double.infinity),
+              painter: FootprintsPainter(_footprintImage!),
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildLetter(String letter, Color color) {
-    return Container(
-      width: 80,
-      height: 80,
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      child: Center(
-        child: Text(
-          letter,
-          style: TextStyle(
-            fontSize: 50,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      ),
+  Widget _buildCrownAndVowels() {
+    return Column(
+      children: [
+        SizedBox(height: 20),
+        _buildVowel("A", Colors.red, Offset(50, 50)),
+        _buildVowel("E", Colors.green, Offset(250, 150)),
+        _buildVowel("I", Colors.blue, Offset(50, 250)),
+        _buildVowel("O", Colors.orange, Offset(250, 350)),
+        _buildVowel("U", Colors.purple, Offset(50, 450)),
+        Spacer(),
+        Image.asset('assets/crown.png', width: 100, height: 100),
+        SizedBox(height: 20),
+      ],
     );
   }
 
-  Widget _buildStars() {
-    return Row(
-      children: List.generate(
-        3,
-        (index) => Icon(Icons.star, color: Colors.yellow, size: 30),
+  Widget _buildVowel(String letter, Color color, Offset position) {
+    return Positioned(
+      left: position.dx,
+      top: position.dy,
+      child: Column(
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            child: Center(
+              child: Text(
+                letter,
+                style: TextStyle(
+                  fontSize: 50,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              3,
+              (index) => Icon(Icons.star, color: Colors.yellow, size: 30),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -169,25 +126,25 @@ class FootprintsPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint();
-
     final points = [
-      Offset(90, 60), // A
-      Offset(300, 140), // E
-      Offset(90, 240), // O
-      Offset(90, 340), // U
+      Offset(90, 90),
+      Offset(270, 190),
+      Offset(90, 290),
+      Offset(270, 390),
+      Offset(90, 490),
     ];
+    final paint = Paint();
 
     for (int i = 0; i < points.length - 1; i++) {
       final start = points[i];
       final end = points[i + 1];
       final distance = (end - start).distance;
       final steps = (distance / 30).floor();
+
       for (int j = 0; j < steps; j++) {
         final t = j / steps;
         final x = start.dx + (end.dx - start.dx) * t;
         final y = start.dy + (end.dy - start.dy) * t;
-
         final dx = end.dx - start.dx;
         final dy = end.dy - start.dy;
         final angle = math.atan2(dy, dx);
