@@ -1,47 +1,32 @@
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
-import 'dart:async';
-import 'dart:math' as math;
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(home: VowelsScreen());
-  }
-}
 
 class VowelsScreen extends StatefulWidget {
+  final String characterImagePath;
+  final String username;
+
+  VowelsScreen({required this.characterImagePath, required this.username});
+
   @override
   _VowelsScreenState createState() => _VowelsScreenState();
 }
 
 class _VowelsScreenState extends State<VowelsScreen> {
-  ui.Image? _footprintImage;
+  // Map para rastrear los tamaños dinámicos de las imágenes
+  Map<String, double> _sizes = {
+    "assets/vocalA.jpg": 90,
+    "assets/vocalE.jpg": 90,
+    "assets/vocalI.jpg": 90,
+    "assets/vocalO.jpg": 90,
+    "assets/vocalU.jpg": 90,
+    "assets/vocales.jpg": 90,
+  };
 
-  @override
-  void initState() {
-    super.initState();
-    _loadImage();
-  }
-
-  Future<void> _loadImage() async {
-    final imageProvider = AssetImage('assets/footprint.png');
-    final completer = Completer<ui.Image>();
-    final imageStream = imageProvider.resolve(ImageConfiguration());
-    ImageStreamListener? listener;
-
-    listener = ImageStreamListener((ImageInfo info, bool _) {
-      completer.complete(info.image);
-      imageStream.removeListener(listener!);
+  void _onVowelPressed(String path) {
+    setState(() {
+      _sizes.keys.forEach((key) {
+        _sizes[key] = key == path ? 120 : 90; // Ajusta tamaños
+      });
     });
-
-    imageStream.addListener(listener);
-    _footprintImage = await completer.future;
-    setState(() {});
   }
 
   @override
@@ -49,127 +34,179 @@ class _VowelsScreenState extends State<VowelsScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.yellow,
-        title: Text(
-          'Unidad 1, Sección 1 - Vocales',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        backgroundColor: Color.fromARGB(255, 189, 162, 139),
+        elevation: 0,
+        title: Row(
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundImage: AssetImage(widget.characterImagePath),
+            ),
+            SizedBox(width: 10),
+            Text(
+              widget.username,
+              style: TextStyle(color: Colors.black, fontSize: 18),
+            ),
+          ],
         ),
         leading: Icon(Icons.arrow_back, color: Colors.black),
       ),
       body: Stack(
-        children: [
-          _buildCrownAndVowels(),
-          if (_footprintImage != null)
-            CustomPaint(
-              size: Size(double.infinity, double.infinity),
-              painter: FootprintsPainter(_footprintImage!),
-            ),
+        children: [_buildVowelSectionTitle(), _buildImagesAndFootprints()],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black,
+        items: [
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/boca.jpg', height: 35),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/micro.jpg', height: 35),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/home.jpg', height: 35),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/nota.jpg', height: 35),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/juego.png', height: 35),
+            label: '',
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildCrownAndVowels() {
+  Widget _buildVowelSectionTitle() {
     return Column(
       children: [
-        SizedBox(height: 20),
-        _buildVowel("A", Colors.red, Offset(50, 50)),
-        _buildVowel("E", Colors.green, Offset(250, 150)),
-        _buildVowel("I", Colors.blue, Offset(50, 250)),
-        _buildVowel("O", Colors.orange, Offset(250, 350)),
-        _buildVowel("U", Colors.purple, Offset(50, 450)),
-        Spacer(),
-        Image.asset('assets/crown.png', width: 100, height: 100),
-        SizedBox(height: 20),
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+          color: const Color.fromARGB(
+            238,
+            235,
+            179,
+            27,
+          ), // Fondo amarillo solo para el título y las vocales
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Unidad 1, Sección 1",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    "Vocales",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              // Imagen del libro, ubicada en la esquina derecha
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(
+                      "assets/book.jpg",
+                    ), // Ruta de la imagen del libro
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          color: Colors.white, // Fondo blanco para el resto del contenido
+          child: SizedBox(height: 20), // Espacio adicional si necesario
+        ),
       ],
     );
   }
 
-  Widget _buildVowel(String letter, Color color, Offset position) {
-    return Positioned(
-      left: position.dx,
-      top: position.dy,
-      child: Column(
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-            child: Center(
-              child: Text(
-                letter,
-                style: TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+  Widget _buildImagesAndFootprints() {
+    final List<Map<String, dynamic>> elements = [
+      {"path": "assets/vocalA.jpg", "position": Offset(10, 130)},
+      {"path": "assets/vocalE.jpg", "position": Offset(235, 210)},
+      {"path": "assets/vocalI.jpg", "position": Offset(20, 300)},
+      {"path": "assets/vocalO.jpg", "position": Offset(250, 390)},
+      {"path": "assets/vocalU.jpg", "position": Offset(10, 460)},
+      {"path": "assets/vocales.jpg", "position": Offset(250, 510)},
+    ];
+
+    final List<Offset> footprintPositions = [
+      Offset(90, 170),
+      Offset(143, 190),
+      Offset(190, 200),
+      Offset(220, 210),
+      Offset(190, 240),
+      Offset(140, 260),
+      Offset(90, 280),
+      Offset(95, 310),
+      Offset(120, 350),
+      Offset(180, 370),
+      Offset(240, 390),
+      Offset(210, 420),
+      Offset(150, 440),
+      Offset(100, 460),
+      Offset(85, 490),
+      Offset(120, 500),
+      Offset(180, 510),
+      Offset(240, 520),
+    ];
+
+    return Stack(
+      children: [
+        ...elements.map((element) {
+          final path = element["path"] as String;
+          return Positioned(
+            left: (element["position"] as Offset).dx,
+            top: (element["position"] as Offset).dy,
+            child: GestureDetector(
+              onTap: () => _onVowelPressed(path),
+              child: Container(
+                width: _sizes[path],
+                height: _sizes[path],
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.lightBlueAccent,
+                  image: DecorationImage(
+                    image: AssetImage(path),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              3,
-              (index) => Icon(Icons.star, color: Colors.yellow, size: 30),
-            ),
-          ),
-        ],
-      ),
+          );
+        }).toList(),
+        ...footprintPositions.map((position) {
+          return Positioned(
+            left: position.dx,
+            top: position.dy,
+            child: Icon(Icons.pets, size: 25, color: Colors.black),
+          );
+        }).toList(),
+      ],
     );
-  }
-}
-
-class FootprintsPainter extends CustomPainter {
-  final ui.Image footprintImage;
-
-  FootprintsPainter(this.footprintImage);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final points = [
-      Offset(90, 90),
-      Offset(270, 190),
-      Offset(90, 290),
-      Offset(270, 390),
-      Offset(90, 490),
-    ];
-    final paint = Paint();
-
-    for (int i = 0; i < points.length - 1; i++) {
-      final start = points[i];
-      final end = points[i + 1];
-      final distance = (end - start).distance;
-      final steps = (distance / 30).floor();
-
-      for (int j = 0; j < steps; j++) {
-        final t = j / steps;
-        final x = start.dx + (end.dx - start.dx) * t;
-        final y = start.dy + (end.dy - start.dy) * t;
-        final dx = end.dx - start.dx;
-        final dy = end.dy - start.dy;
-        final angle = math.atan2(dy, dx);
-
-        canvas.save();
-        canvas.translate(x, y);
-        canvas.rotate(angle);
-        canvas.drawImageRect(
-          footprintImage,
-          Rect.fromLTWH(
-            0,
-            0,
-            footprintImage.width.toDouble(),
-            footprintImage.height.toDouble(),
-          ),
-          Rect.fromCenter(center: Offset.zero, width: 20, height: 20),
-          paint,
-        );
-        canvas.restore();
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
   }
 }

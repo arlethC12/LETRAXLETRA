@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart'; // Importa el paquete Flutter para UI
 import 'package:audioplayers/audioplayers.dart'; // Importa el paquete audioplayers
 import 'registro.dart'; // Importa la pantalla de registro
+import 'resnum.dart'; // Importa la pantalla resnum
 
 void main() {
   runApp(const MyApp()); // Inicia la aplicación ejecutando MyApp
@@ -114,7 +115,10 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () {
-                // Implementa navegación para "Inicia Sesión"
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyHomePage()),
+                );
               },
               label: const Text(
                 'Inicia Sesíon',

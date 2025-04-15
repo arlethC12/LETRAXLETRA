@@ -63,7 +63,13 @@ class HomeScreen extends StatelessWidget {
               () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => VowelsScreen()),
+                  MaterialPageRoute(
+                    builder:
+                        (context) => VowelsScreen(
+                          characterImagePath: characterImagePath,
+                          username: username,
+                        ),
+                  ),
                 );
               },
             ),
@@ -115,7 +121,7 @@ class HomeScreen extends StatelessWidget {
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/boca.jpg', height: 35),
+            icon: Image.asset('assets/home.jpg', height: 35),
             label: '',
           ),
           BottomNavigationBarItem(
@@ -123,7 +129,7 @@ class HomeScreen extends StatelessWidget {
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/nota.jpg', height: 35),
+            icon: Image.asset('assets/juego.png', height: 35),
             label: '',
           ),
         ],
@@ -172,7 +178,7 @@ class HomeScreen extends StatelessWidget {
                         isLocked
                             ? Container(
                               padding: EdgeInsets.symmetric(
-                                horizontal: 26,
+                                horizontal: 20,
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(

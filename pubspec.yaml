@@ -112,10 +112,20 @@ flutter:
     - assets/grado2.png
     - assets/grado3.png
     - assets/grado4.png
+    - assets/home.jpg
+    - assets/juego.png
     - assets/boca.jpg
     - assets/candado.png
     - assets/micro.jpg
     - assets/nota.jpg
+    - assets/vocalA.jpg
+    - assets/vocalE.jpg
+    - assets/vocalI.jpg
+    - assets/vocalO.jpg
+    - assets/vocalU.jpg
+    - assets/vocales.jpg
+    - assets/huellas.png
+    - assets/book.jpg
     - assets/audios/Regis.mp3
     - assets/audios/dinombre.mp3
   
