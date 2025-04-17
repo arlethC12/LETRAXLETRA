@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'resnum.dart'; // Importa el archivo resnum.dart para la navegación.
+import 'registro.dart'; // Importa el archivo registro.dart
 
 void main() {
   runApp(const Resga());
@@ -30,12 +31,15 @@ class ResponsiveScreen extends StatelessWidget {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.white, // Fondo blanco para evitar negro
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black, size: 30),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => PantallaInicio()),
+              );
             },
           ),
           flexibleSpace: Column(

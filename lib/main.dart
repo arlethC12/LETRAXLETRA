@@ -39,127 +39,147 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Row(
+      body: SafeArea(
+        // Asegura que el contenido no se superponga a áreas como el notch
+        child: SingleChildScrollView(
+          // Permite desplazamiento vertical
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+            ), // Margen lateral
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(
-                  'LETRA',
-                  style: TextStyle(
-                    fontSize: 40 * fontScaleFactor, // Responsive font size
-                    fontWeight: FontWeight.w900,
-                    color: Colors.blue,
-                    fontFamily: 'Roboto',
+                SizedBox(height: 30 * spacingScaleFactor), // Espacio inicial
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'LETRA',
+                      style: TextStyle(
+                        fontSize: 40 * fontScaleFactor,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.blue,
+                        fontFamily: 'Roboto',
+                      ),
+                    ),
+                    SizedBox(width: 10 * fontScaleFactor),
+                    Text(
+                      'X',
+                      style: TextStyle(
+                        fontSize: 46 * fontScaleFactor,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.red,
+                        fontFamily: 'Roboto',
+                      ),
+                    ),
+                    SizedBox(width: 10 * fontScaleFactor),
+                    Text(
+                      'LETRA',
+                      style: TextStyle(
+                        fontSize: 40 * fontScaleFactor,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.blue,
+                        fontFamily: 'Roboto',
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 30 * spacingScaleFactor),
+                // Controla la altura de la imagen para evitar desbordamiento
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight:
+                        screenSize.height *
+                        0.3, // Limita la altura de la imagen al 30% de la pantalla
+                  ),
+                  child: FractionallySizedBox(
+                    widthFactor: 0.7, // 70% del ancho de la pantalla
+                    child: Image.asset(
+                      'assets/registro.jpg',
+                      fit:
+                          BoxFit
+                              .contain, // Asegura que la imagen se escale correctamente
+                    ),
                   ),
                 ),
-                SizedBox(width: 10 * fontScaleFactor),
-                Text(
-                  'X',
-                  style: TextStyle(
-                    fontSize: 46 * fontScaleFactor,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.red,
-                    fontFamily: 'Roboto',
+                SizedBox(height: 30 * spacingScaleFactor),
+                IconButton(
+                  icon: Icon(
+                    Icons.volume_up,
+                    color: Colors.black,
+                    size: 36 * fontScaleFactor,
+                  ),
+                  onPressed: () async {
+                    try {
+                      await player.play(AssetSource('audios/Regis.mp3'));
+                    } catch (e) {
+                      print("Error al reproducir el audio: $e");
+                    }
+                  },
+                ),
+                SizedBox(height: 20 * spacingScaleFactor),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PantallaInicio()),
+                    );
+                  },
+                  label: Text(
+                    'Registrate',
+                    style: TextStyle(
+                      fontSize: 22 * fontScaleFactor,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFE23B),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 60 * fontScaleFactor,
+                      vertical: 20 * spacingScaleFactor,
+                    ),
+                  ),
+                  icon: Icon(
+                    Icons.arrow_forward,
+                    color: Colors.black,
+                    size: 24 * fontScaleFactor,
                   ),
                 ),
-                SizedBox(width: 10 * fontScaleFactor),
-                Text(
-                  'LETRA',
-                  style: TextStyle(
-                    fontSize: 40 * fontScaleFactor,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.blue,
-                    fontFamily: 'Roboto',
+                SizedBox(height: 20 * spacingScaleFactor),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyHomePage()),
+                    );
+                  },
+                  label: Text(
+                    'Inicia Sesíon',
+                    style: TextStyle(
+                      fontSize: 22 * fontScaleFactor,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFE23B),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 50 * fontScaleFactor,
+                      vertical: 20 * spacingScaleFactor,
+                    ),
+                  ),
+                  icon: Icon(
+                    Icons.arrow_forward,
+                    color: Colors.black,
+                    size: 24 * fontScaleFactor,
                   ),
                 ),
+                SizedBox(height: 30 * spacingScaleFactor), // Espacio final
               ],
             ),
-            SizedBox(height: 30 * spacingScaleFactor),
-            // Use FractionallySizedBox to make the image responsive
-            FractionallySizedBox(
-              widthFactor: 0.7, // 70% of screen width
-              child: Image.asset(
-                'assets/registro.jpg',
-                fit: BoxFit.contain, // Ensure the image scales properly
-              ),
-            ),
-            SizedBox(height: 30 * spacingScaleFactor),
-            IconButton(
-              icon: Icon(
-                Icons.volume_up,
-                color: Colors.black,
-                size: 36 * fontScaleFactor, // Responsive icon size
-              ),
-              onPressed: () async {
-                try {
-                  await player.play(AssetSource('audios/Regis.mp3'));
-                } catch (e) {
-                  print("Error al reproducir el audio: $e");
-                }
-              },
-            ),
-            SizedBox(height: 20 * spacingScaleFactor),
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => PantallaInicio()),
-                );
-              },
-              label: Text(
-                'Registrate',
-                style: TextStyle(
-                  fontSize: 22 * fontScaleFactor,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFFE23B),
-                padding: EdgeInsets.symmetric(
-                  horizontal: 60 * fontScaleFactor,
-                  vertical: 20 * spacingScaleFactor,
-                ),
-              ),
-              icon: Icon(
-                Icons.arrow_forward,
-                color: Colors.black,
-                size: 24 * fontScaleFactor,
-              ),
-            ),
-            SizedBox(height: 20 * spacingScaleFactor),
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MyHomePage()),
-                );
-              },
-              label: Text(
-                'Inicia Sesíon',
-                style: TextStyle(
-                  fontSize: 22 * fontScaleFactor,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFFE23B),
-                padding: EdgeInsets.symmetric(
-                  horizontal: 50 * fontScaleFactor,
-                  vertical: 20 * spacingScaleFactor,
-                ),
-              ),
-              icon: Icon(
-                Icons.arrow_forward,
-                color: Colors.black,
-                size: 24 * fontScaleFactor,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
