@@ -2,131 +2,118 @@ import 'package:flutter/material.dart';
 import 'avatar.dart'; // Importación del archivo avatar.dart
 
 void main() {
-  runApp(MyApp()); // Inicia la aplicación.
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false, // Oculta la etiqueta de depuración.
-      home: MyHomePage(), // Establece la pantalla principal.
-    );
+    return MaterialApp(debugShowCheckedModeBanner: false, home: MyHomePage());
   }
 }
 
 class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(
-          60,
-        ), // Define la altura del AppBar.
-        child: AppBar(
-          backgroundColor: Colors.white, // Fondo blanco.
-          elevation: 0, // Elimina la sombra del AppBar.
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.black, // Color de la flecha de retroceso.
-              size: 30, // Tamaño ajustado.
-            ),
-            onPressed: () {
-              Navigator.pop(context); // Regresa a la pantalla anterior.
-            },
-          ),
-          flexibleSpace: Padding(
-            padding: const EdgeInsets.only(
-              top: 85.0,
-            ), // Ajusta la posición vertical.
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                LinearProgressIndicator(
-                  value: 0.97, // Indica el progreso del formulario.
-                  backgroundColor:
-                      Colors.grey[300], // Color de fondo de la barra.
-                  valueColor: const AlwaysStoppedAnimation<Color>(
-                    Colors.yellow,
-                  ), // Color del progreso.
-                  minHeight: 10, // Altura de la barra de progreso.
-                ),
-              ],
-            ),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black, size: 30),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(10),
+          child: LinearProgressIndicator(
+            value: 0.97,
+            backgroundColor: Colors.grey[300],
+            valueColor: const AlwaysStoppedAnimation<Color>(Colors.yellow),
+            minHeight: 10,
           ),
         ),
       ),
       body: SingleChildScrollView(
         child: Center(
-          child: Column(
-            children: [
-              SizedBox(height: 20),
-              Image.asset('assets/num.jpg', height: 300), // Imagen decorativa.
-              SizedBox(height: 10),
-              Icon(
-                Icons.volume_up,
-                size: 40,
-                color: Colors.black,
-              ), // Ícono de bocina para indicaciones de audio.
-              SizedBox(height: 10),
-              Text(
-                'Ingresa tu número telefónico:',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ), // Texto de instrucción.
-              SizedBox(height: 10),
-              Container(
-                width: 300, // Ajusta el ancho del campo de texto.
-                child: TextField(
-                  decoration: InputDecoration(
-                    prefixText: '+52', // Prefijo para números de México.
-                    prefixIcon: Icon(Icons.mic), // Ícono de micrófono.
-                    border: OutlineInputBorder(), // Establece un borde visible.
-                    labelText: 'Número', // Texto de referencia en el campo.
-                  ),
-                  keyboardType:
-                      TextInputType.phone, // Configura el teclado numérico.
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.07),
+            child: Column(
+              children: [
+                SizedBox(height: screenHeight * 0.03),
+                Image.asset(
+                  'assets/num.jpg',
+                  height: screenHeight * 0.3,
+                  width: screenWidth * 0.8,
+                  fit: BoxFit.contain,
                 ),
-              ),
-              SizedBox(height: 80),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CharacterSelectionScreen(),
+                SizedBox(height: screenHeight * 0.02),
+                const Icon(Icons.volume_up, size: 40, color: Colors.black),
+                SizedBox(height: screenHeight * 0.015),
+                Text(
+                  'Ingresa tu número telefónico:',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.05,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: screenHeight * 0.015),
+                Container(
+                  width: screenWidth * 0.85,
+                  child: TextField(
+                    decoration: InputDecoration(
+                      prefixText: '+52 ',
+                      prefixIcon: const Icon(Icons.mic),
+                      border: const OutlineInputBorder(),
+                      labelText: 'Número',
                     ),
-                  ); // Redirige a la pantalla de selección de avatar.
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.yellow, // Fondo amarillo.
-                  foregroundColor: Colors.black, // Texto negro.
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 20, // Altura del botón.
-                    horizontal: 40, // Anchura del botón.
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                      20.0,
-                    ), // Bordes redondeados.
+                    keyboardType: TextInputType.phone,
                   ),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Text(
-                      'Continuar',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                SizedBox(height: screenHeight * 0.08),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CharacterSelectionScreen(),
                       ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.yellow,
+                    foregroundColor: Colors.black,
+                    padding: EdgeInsets.symmetric(
+                      vertical: screenHeight * 0.02,
+                      horizontal: screenWidth * 0.1,
                     ),
-                    SizedBox(width: 8), // Espaciado entre texto y flecha.
-                    Icon(Icons.arrow_forward, size: 24), // Flecha de avance.
-                  ],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Continuar',
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.045,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.arrow_forward, size: 24),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

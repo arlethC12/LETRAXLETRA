@@ -1,4 +1,3 @@
-// 👇👇👇 Importaciones al inicio
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'niveles.dart'; // Asegúrate que Niveles reciba imagePath como parámetro
@@ -34,6 +33,10 @@ class CharacterSelectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Obtener el tamaño de la pantalla
+    final size = MediaQuery.of(context).size;
+    final padding = EdgeInsets.all(size.width * 0.04); // 4% del ancho
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -47,7 +50,11 @@ class CharacterSelectionScreen extends StatelessWidget {
         centerTitle: true,
         title: Text(
           "Elige tu personaje",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: size.width * 0.05, // Escala según el ancho
+          ),
         ),
         actions: [
           IconButton(
@@ -56,9 +63,9 @@ class CharacterSelectionScreen extends StatelessWidget {
           ),
         ],
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(20.0),
+          preferredSize: Size.fromHeight(size.height * 0.03),
           child: SizedBox(
-            height: 10.0,
+            height: size.height * 0.015,
             child: LinearProgressIndicator(
               value: 10,
               backgroundColor: Colors.grey[350],
@@ -67,33 +74,45 @@ class CharacterSelectionScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 18.0,
-            mainAxisSpacing: 18.0,
+      body: SafeArea(
+        child: Padding(
+          padding: padding,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // Calcular el número de columnas según el ancho
+              int crossAxisCount = (constraints.maxWidth / 120).floor();
+              if (crossAxisCount < 2) crossAxisCount = 2; // Mínimo 2 columnas
+
+              return GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: size.width * 0.04,
+                  mainAxisSpacing: size.height * 0.02,
+                  childAspectRatio: 1, // Relación de aspecto cuadrada
+                ),
+                itemCount: characterImages.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => LoadingScreen(
+                                imagePath: characterImages[index],
+                              ),
+                        ),
+                      );
+                    },
+                    child: CircleAvatar(
+                      backgroundImage: AssetImage(characterImages[index]),
+                      radius: constraints.maxWidth / (crossAxisCount * 2.5),
+                    ),
+                  );
+                },
+              );
+            },
           ),
-          itemCount: characterImages.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) =>
-                            LoadingScreen(imagePath: characterImages[index]),
-                  ),
-                );
-              },
-              child: CircleAvatar(
-                backgroundImage: AssetImage(characterImages[index]),
-                radius: 60.0,
-              ),
-            );
-          },
         ),
       ),
     );
@@ -135,14 +154,13 @@ class _LoadingScreenState extends State<LoadingScreen> {
           timer.cancel();
           _progress = 1.0;
 
-          // ✅ PASAMOS LA IMAGEN SELECCIONADA A NIVELES
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder:
                   (context) => Niveles(
                     characterImagePath: widget.imagePath,
-                    username: 'Invitado', // o cualquier texto por defecto
+                    username: 'Invitado',
                   ),
             ),
           );
@@ -153,77 +171,88 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 255, 197, 36),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (_progress < 1.0)
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (_progress < 1.0)
+                Text(
+                  "Bienvenido",
+                  style: TextStyle(
+                    fontSize: size.width * 0.08, // Escala según el ancho
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              if (_progress >= 1.0)
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "LETRA ",
+                        style: TextStyle(
+                          fontSize: size.width * 0.08,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      TextSpan(
+                        text: "X",
+                        style: TextStyle(
+                          fontSize: size.width * 0.08,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                      ),
+                      TextSpan(
+                        text: " LETRA",
+                        style: TextStyle(
+                          fontSize: size.width * 0.08,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              SizedBox(height: size.height * 0.03),
+              Image.asset(
+                loadingImages[currentImageIndex],
+                height: size.height * 0.25, // 25% del alto de la pantalla
+                fit: BoxFit.contain,
+              ),
+              SizedBox(height: size.height * 0.03),
+              Container(
+                width: size.width * 0.7, // 70% del ancho
+                height: size.height * 0.04,
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 255, 175, 55),
+                  borderRadius: BorderRadius.circular(size.width * 0.04),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(size.width * 0.04),
+                  child: LinearProgressIndicator(
+                    value: _progress,
+                    backgroundColor: Colors.grey[300],
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+              ),
+              SizedBox(height: size.height * 0.05),
               Text(
-                "Bienvenido",
+                "Cargando...",
                 style: TextStyle(
-                  fontSize: 35.0,
+                  fontSize: size.width * 0.06,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
                 ),
               ),
-            if (_progress >= 1.0)
-              Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "LETRA ",
-                      style: TextStyle(
-                        fontSize: 35.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                    ),
-                    TextSpan(
-                      text: "X",
-                      style: TextStyle(
-                        fontSize: 35.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                      ),
-                    ),
-                    TextSpan(
-                      text: " LETRA",
-                      style: TextStyle(
-                        fontSize: 35.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            SizedBox(height: 20.0),
-            Image.asset(loadingImages[currentImageIndex], height: 200.0),
-            SizedBox(height: 20.0),
-            Container(
-              width: 300.0,
-              height: 25.0,
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 255, 175, 55),
-                borderRadius: BorderRadius.circular(15.0),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15.0),
-                child: LinearProgressIndicator(
-                  value: _progress,
-                  backgroundColor: Colors.grey[300],
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              ),
-            ),
-            SizedBox(height: 35.0),
-            Text(
-              "Cargando...",
-              style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

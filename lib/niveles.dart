@@ -27,83 +27,91 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Obtener el tamaño de la pantalla
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(62),
+        preferredSize: Size.fromHeight(size.height * 0.08), // 8% del alto
         child: AppBar(
           backgroundColor: Color.fromARGB(255, 189, 162, 139),
           elevation: 0,
           title: Row(
             children: [
               CircleAvatar(
-                radius: 20,
+                radius: size.width * 0.05, // Escala según el ancho
                 backgroundImage: AssetImage(characterImagePath),
               ),
-              SizedBox(width: 10),
+              SizedBox(width: size.width * 0.03),
               Text(
                 username,
-                style: TextStyle(color: Colors.black, fontSize: 18),
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: size.width * 0.045, // Escala según el ancho
+                ),
               ),
             ],
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            buildGradeCard(
-              context,
-              "Primer Grado",
-              "COMENZAR",
-              "assets/grado1.png",
-              false,
-              125.0,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (context) => VowelsScreen(
-                          characterImagePath: characterImagePath,
-                          username: username,
-                        ),
-                  ),
-                );
-              },
-            ),
-            SizedBox(height: 12),
-            buildGradeCard(
-              context,
-              "Segundo Grado",
-              "",
-              "assets/grado2.png",
-              true,
-              125.0,
-              null,
-            ),
-            SizedBox(height: 12),
-            buildGradeCard(
-              context,
-              "Tercer Grado",
-              "",
-              "assets/grado3.png",
-              true,
-              125.0,
-              null,
-            ),
-            SizedBox(height: 12),
-            buildGradeCard(
-              context,
-              "Cuarto Grado",
-              "",
-              "assets/grado4.png",
-              true,
-              125.0,
-              null,
-            ),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(size.width * 0.05), // 5% del ancho
+          child: Column(
+            children: [
+              buildGradeCard(
+                context,
+                "Primer Grado",
+                "COMENZAR",
+                "assets/grado1.png",
+                false,
+                size.width * 0.35, // Aumentado de 0.3 a 0.35
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => VowelsScreen(
+                            characterImagePath: characterImagePath,
+                            username: username,
+                          ),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: size.height * 0.02),
+              buildGradeCard(
+                context,
+                "Segundo Grado",
+                "",
+                "assets/grado2.png",
+                true,
+                size.width * 0.35, // Aumentado de 0.3 a 0.35
+                null,
+              ),
+              SizedBox(height: size.height * 0.02),
+              buildGradeCard(
+                context,
+                "Tercer Grado",
+                "",
+                "assets/grado3.png",
+                true,
+                size.width * 0.35, // Aumentado de 0.3 a 0.35
+                null,
+              ),
+              SizedBox(height: size.height * 0.02),
+              buildGradeCard(
+                context,
+                "Cuarto Grado",
+                "",
+                "assets/grado4.png",
+                true,
+                size.width * 0.35, // Aumentado de 0.3 a 0.35
+                null,
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -113,23 +121,23 @@ class HomeScreen extends StatelessWidget {
         unselectedItemColor: Colors.black,
         items: [
           BottomNavigationBarItem(
-            icon: Image.asset('assets/boca.jpg', height: 35),
+            icon: Image.asset('assets/boca.jpg', height: size.height * 0.05),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/micro.jpg', height: 35),
+            icon: Image.asset('assets/micro.jpg', height: size.height * 0.05),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/home.jpg', height: 35),
+            icon: Image.asset('assets/home.jpg', height: size.height * 0.05),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/nota.jpg', height: 35),
+            icon: Image.asset('assets/nota.jpg', height: size.height * 0.05),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/juego.png', height: 35),
+            icon: Image.asset('assets/juego.png', height: size.height * 0.05),
             label: '',
           ),
         ],
@@ -146,28 +154,35 @@ class HomeScreen extends StatelessWidget {
     double imageSize,
     VoidCallback? onTap,
   ) {
+    final size = MediaQuery.of(context).size;
+
     return GestureDetector(
       onTap: isLocked ? null : onTap,
       child: Container(
-        height: 130,
+        height: size.height * 0.20, // Aumentado de 0.18 a 0.20
         decoration: BoxDecoration(
           color: Color(0xFFFFC107),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(size.width * 0.03),
         ),
         child: Row(
           children: [
             IconButton(
-              icon: Icon(Icons.volume_up, color: Colors.black),
+              icon: Icon(
+                Icons.volume_up,
+                color: Colors.black,
+                size: size.width * 0.08, // Aumentado de 0.07 a 0.08
+              ),
               onPressed: () {},
             ),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 29,
+                      fontSize: size.width * 0.09, // Aumentado de 0.07 a 0.09
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -178,32 +193,37 @@ class HomeScreen extends StatelessWidget {
                         isLocked
                             ? Container(
                               padding: EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 4,
+                                horizontal: size.width * 0.05,
+                                vertical: size.height * 0.01,
                               ),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(
+                                  size.width * 0.03,
+                                ),
                               ),
                               child: Image.asset(
                                 'assets/candado.png',
-                                height: 40,
+                                height: size.height * 0.06,
                               ),
                             )
                             : Container(
                               padding: EdgeInsets.symmetric(
-                                horizontal: 26,
-                                vertical: 4,
+                                horizontal: size.width * 0.06,
+                                vertical: size.height * 0.01,
                               ),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(
+                                  size.width * 0.03,
+                                ),
                               ),
                               child: Text(
                                 actionText,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
+                                  fontSize: size.width * 0.04,
                                 ),
                               ),
                             ),
@@ -212,11 +232,12 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(size.width * 0.02),
               child: Image.asset(
                 imagePath,
                 height: imageSize,
                 width: imageSize,
+                fit: BoxFit.contain,
               ),
             ),
           ],

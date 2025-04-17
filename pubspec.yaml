@@ -33,6 +33,7 @@ dependencies:
     sdk: flutter
   flutter_tts: ^4.2.2  # Verifica la última
   font_awesome_flutter: ^10.5.0
+  flutter_screenutil: ^5.8.4
   
   
 
@@ -126,6 +127,8 @@ flutter:
     - assets/vocales.jpg
     - assets/huellas.png
     - assets/book.jpg
+    - assets/tiger.png
+    - assets/corona.png
     - assets/audios/Regis.mp3
     - assets/audios/dinombre.mp3
   
