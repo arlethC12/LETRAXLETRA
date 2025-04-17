@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'resnum.dart'; // Importa el archivo resnum.dart para la navegación.
-import 'registro.dart'; // Importa el archivo registro.dart
+import 'package:audioplayers/audioplayers.dart';
+import 'resnum.dart';
+import 'registro.dart';
 
 void main() {
   runApp(const Resga());
@@ -18,8 +19,29 @@ class Resga extends StatelessWidget {
   }
 }
 
-class ResponsiveScreen extends StatelessWidget {
+class ResponsiveScreen extends StatefulWidget {
   const ResponsiveScreen({super.key});
+
+  @override
+  State<ResponsiveScreen> createState() => _ResponsiveScreenState();
+}
+
+class _ResponsiveScreenState extends State<ResponsiveScreen> {
+  final AudioPlayer _player = AudioPlayer();
+
+  void _playAudio() async {
+    await _player.play(AssetSource('audios/edad.mp3'));
+  }
+
+  void _stopAudio() async {
+    await _player.stop(); // 👈 Detiene el audio
+  }
+
+  @override
+  void dispose() {
+    _player.dispose(); // 👈 Libera los recursos del reproductor
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +53,12 @@ class ResponsiveScreen extends StatelessWidget {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
         child: AppBar(
-          backgroundColor: Colors.white, // Fondo blanco para evitar negro
+          backgroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black, size: 30),
             onPressed: () {
+              _stopAudio(); // 👈 Detén el audio antes de navegar
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => PantallaInicio()),
@@ -69,7 +92,14 @@ class ResponsiveScreen extends StatelessWidget {
                 fit: BoxFit.contain,
               ),
               const SizedBox(height: 20),
-              const Icon(Icons.volume_up, size: 30, color: Colors.black),
+              IconButton(
+                icon: const Icon(
+                  Icons.volume_up,
+                  size: 30,
+                  color: Colors.black,
+                ),
+                onPressed: _playAudio,
+              ),
               const SizedBox(height: 20),
               Text(
                 '¿Cuántos años tienes?',
@@ -96,6 +126,7 @@ class ResponsiveScreen extends StatelessWidget {
               const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () {
+                  _stopAudio(); // 👈 Detén el audio antes de navegar
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => MyHomePage()),

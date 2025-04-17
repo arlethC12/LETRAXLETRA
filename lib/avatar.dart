@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart'; // Importa audioplayers
 import 'dart:async';
 import 'niveles.dart'; // Asegúrate que Niveles reciba imagePath como parámetro
 
@@ -17,7 +18,13 @@ class MyApp extends StatelessWidget {
 }
 
 // Pantalla de selección de personaje
-class CharacterSelectionScreen extends StatelessWidget {
+class CharacterSelectionScreen extends StatefulWidget {
+  @override
+  _CharacterSelectionScreenState createState() =>
+      _CharacterSelectionScreenState();
+}
+
+class _CharacterSelectionScreenState extends State<CharacterSelectionScreen> {
   final List<String> characterImages = [
     'assets/ajaguar.jpg',
     'assets/amono.jpg',
@@ -31,18 +38,46 @@ class CharacterSelectionScreen extends StatelessWidget {
     'assets/atapir.jpg',
   ];
 
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Instancia del reproductor
+  bool _isPlaying = false;
+
+  // Reproducir o detener audio
+  void _toggleAudio() async {
+    if (_isPlaying) {
+      await _audioPlayer.stop();
+      setState(() {
+        _isPlaying = false;
+      });
+    } else {
+      await _audioPlayer.play(AssetSource('audios/avatar.mp3'));
+      setState(() {
+        _isPlaying = true;
+      });
+    }
+  }
+
+  // Liberar recursos del reproductor
+  @override
+  void dispose() {
+    _audioPlayer.stop();
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Obtener el tamaño de la pantalla
     final size = MediaQuery.of(context).size;
-    final padding = EdgeInsets.all(size.width * 0.04); // 4% del ancho
+    final padding = EdgeInsets.all(size.width * 0.04);
 
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context);
+            if (_isPlaying) {
+              _audioPlayer.stop(); // Detenemos el audio al regresar
+            }
+            Navigator.pop(context); // Regresamos a la pantalla anterior
           },
         ),
         backgroundColor: Colors.white,
@@ -53,13 +88,13 @@ class CharacterSelectionScreen extends StatelessWidget {
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
-            fontSize: size.width * 0.05, // Escala según el ancho
+            fontSize: size.width * 0.05,
           ),
         ),
         actions: [
           IconButton(
             icon: Icon(Icons.volume_up, color: Colors.black),
-            onPressed: () {},
+            onPressed: _toggleAudio,
           ),
         ],
         bottom: PreferredSize(
@@ -79,21 +114,22 @@ class CharacterSelectionScreen extends StatelessWidget {
           padding: padding,
           child: LayoutBuilder(
             builder: (context, constraints) {
-              // Calcular el número de columnas según el ancho
               int crossAxisCount = (constraints.maxWidth / 120).floor();
-              if (crossAxisCount < 2) crossAxisCount = 2; // Mínimo 2 columnas
+              if (crossAxisCount < 2) crossAxisCount = 2;
 
               return GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
                   crossAxisSpacing: size.width * 0.04,
                   mainAxisSpacing: size.height * 0.02,
-                  childAspectRatio: 1, // Relación de aspecto cuadrada
+                  childAspectRatio: 1,
                 ),
                 itemCount: characterImages.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
+                      _audioPlayer
+                          .stop(); // Detenemos el audio antes de navegar
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -184,7 +220,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
                 Text(
                   "Bienvenido",
                   style: TextStyle(
-                    fontSize: size.width * 0.08, // Escala según el ancho
+                    fontSize: size.width * 0.08,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -223,12 +259,12 @@ class _LoadingScreenState extends State<LoadingScreen> {
               SizedBox(height: size.height * 0.03),
               Image.asset(
                 loadingImages[currentImageIndex],
-                height: size.height * 0.25, // 25% del alto de la pantalla
+                height: size.height * 0.25,
                 fit: BoxFit.contain,
               ),
               SizedBox(height: size.height * 0.03),
               Container(
-                width: size.width * 0.7, // 70% del ancho
+                width: size.width * 0.7,
                 height: size.height * 0.04,
                 decoration: BoxDecoration(
                   color: Color.fromARGB(255, 255, 175, 55),

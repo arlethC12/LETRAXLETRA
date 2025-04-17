@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart'; // 👈 Importa audioplayers
 import 'avatar.dart'; // Importación del archivo avatar.dart
 
 void main() {
@@ -12,7 +13,29 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  final AudioPlayer _player = AudioPlayer(); // 👈 Instancia del reproductor
+
+  void _playAudio() async {
+    await _player.play(
+      AssetSource(
+        'audios/telefono.mp3',
+      ), // 👈 Asegúrate de tener este archivo en assets
+    );
+  }
+
+  @override
+  void dispose() {
+    _player.stop(); // 👈 Detiene el audio al salir de la pantalla
+    _player.dispose(); // 👈 Libera recursos
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -53,7 +76,14 @@ class MyHomePage extends StatelessWidget {
                   fit: BoxFit.contain,
                 ),
                 SizedBox(height: screenHeight * 0.02),
-                const Icon(Icons.volume_up, size: 40, color: Colors.black),
+                IconButton(
+                  icon: const Icon(
+                    Icons.volume_up,
+                    size: 40,
+                    color: Colors.black,
+                  ),
+                  onPressed: _playAudio, // 👈 Reproduce el audio
+                ),
                 SizedBox(height: screenHeight * 0.015),
                 Text(
                   'Ingresa tu número telefónico:',
@@ -79,6 +109,7 @@ class MyHomePage extends StatelessWidget {
                 SizedBox(height: screenHeight * 0.08),
                 ElevatedButton(
                   onPressed: () {
+                    _player.stop(); // 👈 Detiene el audio antes de navegar
                     Navigator.push(
                       context,
                       MaterialPageRoute(

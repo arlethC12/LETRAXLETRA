@@ -23,34 +23,50 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State {
+  late AudioPlayer player;
+
+  @override
+  void initState() {
+    super.initState();
+    player = AudioPlayer();
+  }
+
+  @override
+  void dispose() {
+    player.stop();
+    player.dispose();
+    super.dispose();
+  }
+
+  void _navigateToScreen(BuildContext context, Widget screen) async {
+    await player.stop();
+    Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final player = AudioPlayer();
-    // Get the screen size
     final screenSize = MediaQuery.of(context).size;
-    // Define a scaling factor for font sizes and other elements
-    final double fontScaleFactor =
-        screenSize.width / 400; // Base width of 400 for scaling
-    final double spacingScaleFactor =
-        screenSize.height / 800; // Base height of 800 for spacing
+    final double fontScaleFactor = screenSize.width / 400;
+    final double spacingScaleFactor = screenSize.height / 800;
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        // Asegura que el contenido no se superponga a áreas como el notch
         child: SingleChildScrollView(
-          // Permite desplazamiento vertical
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-            ), // Margen lateral
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                SizedBox(height: 30 * spacingScaleFactor), // Espacio inicial
+                SizedBox(height: 30 * spacingScaleFactor),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -86,20 +102,15 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 30 * spacingScaleFactor),
-                // Controla la altura de la imagen para evitar desbordamiento
                 ConstrainedBox(
                   constraints: BoxConstraints(
-                    maxHeight:
-                        screenSize.height *
-                        0.3, // Limita la altura de la imagen al 30% de la pantalla
+                    maxHeight: screenSize.height * 0.3,
                   ),
                   child: FractionallySizedBox(
-                    widthFactor: 0.7, // 70% del ancho de la pantalla
+                    widthFactor: 0.7,
                     child: Image.asset(
                       'assets/registro.jpg',
-                      fit:
-                          BoxFit
-                              .contain, // Asegura que la imagen se escale correctamente
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
@@ -121,10 +132,7 @@ class HomeScreen extends StatelessWidget {
                 SizedBox(height: 20 * spacingScaleFactor),
                 ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => PantallaInicio()),
-                    );
+                    _navigateToScreen(context, PantallaInicio());
                   },
                   label: Text(
                     'Registrate',
@@ -150,10 +158,7 @@ class HomeScreen extends StatelessWidget {
                 SizedBox(height: 20 * spacingScaleFactor),
                 ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MyHomePage()),
-                    );
+                    _navigateToScreen(context, MyHomePage());
                   },
                   label: Text(
                     'Inicia Sesíon',
@@ -176,7 +181,7 @@ class HomeScreen extends StatelessWidget {
                     size: 24 * fontScaleFactor,
                   ),
                 ),
-                SizedBox(height: 30 * spacingScaleFactor), // Espacio final
+                SizedBox(height: 30 * spacingScaleFactor),
               ],
             ),
           ),
