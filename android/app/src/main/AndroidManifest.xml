@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<!-- Permiso para usar el micrófono -->
     <application
         android:label="letra_x_letra"
         android:name="${applicationName}"

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'resga.dart';
 
 void main() {
@@ -25,24 +26,53 @@ class PantallaInicio extends StatefulWidget {
   _PantallaInicioState createState() => _PantallaInicioState();
 }
 
-class _PantallaInicioState extends State {
+class _PantallaInicioState extends State<PantallaInicio> {
   late AudioPlayer player;
+  late stt.SpeechToText _speech;
+  bool _isListening = false;
+  String _text = '';
+  final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     player = AudioPlayer();
+    _speech = stt.SpeechToText();
   }
 
   @override
   void dispose() {
     player.stop();
     player.dispose();
+    _speech.stop();
     super.dispose();
+  }
+
+  void _listen() async {
+    if (!_isListening) {
+      bool available = await _speech.initialize(
+        onStatus: (val) => print('Estado: $val'),
+        onError: (val) => print('Error: $val'),
+      );
+      if (available) {
+        setState(() => _isListening = true);
+        _speech.listen(
+          onResult:
+              (val) => setState(() {
+                _text = val.recognizedWords;
+                _controller.text = _text;
+              }),
+        );
+      }
+    } else {
+      setState(() => _isListening = false);
+      _speech.stop();
+    }
   }
 
   void _navigateToScreen(BuildContext context, Widget screen) async {
     await player.stop();
+    _speech.stop(); // Detener reconocimiento si está activo
     Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
   }
 
@@ -61,7 +91,8 @@ class _PantallaInicioState extends State {
               size: size.width * 0.09,
             ),
             onPressed: () async {
-              await player.stop(); // Detener el audio antes de retroceder
+              await player.stop();
+              _speech.stop();
               Navigator.pop(context);
             },
           ),
@@ -121,12 +152,16 @@ class _PantallaInicioState extends State {
                 ),
                 SizedBox(height: size.height * 0.03),
                 TextField(
+                  controller: _controller,
                   decoration: InputDecoration(
                     hintText: "Tu nombre es...",
-                    suffixIcon: Icon(
-                      Icons.mic,
-                      color: Colors.black,
-                      size: size.width * 0.06,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isListening ? Icons.mic : Icons.mic_none,
+                        color: Colors.black,
+                        size: size.width * 0.06,
+                      ),
+                      onPressed: _listen,
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(size.width * 0.03),

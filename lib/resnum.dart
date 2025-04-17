@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart'; // 👈 Importa audioplayers
-import 'avatar.dart'; // Importación del archivo avatar.dart
+import 'package:audioplayers/audioplayers.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'avatar.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,20 +20,49 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final AudioPlayer _player = AudioPlayer(); // 👈 Instancia del reproductor
+  final AudioPlayer _player = AudioPlayer();
+  final TextEditingController _controller = TextEditingController();
+  late stt.SpeechToText _speech;
+  bool _isListening = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _speech = stt.SpeechToText();
+  }
 
   void _playAudio() async {
-    await _player.play(
-      AssetSource(
-        'audios/telefono.mp3',
-      ), // 👈 Asegúrate de tener este archivo en assets
-    );
+    await _player.play(AssetSource('audios/telefono.mp3'));
+  }
+
+  void _listen() async {
+    if (!_isListening) {
+      bool available = await _speech.initialize();
+      if (available) {
+        setState(() => _isListening = true);
+        _speech.listen(
+          onResult: (result) {
+            setState(() {
+              _controller.text = result.recognizedWords.replaceAll(
+                RegExp(r'[^0-9]'),
+                '',
+              );
+            });
+          },
+        );
+      }
+    } else {
+      setState(() => _isListening = false);
+      _speech.stop();
+    }
   }
 
   @override
   void dispose() {
-    _player.stop(); // 👈 Detiene el audio al salir de la pantalla
-    _player.dispose(); // 👈 Libera recursos
+    _player.stop();
+    _player.dispose();
+    _controller.dispose();
+    _speech.stop();
     super.dispose();
   }
 
@@ -82,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     size: 40,
                     color: Colors.black,
                   ),
-                  onPressed: _playAudio, // 👈 Reproduce el audio
+                  onPressed: _playAudio,
                 ),
                 SizedBox(height: screenHeight * 0.015),
                 Text(
@@ -94,22 +124,31 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.015),
-                Container(
-                  width: screenWidth * 0.85,
-                  child: TextField(
-                    decoration: InputDecoration(
-                      prefixText: '+52 ',
-                      prefixIcon: const Icon(Icons.mic),
-                      border: const OutlineInputBorder(),
-                      labelText: 'Número',
+                Stack(
+                  alignment: Alignment.centerRight,
+                  children: [
+                    TextField(
+                      controller: _controller,
+                      decoration: const InputDecoration(
+                        prefixText: '+52 ',
+                        border: OutlineInputBorder(),
+                        labelText: 'Número',
+                      ),
+                      keyboardType: TextInputType.phone,
                     ),
-                    keyboardType: TextInputType.phone,
-                  ),
+                    IconButton(
+                      icon: Icon(
+                        _isListening ? Icons.mic : Icons.mic_none,
+                        color: Colors.black,
+                      ),
+                      onPressed: _listen,
+                    ),
+                  ],
                 ),
                 SizedBox(height: screenHeight * 0.08),
                 ElevatedButton(
                   onPressed: () {
-                    _player.stop(); // 👈 Detiene el audio antes de navegar
+                    _player.stop();
                     Navigator.push(
                       context,
                       MaterialPageRoute(
