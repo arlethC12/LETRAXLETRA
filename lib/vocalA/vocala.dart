@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'escriba.dart'; // Asegúrate de que la ruta sea correcta
 
 class VocalAPage extends StatelessWidget {
   const VocalAPage({super.key});
@@ -58,21 +59,19 @@ class _WriteScreenState extends State<WriteScreen> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: LinearProgressIndicator(
-                  value: 0.3, // Ajusta este valor según el progreso deseado
+                  value: 0.3,
                   backgroundColor: Colors.grey[300],
                   valueColor: const AlwaysStoppedAnimation<Color>(
                     Colors.orange,
                   ),
-                  minHeight: 8, // Más ancha
+                  minHeight: 8,
                 ),
               ),
             ),
           ],
         ),
-        leadingWidth: 348, // Más larga
-        actions: const [
-          SizedBox(width: 16), // Espacio para equilibrar el diseño
-        ],
+        leadingWidth: 348,
+        actions: const [SizedBox(width: 16)],
       ),
       body: Stack(
         children: [
@@ -89,7 +88,7 @@ class _WriteScreenState extends State<WriteScreen> {
                       size: 40,
                     ),
                     onPressed: () {
-                      // Add speaker functionality if needed
+                      // Función para reproducir sonido si deseas agregarla
                     },
                   ),
                   const Text(
@@ -158,7 +157,10 @@ class _WriteScreenState extends State<WriteScreen> {
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
           onPressed: () {
-            print('Botón de enviar presionado');
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EscribaScreen()),
+            );
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.orange,

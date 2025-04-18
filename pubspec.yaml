@@ -133,11 +133,13 @@ flutter:
     - assets/book.jpg
     - assets/tiger.png
     - assets/corona.png
+    - assets/letraA.jpg
     - assets/audios/Regis.mp3
     - assets/audios/dinombre.mp3
     - assets/audios/edad.mp3
     - assets/audios/telefono.mp3
     - assets/audios/avatar.mp3
+
   
    
 
