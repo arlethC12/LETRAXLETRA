@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'vocalA/vocala.dart';
 
 // Pantalla principal que muestra las vocales
 class VowelsScreen extends StatefulWidget {
@@ -232,7 +233,7 @@ class _VowelsScreenState extends State<VowelsScreen>
                   Text(
                     "Vocales",
                     style: TextStyle(
-                      fontSize: size.width * 0.055,
+                      fontSize: size.width * 0.045,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
@@ -304,7 +305,16 @@ class _VowelsScreenState extends State<VowelsScreen>
               left: (element["position"] as Offset).dx,
               top: (element["position"] as Offset).dy,
               child: GestureDetector(
-                onTap: () => _onVowelPressed(path),
+                onTap: () {
+                  _onVowelPressed(path); // Cambia el tamaño
+                  if (path == "assets/vocalA.jpg") {
+                    // Navega a la pantalla de vocal A
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => VocalAPage()),
+                    );
+                  }
+                },
                 child: Column(
                   children: [
                     if (path == "assets/vocales.jpg")
