@@ -59,7 +59,7 @@ class _WriteScreenState extends State<WriteScreen> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: LinearProgressIndicator(
-                  value: 0.3,
+                  value: 0.1,
                   backgroundColor: Colors.grey[300],
                   valueColor: const AlwaysStoppedAnimation<Color>(
                     Colors.orange,
@@ -159,7 +159,7 @@ class _WriteScreenState extends State<WriteScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => EscribaScreen()),
+              MaterialPageRoute(builder: (context) => MyApp()),
             );
           },
           style: ElevatedButton.styleFrom(
