@@ -1,27 +1,11 @@
 import 'package:flutter/material.dart';
-import 'compalabra.dart'; // Asegúrate de que compalabra.dart esté en la misma carpeta o ajusta la ruta
-import 'vocala.dart'; // Importa vocala.dart (ajusta la ruta si es necesario)
 
-void main() {
-  runApp(const MyApp());
-}
-
-// Definimos una clase raíz para gestionar el MaterialApp
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class EscribeEPage extends StatelessWidget {
+  const EscribeEPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      initialRoute: '/letter_tracing',
-      routes: {
-        '/letter_tracing': (context) => LetterTracingScreen(),
-        '/compalabra': (context) => CompalabraScreen(),
-        '/vocala':
-            (context) => const VocalAPage(), // Añade la ruta para vocala.dart
-      },
-    );
+    return const LetterTracingScreen();
   }
 }
 
@@ -36,53 +20,56 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
   List<Offset?> points = [];
   Offset? currentPencilPos;
   bool isValid = false;
-  String feedbackMessage = 'Dibuja la letra A.';
+  String feedbackMessage = 'Dibuja la letra E.';
   bool isUpperCase = true;
-  bool isUpperCaseCompleted = false; // Track uppercase A completion
-  bool isLowerCaseCompleted = false; // Track lowercase a completion
 
-  // Regiones clave para la "A" mayúscula
-  List<Rect> getKeyRegionsForUpperCaseA(Size canvasSize) {
+  // Regiones clave para la "E" mayúscula
+  List<Rect> getKeyRegionsForUpperCaseE(Size canvasSize) {
     double width = canvasSize.width;
     double height = canvasSize.height;
     double margin = 20.0; // Margen de tolerancia
 
     return [
-      // Diagonal izquierda: desde (0.3w, 0.8h) a (0.5w, 0.2h)
+      // Trazo vertical principal: desde (0.3w, 0.2h) a (0.3w, 0.8h)
+      Rect.fromPoints(
+        Offset(0.3 * width - margin, 0.2 * height - margin),
+        Offset(0.3 * width + margin, 0.8 * height + margin),
+      ),
+      // Trazo horizontal superior: desde (0.3w, 0.2h) a (0.7w, 0.2h)
+      Rect.fromPoints(
+        Offset(0.3 * width - margin, 0.2 * height - margin),
+        Offset(0.7 * width + margin, 0.2 * height + margin),
+      ),
+      // Trazo horizontal medio: desde (0.3w, 0.5h) a (0.6w, 0.5h)
+      Rect.fromPoints(
+        Offset(0.3 * width - margin, 0.5 * height - margin),
+        Offset(0.6 * width + margin, 0.5 * height + margin),
+      ),
+      // Trazo horizontal inferior: desde (0.3w, 0.8h) a (0.7w, 0.8h)
       Rect.fromPoints(
         Offset(0.3 * width - margin, 0.8 * height - margin),
-        Offset(0.5 * width + margin, 0.2 * height + margin),
-      ),
-      // Diagonal derecha: desde (0.7w, 0.8h) a (0.5w, 0.2h)
-      Rect.fromPoints(
-        Offset(0.5 * width - margin, 0.2 * height - margin),
         Offset(0.7 * width + margin, 0.8 * height + margin),
-      ),
-      // Trazo horizontal: desde (0.35w, 0.5h) a (0.65w, 0.5h)
-      Rect.fromPoints(
-        Offset(0.35 * width - margin, 0.5 * height - margin),
-        Offset(0.65 * width + margin, 0.5 * height + margin),
       ),
     ];
   }
 
-  // Regiones clave para la "a" minúscula
-  List<Rect> getKeyRegionsForLowerCaseA(Size canvasSize) {
+  // Regiones clave para la "e" minúscula
+  List<Rect> getKeyRegionsForLowerCaseE(Size canvasSize) {
     double width = canvasSize.width;
     double height = canvasSize.height;
     double margin = 20.0; // Margen de tolerancia
 
     return [
-      // Círculo (cuerpo de la "a")
+      // Trazo curvo (óvalo abierto)
       Rect.fromCenter(
-        center: Offset(0.5 * width, 0.4 * height),
+        center: Offset(0.5 * width, 0.5 * height),
         width: 0.3 * width + 2 * margin,
         height: 0.3 * height + 2 * margin,
       ),
-      // Trazo vertical
+      // Trazo horizontal central
       Rect.fromPoints(
-        Offset(0.65 * width - margin, 0.4 * height),
-        Offset(0.65 * width + margin, 0.7 * height),
+        Offset(0.35 * width - margin, 0.5 * height - margin),
+        Offset(0.65 * width + margin, 0.5 * height + margin),
       ),
     ];
   }
@@ -92,15 +79,15 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
     if (points.isEmpty) {
       setState(() {
         isValid = false;
-        feedbackMessage = 'Dibuja la letra ${isUpperCase ? "A" : "a"}.';
+        feedbackMessage = 'Dibuja la letra ${isUpperCase ? "E" : "e"}.';
       });
       return;
     }
 
     List<Rect> keyRegions =
         isUpperCase
-            ? getKeyRegionsForUpperCaseA(canvasSize)
-            : getKeyRegionsForLowerCaseA(canvasSize);
+            ? getKeyRegionsForUpperCaseE(canvasSize)
+            : getKeyRegionsForLowerCaseE(canvasSize);
     List<int> pointsInRegion = List.filled(keyRegions.length, 0);
 
     for (var point in points) {
@@ -117,25 +104,15 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
 
     setState(() {
       isValid = allRegionsCovered;
-      if (allRegionsCovered) {
-        if (isUpperCase) {
-          isUpperCaseCompleted = true;
-        } else {
-          isLowerCaseCompleted = true;
-        }
-        feedbackMessage =
-            '¡Letra ${isUpperCase ? "A" : "a"} dibujada correctamente!';
-      } else {
-        feedbackMessage =
-            'Dibuja la letra ${isUpperCase ? "A" : "a"} como en la imagen.';
-      }
+      feedbackMessage =
+          allRegionsCovered
+              ? '¡Letra ${isUpperCase ? "E" : "e"} dibujada correctamente!'
+              : 'Dibuja la letra ${isUpperCase ? "E" : "e"} como en la imagen.';
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    bool isLessonCompleted = isUpperCaseCompleted && isLowerCaseCompleted;
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -155,20 +132,14 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                       color: Color.fromARGB(255, 0, 0, 0),
                     ),
                     onPressed: () {
-                      // Navegar a vocala.dart y reemplazar la pantalla actual
-                      Navigator.pushReplacementNamed(context, '/vocala');
+                      Navigator.pop(context); // Volver a la pantalla anterior
                     },
                   ),
                   Expanded(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: LinearProgressIndicator(
-                        value:
-                            isLessonCompleted
-                                ? 1.0
-                                : (isUpperCaseCompleted || isLowerCaseCompleted)
-                                ? 0.6
-                                : 0.2,
+                        value: isValid ? 1.0 : 0.2,
                         backgroundColor: Colors.grey[300],
                         valueColor: const AlwaysStoppedAnimation<Color>(
                           Colors.orange,
@@ -189,7 +160,7 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                   const Icon(Icons.volume_up, color: Colors.black),
                   const SizedBox(width: 8),
                   Text(
-                    'Escribe la letra ${isUpperCase ? "A" : "a"}',
+                    'Escribe la letra ${isUpperCase ? "E" : "e"}',
                     style: const TextStyle(fontSize: 16, color: Colors.black),
                   ),
                 ],
@@ -203,7 +174,7 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                 width: 200,
                 height: 200,
                 child: Image.asset(
-                  isUpperCase ? 'assets/letraA.jpg' : 'assets/letraA.jpg',
+                  isUpperCase ? 'assets/letraE.jpg' : 'assets/letraE.jpg',
                   fit: BoxFit.contain,
                   opacity: const AlwaysStoppedAnimation(0.5),
                 ),
@@ -222,7 +193,7 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
               ),
             ),
 
-            // Botón para alternar entre A y a
+            // Botón para alternar entre E y e
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
@@ -235,14 +206,14 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                         points.clear();
                         currentPencilPos = null;
                         isValid = false;
-                        feedbackMessage = 'Dibuja la letra A.';
+                        feedbackMessage = 'Dibuja la letra E.';
                       });
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           isUpperCase ? Colors.orange : Colors.grey,
                     ),
-                    child: const Text('A mayúscula'),
+                    child: const Text('E mayúscula'),
                   ),
                   const SizedBox(width: 16),
                   ElevatedButton(
@@ -252,14 +223,14 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                         points.clear();
                         currentPencilPos = null;
                         isValid = false;
-                        feedbackMessage = 'Dibuja la letra a.';
+                        feedbackMessage = 'Dibuja la letra e.';
                       });
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor:
                           !isUpperCase ? Colors.orange : Colors.grey,
                     ),
-                    child: const Text('a minúscula'),
+                    child: const Text('e minúscula'),
                   ),
                 ],
               ),
@@ -355,7 +326,7 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                         currentPencilPos = null;
                         isValid = false;
                         feedbackMessage =
-                            'Dibuja la letra ${isUpperCase ? "A" : "a"}.';
+                            'Dibuja la letra ${isUpperCase ? "E" : "e"}.';
                       });
                     },
                     icon: const Icon(Icons.refresh, color: Colors.white),
@@ -371,33 +342,28 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                       ),
                     ),
                   ),
-                  if (isLessonCompleted)
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        try {
-                          await Navigator.pushNamed(context, '/compalabra');
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error al navegar: $e')),
-                          );
-                        }
-                      },
-                      icon: const Icon(
-                        Icons.arrow_forward,
-                        color: Colors.white,
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      // Define la navegación a la siguiente pantalla aquí
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Siguiente pantalla no implementada'),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.arrow_forward, color: Colors.white),
+                    label: const Text('Siguiente'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
                       ),
-                      label: const Text('Siguiente'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
+                  ),
                 ],
               ),
             ),

@@ -1,0 +1,240 @@
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'burbujaA.dart'; // Importación del archivo burbujaA
+import 'caritaselet.dart'; // Importación del archivo caritaselet
+
+void main() {
+  runApp(UnirimagScreen());
+}
+
+class UnirimagScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: MatchingScreen(),
+    );
+  }
+}
+
+class MatchingScreen extends StatefulWidget {
+  @override
+  _MatchingScreenState createState() => _MatchingScreenState();
+}
+
+class _MatchingScreenState extends State<MatchingScreen> {
+  final List<Map<String, String>> items = [
+    {'emoji': '🐝', 'word': 'abeja'},
+    {'emoji': '🕷️', 'word': 'araña'},
+    {'emoji': '🌈', 'word': 'arcoíris'},
+    {'emoji': '💧', 'word': 'agua'},
+    {'emoji': '🐿️', 'word': 'ardilla'},
+  ];
+
+  Map<int, int> connections = {};
+  int? selectedEmojiIndex;
+
+  // Verificar si todas las uniones están completas
+  bool get _isLessonComplete {
+    return connections.length == items.length &&
+        items.asMap().entries.every((entry) {
+          int index = entry.key;
+          String word = entry.value['word']!;
+          return connections.containsKey(index) &&
+              items[connections[index]!]['word'] == word;
+        });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Barra de progreso con "X", más ancha y con bordes circulares
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      // Navegación a la pantalla caritaselet.dart
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyApp()),
+                      );
+                    },
+                    icon: const Icon(Icons.close, color: Colors.black),
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 11, // Barra más ancha
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                          7.5,
+                        ), // Bordes circulares
+                        child: LinearProgressIndicator(
+                          value: 0.8,
+                          backgroundColor: Colors.grey[300],
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            Colors.orange,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Ícono de bocina y texto
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.volume_up, color: Colors.black, size: 24),
+                  SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      'Selecciona un emoji y conéctalo con su palabra correspondiente',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Stack(
+                children: [
+                  CustomPaint(
+                    size: Size.infinite,
+                    painter: LinePainter(connections: connections),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: List.generate(items.length, (index) {
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedEmojiIndex = index;
+                              });
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.all(16),
+                              child: Text(
+                                items[index]['emoji']!,
+                                style: const TextStyle(fontSize: 40),
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: List.generate(items.length, (index) {
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                if (selectedEmojiIndex != null &&
+                                    items[selectedEmojiIndex!]['word'] ==
+                                        items[index]['word']) {
+                                  connections[selectedEmojiIndex!] = index;
+                                  selectedEmojiIndex = null;
+                                }
+                              });
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.all(16),
+                              child: Text(
+                                items[index]['word']!,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            // Botón de flecha (solo aparece si la lección está completa)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child:
+                  _isLessonComplete
+                      ? IconButton(
+                        onPressed: () {
+                          // Navegación a la pantalla en burbujaA.dart
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BurbujaAScreen(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                        ),
+                        iconSize: 32,
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.orange,
+                          shape: const CircleBorder(),
+                        ),
+                      )
+                      : SizedBox.shrink(), // No mostrar nada si la lección no está completa
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class LinePainter extends CustomPainter {
+  final Map<int, int> connections;
+
+  LinePainter({required this.connections});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint =
+        Paint()
+          ..color = Colors.blue
+          ..strokeWidth = 4
+          ..strokeCap = StrokeCap.round;
+
+    connections.forEach((emojiIndex, wordIndex) {
+      final emojiOffset = Offset(
+        size.width * 0.25, // Coordenadas aproximadas para emojis
+        size.height * (0.15 + emojiIndex * 0.18),
+      );
+      final wordOffset = Offset(
+        size.width * 0.75, // Coordenadas aproximadas para palabras
+        size.height * (0.15 + wordIndex * 0.18),
+      );
+
+      canvas.drawLine(emojiOffset, wordOffset, paint);
+    });
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => true;
+}

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'vocalA/vocala.dart';
+import 'vocalE/aprendevocale.dart'; // Importación para aprendevocale.dart
 
 // Pantalla principal que muestra las vocales
 class VowelsScreen extends StatefulWidget {
@@ -312,6 +313,18 @@ class _VowelsScreenState extends State<VowelsScreen>
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => VocalAPage()),
+                    );
+                  } else if (path == "assets/vocalE.jpg") {
+                    // Navega a la pantalla de aprendizaje de vocal E
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => VocalEPage()),
+                    );
+                  } else if (path == "assets/vocales.jpg") {
+                    // Navega a la pantalla de vocal E (esto parece incorrecto, ajustar si es necesario)
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => VocalEPage()),
                     );
                   }
                 },

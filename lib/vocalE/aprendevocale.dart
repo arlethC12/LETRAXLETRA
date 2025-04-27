@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'escriba.dart'; // Asegúrate de que la ruta sea correcta
+import 'Eescribe.dart'; // Asegúrate de que esta importación sea correcta
 
-class VocalAPage extends StatelessWidget {
-  const VocalAPage({super.key});
+class VocalEPage extends StatelessWidget {
+  const VocalEPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class _WriteScreenState extends State<WriteScreen> {
   void initState() {
     super.initState();
     _videoController = VideoPlayerController.network(
-      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4', // Puedes poner otro enlace de video si lo prefieres
     );
     _initializeVideoPlayerFuture = _videoController.initialize();
     _videoController.setLooping(false); // Disable looping to detect video end
@@ -89,7 +89,7 @@ class _WriteScreenState extends State<WriteScreen> {
         children: [
           Column(
             children: [
-              const SizedBox(height: 15), // Kept as is for top spacing
+              const SizedBox(height: 15),
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -104,7 +104,7 @@ class _WriteScreenState extends State<WriteScreen> {
                     },
                   ),
                   const Text(
-                    'Aprende como se estribe la letra A',
+                    'Aprende como se escribe la letra E',
                     style: TextStyle(
                       color: Colors.black87,
                       fontSize: 18,
@@ -113,7 +113,7 @@ class _WriteScreenState extends State<WriteScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 75), // Kept as provided
+              const SizedBox(height: 75),
               FutureBuilder(
                 future: _initializeVideoPlayerFuture,
                 builder: (context, snapshot) {
@@ -147,6 +147,7 @@ class _WriteScreenState extends State<WriteScreen> {
                             IconButton(
                               icon: Icon(
                                 Icons.play_circle_filled,
+                                // ignore: deprecated_member_use
                                 color: Colors.white.withOpacity(0.8),
                                 size: 70,
                               ),
@@ -164,7 +165,7 @@ class _WriteScreenState extends State<WriteScreen> {
                   }
                 },
               ),
-              const Expanded(child: SizedBox()), // Fills remaining space below
+              const Expanded(child: SizedBox()),
             ],
           ),
         ],
@@ -175,9 +176,12 @@ class _WriteScreenState extends State<WriteScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
                   onPressed: () {
+                    // Navega a EscribeEPage
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MyApp()),
+                      MaterialPageRoute(
+                        builder: (context) => const EscribeEPage(),
+                      ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
