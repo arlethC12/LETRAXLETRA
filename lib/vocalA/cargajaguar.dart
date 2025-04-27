@@ -12,12 +12,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: JaguarWalkingScreen(),
+      home: JaguarWalkingScreen(characterImagePath: 'assets/caminajaguar.jpg'),
     );
   }
 }
 
 class JaguarWalkingScreen extends StatefulWidget {
+  final String characterImagePath;
+
+  const JaguarWalkingScreen({Key? key, required this.characterImagePath})
+    : super(key: key);
+
   @override
   _JaguarWalkingScreenState createState() => _JaguarWalkingScreenState();
 }
@@ -32,33 +37,16 @@ class _JaguarWalkingScreenState extends State<JaguarWalkingScreen>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 10), // Animación lenta
+      duration: const Duration(seconds: 8),
       vsync: this,
     );
 
-    // Listener para actualizar las huellas durante la animación
     _controller.addListener(() {
-      setState(() {
-        final progress =
-            _animation.value /
-            MediaQuery.of(context).size.width; // Progresión dinámica de huellas
-        _currentFootprintIndex = (progress * 10).floor();
-      });
-    });
-
-    // Navegar al finalizar la animación
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder:
-                (context) => VowelsScreen(
-                  characterImagePath: 'assets/caminajaguar.jpg',
-                  username: 'UsuarioEjemplo',
-                ),
-          ),
-        );
+      if (mounted && _animation.value != null) {
+        setState(() {
+          final progress = _animation.value / MediaQuery.of(context).size.width;
+          _currentFootprintIndex = (progress * 10).floor();
+        });
       }
     });
   }
@@ -67,14 +55,29 @@ class _JaguarWalkingScreenState extends State<JaguarWalkingScreen>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // Configuración correcta de la animación con MediaQuery
+    final screenWidth = MediaQuery.of(context).size.width;
     _animation = Tween<double>(
       begin: 0,
-      end: MediaQuery.of(context).size.width - 150, // Movimiento horizontal
+      end: screenWidth - 150,
     ).animate(_controller);
 
-    // Iniciar la animación después de configurar MediaQuery
     _controller.forward();
+    // Redirigir después de que la animación termine
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        // Reemplaza la pantalla actual con la nueva
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => VowelsScreen(
+                  characterImagePath: widget.characterImagePath,
+                  username: 'invitado', // Cambia esto por el nombre del usuario
+                ),
+          ),
+        );
+      }
+    });
   }
 
   @override
@@ -90,14 +93,10 @@ class _JaguarWalkingScreenState extends State<JaguarWalkingScreen>
     return Scaffold(
       body: Stack(
         children: [
-          // Fondo blanco
           Container(color: Colors.white),
-          // Texto centrado "Letra x Letra"
           Center(
             child: Padding(
-              padding: EdgeInsets.only(
-                bottom: size.height * 0.25,
-              ), // Subir el texto
+              padding: EdgeInsets.only(bottom: size.height * 0.25),
               child: RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
@@ -131,26 +130,24 @@ class _JaguarWalkingScreenState extends State<JaguarWalkingScreen>
               ),
             ),
           ),
-          // Jaguar animado
           AnimatedBuilder(
             animation: _animation,
             builder: (context, child) {
               return Positioned(
                 left: _animation.value,
-                top: size.height * 0.45, // Centrado verticalmente
+                top: size.height * 0.45,
                 child: SizedBox(
                   width: 150,
                   child: Image.asset(
-                    'assets/caminajaguar.jpg',
+                    widget.characterImagePath,
                     fit: BoxFit.contain,
                   ),
                 ),
               );
             },
           ),
-          // Huellas progresivas detrás del jaguar
           Positioned(
-            top: size.height * 0.59, // Debajo del jaguar
+            top: size.height * 0.59,
             left: size.width * 0.1,
             child: Row(
               children: List.generate(
@@ -162,8 +159,8 @@ class _JaguarWalkingScreenState extends State<JaguarWalkingScreen>
                     color:
                         index < _currentFootprintIndex
                             ? Colors.black
-                            : Colors.grey.shade400, // Huellas dinámicas
-                    size: size.width * 0.05, // Tamaño proporcional
+                            : Colors.grey.shade400,
+                    size: size.width * 0.05,
                   ),
                 ),
               ),

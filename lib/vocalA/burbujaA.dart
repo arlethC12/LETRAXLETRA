@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'nivellogrado.dart'; // Asegúrate de que la ruta sea correcta
+import 'nivellogrado.dart';
+import 'unirimag.dart';
 
 void main() {
   runApp(BurbujaAScreen());
@@ -33,7 +34,6 @@ class _BubbleScreenState extends State<BubbleScreen>
       duration: Duration(seconds: 2),
     )..repeat(reverse: true);
 
-    // Letters with 'a's included
     List<String> letters = [
       'a',
       'i',
@@ -53,7 +53,6 @@ class _BubbleScreenState extends State<BubbleScreen>
       'o',
       'u',
     ];
-    // Positions (normalized between 0 and 1)
     List<Offset> positions = [
       Offset(0.3, 0.1),
       Offset(0.7, 0.1),
@@ -74,7 +73,6 @@ class _BubbleScreenState extends State<BubbleScreen>
       Offset(0.6, 0.65),
     ];
 
-    // Create bubbles and count 'a's
     for (int i = 0; i < letters.length; i++) {
       bubbles.add(
         Bubble(
@@ -124,6 +122,23 @@ class _BubbleScreenState extends State<BubbleScreen>
     }
   }
 
+  Color getTextColor(String letter) {
+    switch (letter.toLowerCase()) {
+      case 'a':
+        return Colors.red.shade700;
+      case 'i':
+        return Colors.blue.shade700;
+      case 'o':
+        return Colors.purple.shade700;
+      case 'e':
+        return Colors.green.shade700;
+      case 'u':
+        return Colors.orange.shade700;
+      default:
+        return Colors.black;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,18 +146,21 @@ class _BubbleScreenState extends State<BubbleScreen>
       body: SafeArea(
         child: Stack(
           children: [
-            // Progress bar and close button
             Positioned(
               top: 10,
               left: 20,
               right: 20,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
                     icon: Icon(Icons.close, color: Colors.black, size: 30),
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UnirimagScreen(),
+                        ),
+                      );
                     },
                   ),
                   Expanded(
@@ -164,14 +182,13 @@ class _BubbleScreenState extends State<BubbleScreen>
                 ],
               ),
             ),
-            // Instruction text with speaker icon (icon before text)
             Positioned(
               top: 60,
               left: 20,
               child: Row(
                 children: [
                   Icon(Icons.volume_up, color: Colors.black, size: 24),
-                  SizedBox(width: 8), // Space between icon and text
+                  SizedBox(width: 8),
                   Text(
                     'Explota las burbujas de la letra a',
                     style: TextStyle(
@@ -183,7 +200,6 @@ class _BubbleScreenState extends State<BubbleScreen>
                 ],
               ),
             ),
-            // Bubbles
             for (int i = 0; i < bubbles.length; i++)
               if (bubbles[i].isVisible)
                 AnimatedBuilder(
@@ -208,6 +224,7 @@ class _BubbleScreenState extends State<BubbleScreen>
                         child: BubbleWidget(
                           letter: bubbles[i].letter,
                           borderColor: getBorderColor(bubbles[i].letter),
+                          textColor: getTextColor(bubbles[i].letter),
                           key: bubbles[i].key,
                           isPopping:
                               bubbles[i].letter.toLowerCase() == 'a' &&
@@ -217,29 +234,33 @@ class _BubbleScreenState extends State<BubbleScreen>
                     );
                   },
                 ),
-            // Right arrow button
-            Positioned(
-              bottom: 20,
-              right: 20,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NivelOgradoScreen(),
+            if (poppedAs == totalAs)
+              Positioned(
+                bottom: 20,
+                right: 20,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NivelOgradoScreen(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    backgroundColor: Colors.orange,
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  backgroundColor: Colors.orange,
+                  child: Icon(
+                    Icons.arrow_forward,
+                    color: Colors.white,
+                    size: 30,
+                  ),
                 ),
-                child: Icon(Icons.arrow_forward, color: Colors.white, size: 30),
               ),
-            ),
           ],
         ),
       ),
@@ -266,11 +287,13 @@ class Bubble {
 class BubbleWidget extends StatefulWidget {
   final String letter;
   final Color borderColor;
+  final Color textColor;
   final bool isPopping;
 
   BubbleWidget({
     required this.letter,
     required this.borderColor,
+    required this.textColor,
     required this.isPopping,
     required Key key,
   }) : super(key: key);
@@ -284,21 +307,26 @@ class _BubbleWidgetState extends State<BubbleWidget>
   late AnimationController _popController;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
+  late Animation<double> _burstAnimation;
 
   @override
   void initState() {
     super.initState();
     _popController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 300),
+      duration: Duration(milliseconds: 500),
     );
     _scaleAnimation = Tween<double>(
       begin: 1.0,
-      end: 1.5,
+      end: 2.2,
     ).animate(CurvedAnimation(parent: _popController, curve: Curves.easeOut));
     _fadeAnimation = Tween<double>(
       begin: 1.0,
       end: 0.0,
+    ).animate(CurvedAnimation(parent: _popController, curve: Curves.easeOut));
+    _burstAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
     ).animate(CurvedAnimation(parent: _popController, curve: Curves.easeOut));
 
     if (widget.isPopping) {
@@ -329,42 +357,74 @@ class _BubbleWidgetState extends State<BubbleWidget>
           scale: _scaleAnimation.value,
           child: Opacity(
             opacity: _fadeAnimation.value,
-            child: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-                border: Border.all(color: widget.borderColor, width: 3),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 8,
-                    offset: Offset(2, 2),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        Colors.white.withOpacity(0.9),
+                        Colors.blue.withOpacity(0.3),
+                        Colors.purple.withOpacity(0.3),
+                        Colors.green.withOpacity(0.3),
+                        Colors.red.withOpacity(0.3),
+                        Colors.yellow.withOpacity(0.3),
+                      ],
+                      stops: [0.0, 0.3, 0.5, 0.7, 0.9, 1.0],
+                      center: Alignment(-0.5, -0.5),
+                      radius: 1.2,
+                    ),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.7),
+                      width: 2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: Offset(3, 3),
+                      ),
+                      if (widget.letter.toLowerCase() == 'a')
+                        BoxShadow(
+                          color: Colors.red.withOpacity(0.4),
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                        ),
+                    ],
                   ),
-                  BoxShadow(
-                    color: Colors.white.withOpacity(0.5),
-                    blurRadius: 10,
-                    spreadRadius: -2,
-                    offset: Offset(-2, -2),
+                  child: Center(
+                    child: Text(
+                      widget.letter,
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: widget.textColor,
+                      ),
+                    ),
                   ),
-                ],
-                gradient: RadialGradient(
-                  colors: [Colors.white, widget.borderColor.withOpacity(0.1)],
-                  center: Alignment(-0.3, -0.3),
-                  radius: 0.8,
                 ),
-              ),
-              child: Center(
-                child: Text(
-                  widget.letter,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                if (widget.isPopping)
+                  Container(
+                    width: 60 * _burstAnimation.value,
+                    height: 60 * _burstAnimation.value,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          Colors.white.withOpacity(
+                            0.5 * (1 - _burstAnimation.value),
+                          ),
+                          Colors.transparent,
+                        ],
+                        stops: [0.5, 1.0],
+                      ),
+                    ),
                   ),
-                ),
-              ),
+              ],
             ),
           ),
         );

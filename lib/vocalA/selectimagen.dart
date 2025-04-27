@@ -47,7 +47,7 @@ class _SelectionScreenState extends State<SelectionScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Barra de progreso con "X"
+            // Barra de progreso con "X", más ancha y con bordes circulares
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -59,16 +59,26 @@ class _SelectionScreenState extends State<SelectionScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => CompalabraScreen(),
-                        ), // Asegúrate de que la clase se llame 'CompalabraScreen' en compalabra.dart
+                        ),
                       );
                     },
                     icon: Icon(Icons.close, color: Colors.black),
                   ),
                   Expanded(
-                    child: LinearProgressIndicator(
-                      value: 0.5,
-                      backgroundColor: Colors.grey[300],
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                    child: Container(
+                      height: 10, // Barra más ancha
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                          7.5,
+                        ), // Bordes circulares
+                        child: LinearProgressIndicator(
+                          value: 0.5,
+                          backgroundColor: Colors.grey[300],
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.orange,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -81,7 +91,7 @@ class _SelectionScreenState extends State<SelectionScreen> {
                   'Selecciona la imagen correcta',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 8),
+                SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -97,7 +107,7 @@ class _SelectionScreenState extends State<SelectionScreen> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32.0,
-                  vertical: 32.0, // Increased vertical padding
+                  vertical: 32.0,
                 ),
                 child: GridView.count(
                   crossAxisCount: 2,
@@ -112,25 +122,45 @@ class _SelectionScreenState extends State<SelectionScreen> {
                 ),
               ),
             ),
-            // Botón de navegación (solo flecha derecha)
+            // Texto "Correcto" y botón de navegación (solo aparece si es correcto)
             Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: IconButton(
-                onPressed: () {
-                  // Navegar a la pantalla CaritaSelect cuando se presiona la flecha
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MyApp()),
-                  );
-                },
-                icon: Icon(Icons.arrow_forward, color: Colors.black, size: 36),
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  shape: CircleBorder(),
-                  padding: EdgeInsets.all(
-                    20,
-                  ), // Increased padding for larger button
-                ),
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                children: [
+                  if (selectedImage == correctImage)
+                    Text(
+                      'Correcto',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
+                    ),
+                  if (selectedImage == correctImage)
+                    SizedBox(
+                      height: 55,
+                    ), // Espacio para mover "Correcto" más arriba
+                  if (selectedImage == correctImage)
+                    IconButton(
+                      onPressed: () {
+                        // Navegar a la pantalla CaritaSelect cuando se presiona la flecha
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MyApp()),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.arrow_forward,
+                        color: Colors.white,
+                        size: 36,
+                      ),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        shape: CircleBorder(),
+                        padding: EdgeInsets.all(20),
+                      ),
+                    ),
+                ],
               ),
             ),
           ],

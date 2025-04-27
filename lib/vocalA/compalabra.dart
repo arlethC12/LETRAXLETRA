@@ -34,7 +34,7 @@ class _LessonScreenState extends State<LessonScreen> {
             color: Colors.white,
             child: Column(
               children: [
-                // Barra de progreso con la "X"
+                // Barra de progreso con bordes circulares y color naranja
                 Padding(
                   padding: const EdgeInsets.only(top: 40, left: 16, right: 16),
                   child: Row(
@@ -48,11 +48,16 @@ class _LessonScreenState extends State<LessonScreen> {
                       Expanded(
                         child: Container(
                           height: 10,
-                          child: LinearProgressIndicator(
-                            value: 0.3,
-                            backgroundColor: Colors.grey[300],
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Color(0xFFFFC107),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(
+                              5,
+                            ), // Bordes circulares
+                            child: LinearProgressIndicator(
+                              value: 0.3,
+                              backgroundColor: Colors.grey[300],
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.orange, // Color naranja
+                              ),
                             ),
                           ),
                         ),
@@ -240,7 +245,7 @@ class _LessonScreenState extends State<LessonScreen> {
                   ],
                 ),
                 Spacer(),
-                // Botón de flecha
+                // Botón de flecha con color naranja
                 if (isCorrect)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 20),
@@ -255,7 +260,7 @@ class _LessonScreenState extends State<LessonScreen> {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFFF9800),
+                        backgroundColor: Colors.orange, // Color naranja
                         shape: CircleBorder(),
                         padding: EdgeInsets.all(20),
                       ),

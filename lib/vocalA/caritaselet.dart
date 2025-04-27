@@ -49,6 +49,17 @@ class _SelectionScreenState extends State<SelectionScreen> {
     });
   }
 
+  // Verificar si la lección está completa (todas las imágenes que empiezan con "A" tienen carita)
+  bool get _isLessonComplete {
+    return gridItems.every((item) {
+      String imageName = item['name'].toLowerCase();
+      if (imageName.startsWith('a')) {
+        return item['hasSmiley'] == true;
+      }
+      return true; // Ignorar imágenes que no empiezan con "A"
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,7 +68,7 @@ class _SelectionScreenState extends State<SelectionScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Barra de progreso con "X"
+            // Barra de progreso con "X", más ancha y con bordes circulares
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -75,16 +86,26 @@ class _SelectionScreenState extends State<SelectionScreen> {
                     icon: Icon(Icons.close, color: Colors.black),
                   ),
                   Expanded(
-                    child: LinearProgressIndicator(
-                      value: 0.5,
-                      backgroundColor: Colors.grey[300],
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                    child: Container(
+                      height: 10, // Barra más ancha
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                          7.5,
+                        ), // Bordes circulares
+                        child: LinearProgressIndicator(
+                          value: 0.7,
+                          backgroundColor: Colors.grey[300],
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.orange,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-            // Texto centrado con ícono de audio
+            // Texto centrado con ícono de audio antes del texto
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 16.0,
@@ -93,6 +114,8 @@ class _SelectionScreenState extends State<SelectionScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Icon(Icons.volume_up, color: Colors.black, size: 24),
+                  SizedBox(width: 8),
                   Flexible(
                     child: Text(
                       'Selecciona las imágenes que empiecen con la letra A',
@@ -105,8 +128,6 @@ class _SelectionScreenState extends State<SelectionScreen> {
                       softWrap: true,
                     ),
                   ),
-                  SizedBox(width: 8),
-                  Icon(Icons.volume_up, color: Colors.black, size: 24),
                 ],
               ),
             ),
@@ -121,8 +142,7 @@ class _SelectionScreenState extends State<SelectionScreen> {
                   crossAxisCount: 3,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
-                  childAspectRatio:
-                      0.65, // Ajustado para dar más espacio en la parte superior
+                  childAspectRatio: 0.65,
                   shrinkWrap: true,
                   children: List.generate(gridItems.length, (index) {
                     return _buildImageContainer(index);
@@ -130,24 +150,33 @@ class _SelectionScreenState extends State<SelectionScreen> {
                 ),
               ),
             ),
-            // Botón de navegación (solo flecha derecha)
+            // Botón de navegación (solo aparece si la lección está completa)
             Padding(
               padding: const EdgeInsets.all(20.0),
-              child: IconButton(
-                onPressed: () {
-                  // Navegar hacia unirimag.dart
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => UnirimagScreen()),
-                  );
-                },
-                icon: Icon(Icons.arrow_forward, color: Colors.black, size: 30),
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  shape: CircleBorder(),
-                  padding: EdgeInsets.all(16),
-                ),
-              ),
+              child:
+                  _isLessonComplete
+                      ? IconButton(
+                        onPressed: () {
+                          // Navegar hacia unirimag.dart
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => UnirimagScreen(),
+                            ),
+                          );
+                        },
+                        icon: Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.orange,
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.all(16),
+                        ),
+                      )
+                      : SizedBox.shrink(), // No mostrar nada si la lección no está completa
             ),
           ],
         ),

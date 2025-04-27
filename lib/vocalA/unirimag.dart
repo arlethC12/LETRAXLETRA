@@ -34,6 +34,17 @@ class _MatchingScreenState extends State<MatchingScreen> {
   Map<int, int> connections = {};
   int? selectedEmojiIndex;
 
+  // Verificar si todas las uniones están completas
+  bool get _isLessonComplete {
+    return connections.length == items.length &&
+        items.asMap().entries.every((entry) {
+          int index = entry.key;
+          String word = entry.value['word']!;
+          return connections.containsKey(index) &&
+              items[connections[index]!]['word'] == word;
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,6 +52,7 @@ class _MatchingScreenState extends State<MatchingScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            // Barra de progreso con "X", más ancha y con bordes circulares
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -56,25 +68,47 @@ class _MatchingScreenState extends State<MatchingScreen> {
                     icon: const Icon(Icons.close, color: Colors.black),
                   ),
                   Expanded(
-                    child: LinearProgressIndicator(
-                      value: 0.5,
-                      backgroundColor: Colors.grey[300],
-                      valueColor: const AlwaysStoppedAnimation<Color>(
-                        Colors.orange,
+                    child: Container(
+                      height: 11, // Barra más ancha
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                          7.5,
+                        ), // Bordes circulares
+                        child: LinearProgressIndicator(
+                          value: 0.8,
+                          backgroundColor: Colors.grey[300],
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            Colors.orange,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
+            // Ícono de bocina y texto
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                'Selecciona un emoji y conéctalo con su palabra correspondiente',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.volume_up, color: Colors.black, size: 24),
+                  SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      'Selecciona un emoji y conéctalo con su palabra correspondiente',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
               ),
             ),
             Expanded(
@@ -140,23 +174,32 @@ class _MatchingScreenState extends State<MatchingScreen> {
                 ],
               ),
             ),
+            // Botón de flecha (solo aparece si la lección está completa)
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: IconButton(
-                onPressed: () {
-                  // Navegación a la pantalla en burbujaA.dart
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => BurbujaAScreen()),
-                  );
-                },
-                icon: const Icon(Icons.arrow_forward, color: Colors.white),
-                iconSize: 32,
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  shape: const CircleBorder(),
-                ),
-              ),
+              child:
+                  _isLessonComplete
+                      ? IconButton(
+                        onPressed: () {
+                          // Navegación a la pantalla en burbujaA.dart
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BurbujaAScreen(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                        ),
+                        iconSize: 32,
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.orange,
+                          shape: const CircleBorder(),
+                        ),
+                      )
+                      : SizedBox.shrink(), // No mostrar nada si la lección no está completa
             ),
           ],
         ),
