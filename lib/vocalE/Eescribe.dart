@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'arrastralaletra.dart'; // Importa el archivo arrastralaletra.dart
 
 class EscribeEPage extends StatelessWidget {
   const EscribeEPage({super.key});
@@ -344,10 +345,13 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
-                      // Define la navegación a la siguiente pantalla aquí
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Siguiente pantalla no implementada'),
+                      // Navega a la pantalla definida en arrastralaletra.dart
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) =>
+                                  DragLetterScreen(), // Asegúrate de que este sea el nombre correcto del widget
                         ),
                       );
                     },

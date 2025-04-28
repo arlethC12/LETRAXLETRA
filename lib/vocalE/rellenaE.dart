@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'pintaE.dart'; // Asegúrate que esté en la misma carpeta o ajusta la ruta si es necesario
 
 void main() {
-  runApp(const MyApp());
+  runApp(const RellenaEPantalla());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class RellenaEPantalla extends StatelessWidget {
+  const RellenaEPantalla({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +86,13 @@ class _GameScreenState extends State<GameScreen> {
                 padding: const EdgeInsets.only(bottom: 20.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    // Acción al presionar el botón (puede navegar a otra pantalla, etc.)
+                    // Aquí navegamos a la pantalla de pintaE
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PintaEPantalla(),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange,
@@ -125,25 +132,19 @@ class LetterEWithCircles extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width:
-          150, // Reduje el ancho porque ahora la última fila tiene solo 2 círculos
-      height:
-          260, // Aumenté el alto para dar espacio al círculo adicional en la barra vertical
+      width: 150,
+      height: 260,
       child: Stack(
         children: [
-          // Círculos en la barra vertical izquierda (ahora 5 círculos)
           _buildCircle(10, 10, 0),
           _buildCircle(10, 50, 1),
           _buildCircle(10, 90, 2),
           _buildCircle(10, 130, 3),
-          _buildCircle(10, 170, 4), // Círculo adicional en la barra vertical
-          // Círculos en la barra superior
+          _buildCircle(10, 170, 4),
           _buildCircle(50, 10, 5),
           _buildCircle(90, 10, 6),
-          // Círculos en la barra del medio
           _buildCircle(50, 90, 7),
           _buildCircle(90, 90, 8),
-          // Círculos en la barra inferior (solo 2 círculos, mejor alineados)
           _buildCircle(50, 170, 9),
           _buildCircle(90, 170, 10),
         ],
@@ -158,18 +159,18 @@ class LetterEWithCircles extends StatelessWidget {
       child: DragTarget<String>(
         onWillAccept: (data) {
           return [
-            '⭐', // Estrella
-            '🌽', // Elote
-            '🪜', // Escalera
-            '🐘', // Elefante
-            '🪞', // Espejo
-            '🧹', // Escoba
-            '🏫', // Escuela
-            '🧽', // Esponja
-            '🥤', // Envase
-            '🥗', // Ensalada
-            '🩺', // Estetoscopio
-            '🦂', // Escorpión
+            '⭐',
+            '🌽',
+            '🪜',
+            '🐘',
+            '🪞',
+            '🧹',
+            '🏫',
+            '🧽',
+            '🥤',
+            '🥗',
+            '🩺',
+            '🦂',
           ].contains(data);
         },
         onAccept: (data) => onAccept(index, data),
@@ -239,6 +240,7 @@ class BottomIcons extends StatelessWidget {
     return Draggable<String>(
       data: emoji,
       feedback: Material(
+        color: Colors.transparent,
         child: Container(
           width: 50,
           height: 50,

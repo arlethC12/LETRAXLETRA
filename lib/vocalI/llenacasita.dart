@@ -7,7 +7,10 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: GameScreen());
+    return MaterialApp(
+      debugShowCheckedModeBanner: false, // Remove DEBUG label
+      home: GameScreen(),
+    );
   }
 }
 
@@ -18,9 +21,9 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   List<String?> windows = List.filled(
-    4,
+    2,
     null,
-  ); // 4 ventanas, inicialmente vacías
+  ); // 2 ventanas, inicialmente vacías
   int filledWindows = 0; // Contador de ventanas llenas
   double progress = 0.0; // Progreso de la barra (0 a 1)
 
@@ -62,7 +65,10 @@ class _GameScreenState extends State<GameScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.close, color: Colors.yellow),
+                        icon: Icon(
+                          Icons.close,
+                          color: const Color.fromARGB(255, 0, 0, 0),
+                        ),
                         onPressed: () {
                           // Acción para cerrar
                         },
@@ -70,33 +76,45 @@ class _GameScreenState extends State<GameScreen> {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: LinearProgressIndicator(
-                            value: progress,
-                            backgroundColor: Colors.grey[300],
-                            color: Colors.yellow,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(
+                              20,
+                            ), // Bordes circulares
+                            child: LinearProgressIndicator(
+                              value: progress,
+                              backgroundColor: Colors.grey[300],
+                              color: Colors.orange, // Color naranja
+                              minHeight: 10, // Altura de la barra
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 40), // Más espacio para bajar la casa
                 // Texto de instrucción
                 Text(
                   'Selecciona la imagen que empiece con la letra I y ponla en la casa',
-                  style: TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: 18),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 45), // Más espacio para bajar la casa
                 // Casa con ventanas
                 Stack(
                   alignment: Alignment.center,
                   children: [
                     // Techo de la casa
-                    CustomPaint(size: Size(200, 100), painter: RoofPainter()),
+                    Positioned(
+                      top: -8,
+                      child: CustomPaint(
+                        size: Size(209, 50),
+                        painter: RoofPainter(),
+                      ),
+                    ),
                     // Cuerpo de la casa
                     Container(
-                      margin: EdgeInsets.only(top: 50),
+                      margin: EdgeInsets.only(top: 38),
                       width: 200,
                       height: 200,
                       color: Colors.purple[200],
@@ -118,77 +136,21 @@ class _GameScreenState extends State<GameScreen> {
                               ),
                             ),
                           ),
-                          // Ventanas
+                          // Ventanas cuadradas
                           Positioned(
                             top: 20,
                             left: 20,
-                            child: Container(
-                              width: 60,
-                              height: 60,
-                              color:
-                                  windows[0] == null
-                                      ? Colors.white
-                                      : Colors.grey[200],
-                              child: Center(
-                                child: Text(
-                                  windows[0] ?? '',
-                                  style: TextStyle(fontSize: 30),
-                                ),
-                              ),
+                            child: WindowPane(
+                              emoji: windows[0],
+                              isFilled: windows[0] != null,
                             ),
                           ),
                           Positioned(
                             top: 20,
                             right: 20,
-                            child: Container(
-                              width: 60,
-                              height: 60,
-                              color:
-                                  windows[1] == null
-                                      ? Colors.white
-                                      : Colors.grey[200],
-                              child: Center(
-                                child: Text(
-                                  windows[1] ?? '',
-                                  style: TextStyle(fontSize: 30),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 80,
-                            left: 20,
-                            child: Container(
-                              width: 60,
-                              height: 60,
-                              color:
-                                  windows[2] == null
-                                      ? Colors.white
-                                      : Colors.grey[200],
-                              child: Center(
-                                child: Text(
-                                  windows[2] ?? '',
-                                  style: TextStyle(fontSize: 30),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 80,
-                            right: 20,
-                            child: Container(
-                              width: 60,
-                              height: 60,
-                              color:
-                                  windows[3] == null
-                                      ? Colors.white
-                                      : Colors.grey[200],
-                              child: Center(
-                                child: Text(
-                                  windows[3] ?? '',
-                                  style: TextStyle(fontSize: 30),
-                                ),
-                              ),
+                            child: WindowPane(
+                              emoji: windows[1],
+                              isFilled: windows[1] != null,
                             ),
                           ),
                         ],
@@ -263,19 +225,45 @@ class EmojiButton extends StatelessWidget {
   }
 }
 
+// Widget para ventanas cuadradas
+class WindowPane extends StatelessWidget {
+  final String? emoji;
+  final bool isFilled;
+
+  WindowPane({this.emoji, required this.isFilled});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 60,
+      height: 60,
+      decoration: BoxDecoration(
+        color: isFilled ? Colors.grey[200] : Colors.white,
+        border: Border.all(color: Colors.black),
+      ),
+      child: Center(
+        child: Text(
+          emoji ?? '',
+          style: TextStyle(fontSize: 30), // Tamaño más grande para emojis
+        ),
+      ),
+    );
+  }
+}
+
 // Pintor para el tejado de la casa (Techo triangular)
 class RoofPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint =
         Paint()
-          ..color = const Color.fromARGB(255, 145, 70, 1)
+          ..color = Color.fromARGB(255, 145, 70, 1) // Color marrón
           ..style = PaintingStyle.fill;
 
     final path = Path();
-    path.moveTo(5, size.height); // Punto inferior izquierdo
-    path.lineTo(size.width / 5, 3); // Pico del triángulo (centro arriba)
-    path.lineTo(size.width, size.height); // Punto inferior derecho
+    path.moveTo(0, size.height); // Esquina inferior izquierda
+    path.lineTo(size.width / 2, 0); // Pico central arriba
+    path.lineTo(size.width, size.height); // Esquina inferior derecha
     path.close();
 
     canvas.drawPath(path, paint);

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'rellenaE.dart'; // <<--- Aquí importamos la otra pantalla
 
 void main() {
-  runApp(MyApp());
+  runApp(DragLetterScreen());
 }
 
-class MyApp extends StatelessWidget {
+class DragLetterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -42,7 +43,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
             SizedBox(width: 8.0),
             Container(
               width: MediaQuery.of(context).size.width * 0.7,
-              height: 20,
+              height: 15,
               decoration: BoxDecoration(
                 color: Colors.orange,
                 borderRadius: BorderRadius.circular(10.0),
@@ -112,7 +113,12 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                 if (allBoxesFilled)
                   GestureDetector(
                     onTap: () {
-                      print('Botón de flecha presionado');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RellenaEPantalla(),
+                        ),
+                      );
                     },
                     child: Container(
                       width: 60,
