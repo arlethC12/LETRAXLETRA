@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:letra_x_letra/vocalO/unirpieza.dart';
+import 'package:letra_x_letra/vocalO/BurbujaO.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(Helado());
 }
 
-class MyApp extends StatelessWidget {
+class Helado extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(debugShowCheckedModeBanner: false, home: PuzzleScreen());
@@ -45,7 +47,11 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
               child: IconButton(
                 icon: Icon(Icons.close, color: Colors.black),
                 onPressed: () {
-                  Navigator.pop(context);
+                  //navega a unirpueza.dart
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => UnirpiezaO()),
+                  );
                 },
               ),
             ),
@@ -83,7 +89,15 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                       shape: CircleBorder(),
                       padding: EdgeInsets.all(15),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      // Navegar a BurbujaO.dart
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BurbujaOScreen(),
+                        ),
+                      );
+                    },
                     child: Icon(Icons.arrow_forward, color: Colors.white),
                   ),
                 ),

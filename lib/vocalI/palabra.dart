@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:letra_x_letra/vocalI/rompecabesa.dart'; // Importa rompecabesa.dart (contiene RompecabesaScreen)
+import 'package:letra_x_letra/vocalI/BurbujaI.dart'; // Importa BurbujaI.dart (contiene BurbujaIScreen)
 
 void main() {
-  runApp(MyApp());
+  runApp(PalabraScreen());
 }
 
-class MyApp extends StatelessWidget {
+class PalabraScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -40,7 +42,13 @@ class _WordCompletionScreenState extends State<WordCompletionScreen> {
                     IconButton(
                       icon: Icon(Icons.close),
                       onPressed: () {
-                        Navigator.pop(context);
+                        // Navegar a la pantalla de rompecabesa.dart
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RompecabesaScreen(),
+                          ),
+                        );
                       },
                     ),
                     Expanded(
@@ -79,7 +87,10 @@ class _WordCompletionScreenState extends State<WordCompletionScreen> {
                       _buildLetterBox(firstLetter),
                       Text(
                         'gles',
-                        style: TextStyle(fontSize: 40, color: Colors.orange),
+                        style: TextStyle(
+                          fontSize: 40,
+                          color: const Color.fromARGB(157, 255, 153, 0),
+                        ),
                       ),
                       _buildLetterBox(secondLetter),
                       Text(
@@ -90,7 +101,7 @@ class _WordCompletionScreenState extends State<WordCompletionScreen> {
                   ),
                 ),
                 SizedBox(
-                  height: 55,
+                  height: 65,
                 ), // Increased from 20 to 40 to lower the letter boxes
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -100,11 +111,17 @@ class _WordCompletionScreenState extends State<WordCompletionScreen> {
                     _buildSelectableLetter('i', false),
                   ],
                 ),
-                SizedBox(height: 60),
+                SizedBox(height: 80),
                 if (firstLetter == 'I' && secondLetter == 'i')
                   ElevatedButton(
                     onPressed: () {
-                      // Acción al completar la palabra
+                      // Navegar a la pantalla de BurbujaI.dart
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BurbujaIScreen(),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 233, 144, 42),

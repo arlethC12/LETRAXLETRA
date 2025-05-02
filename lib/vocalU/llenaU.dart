@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:letra_x_letra/vocalU/unepalabra.dart';
+import 'package:letra_x_letra/vocalU/unepalabra.dart';
+import 'package:letra_x_letra/vocalU/BurbujaU.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const llenaU());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class llenaU extends StatelessWidget {
+  const llenaU({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +59,12 @@ class _UvasScreenState extends State<UvasScreen> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.close, color: Colors.black),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => unepla()),
+                      );
+                    },
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -121,7 +129,12 @@ class _UvasScreenState extends State<UvasScreen> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => BurbujaUScreen()),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     shape: const CircleBorder(),
                     padding: const EdgeInsets.all(15),

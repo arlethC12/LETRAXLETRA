@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:letra_x_letra/vocalI/llenacasita.dart'; // Importa llenacasita.dart (contiene LlenaCasitaScreen)
+import 'package:letra_x_letra/vocalI/palabra.dart'; // Importa palabra.dart (contiene PalabraScreen)
 
-void main() => runApp(MyApp());
+void main() => runApp(RompecabesaScreen());
 
-class MyApp extends StatelessWidget {
+class RompecabesaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(debugShowCheckedModeBanner: false, home: PuzzleScreen());
@@ -51,7 +53,15 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                       color: const Color.fromARGB(255, 24, 23, 21),
                       size: 25,
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      // Navegar a la pantalla de llenacasita.dart
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LlenaCasitaScreen(),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
@@ -136,7 +146,13 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Navegar a la pantalla de palabra.dart
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PalabraScreen()),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   shape: CircleBorder(),
                   padding: EdgeInsets.all(16),

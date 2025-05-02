@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:letra_x_letra/vocalU/imagselect.dart';
+import 'package:letra_x_letra/vocalU/llenaU.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(unepla());
 }
 
-class MyApp extends StatelessWidget {
+class unepla extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,7 +38,15 @@ class _WordCompletionGameState extends State<WordCompletionGame> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Icon(Icons.close),
+        leading: IconButton(
+          icon: Icon(Icons.close),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => imagsel()),
+            );
+          },
+        ),
         title: Column(
           children: [
             ClipRRect(
@@ -194,7 +204,12 @@ class _WordCompletionGameState extends State<WordCompletionGame> {
           // Botón de flecha (aparece al completar, naranja con flecha blanca)
           if (isCompleted)
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => llenaU()),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange, // Fondo naranja
                 foregroundColor: Colors.white, // Icono blanco

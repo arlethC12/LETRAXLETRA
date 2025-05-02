@@ -26,8 +26,8 @@ class _WriteScreenState extends State<WriteScreen> {
   @override
   void initState() {
     super.initState();
-    _videoController = VideoPlayerController.network(
-      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4', // Puedes poner otro enlace de video si lo prefieres
+    _videoController = VideoPlayerController.asset(
+      'assets/videos/videoletraE.mp4',
     );
     _initializeVideoPlayerFuture = _videoController.initialize();
     _videoController.setLooping(false); // Disable looping to detect video end

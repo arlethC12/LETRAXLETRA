@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:letra_x_letra/vocalI/pintai.dart'; // Importa pintai.dart (contiene ColorPuzzleScreen)
+import 'package:letra_x_letra/vocalI/rompecabesa.dart'; // Importa rompecabesa.dart
 
 void main() {
-  runApp(MyApp());
+  runApp(LlenaCasitaScreen());
 }
 
-class MyApp extends StatelessWidget {
+class LlenaCasitaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -28,7 +30,7 @@ class _GameScreenState extends State<GameScreen> {
   double progress = 0.0; // Progreso de la barra (0 a 1)
 
   // Lista de emojis que comienzan con "I"
-  List<String> validEmojis = ['💉', '🧲']; // Inyección y Imán
+  List<String> validEmojis = ['💉', '🧲', '⛪']; // Inyección, Imán y Iglesia
 
   // Función para manejar cuando se selecciona un emoji
   void selectEmoji(String emoji) {
@@ -70,7 +72,13 @@ class _GameScreenState extends State<GameScreen> {
                           color: const Color.fromARGB(255, 0, 0, 0),
                         ),
                         onPressed: () {
-                          // Acción para cerrar
+                          // Navegar a la pantalla de pintai.dart
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ColorPuzzleScreen(),
+                            ),
+                          );
                         },
                       ),
                       Expanded(
@@ -181,7 +189,7 @@ class _GameScreenState extends State<GameScreen> {
           // Botón naranja con flecha blanca (aparece al llenar todas las ventanas)
           if (filledWindows == windows.length)
             Positioned(
-              bottom: 20,
+              bottom: 20.0, // Valor corregido
               right: 20,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -190,7 +198,13 @@ class _GameScreenState extends State<GameScreen> {
                   padding: EdgeInsets.all(20),
                 ),
                 onPressed: () {
-                  // Acción del botón
+                  // Navegar a la pantalla de rompecabesa.dart
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RompecabesaScreen(),
+                    ),
+                  );
                 },
                 child: Icon(Icons.arrow_forward, color: Colors.white, size: 30),
               ),

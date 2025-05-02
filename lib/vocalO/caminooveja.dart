@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:letra_x_letra/vocalO/seleccionaimagen.dart';
+import 'package:letra_x_letra/vocalO/unirpieza.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(CaminoOveja());
 }
 
-class MyApp extends StatelessWidget {
+class CaminoOveja extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(debugShowCheckedModeBanner: false, home: GameScreen());
@@ -24,9 +26,8 @@ class _GameScreenState extends State<GameScreen>
       false; // Controla la aparición de la oveja en el pasto
   bool showSmallSheep = true; // Controla la visibilidad de las ovejas pequeñas
   bool showNextButton = false; // Controla la aparición del botón con flecha
-  Offset sheepPosition =
-      Offset
-          .zero; // Posición actual de las ovejas pequeñas durante la animación
+  bool isGameCompleted = false; // Controla el estado del juego
+  Offset sheepPosition = Offset.zero; // Posición actual de las ovejas pequeñas
   AnimationController? _controller;
   Animation<double>? _animation;
   int currentPointIndex = 0;
@@ -35,7 +36,7 @@ class _GameScreenState extends State<GameScreen>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 3), // Duración de la animación
+      duration: const Duration(seconds: 3),
       vsync: this,
     );
     _animation =
@@ -56,9 +57,10 @@ class _GameScreenState extends State<GameScreen>
           ..addStatusListener((status) {
             if (status == AnimationStatus.completed) {
               setState(() {
-                showSmallSheep = false; // Oculta las ovejas pequeñas
-                showSheepAtGrass = true; // Muestra la oveja grande en el pasto
-                showNextButton = true; // Muestra el botón con flecha
+                showSmallSheep = false;
+                showSheepAtGrass = true;
+                showNextButton = true;
+                isGameCompleted = true; // Marca el juego como completado
               });
             }
           });
@@ -72,7 +74,7 @@ class _GameScreenState extends State<GameScreen>
 
   void startSheepAnimation() {
     if (points.isNotEmpty) {
-      sheepPosition = points[0]; // Inicia en el primer punto del trazo
+      sheepPosition = points[0];
       currentPointIndex = 0;
       _controller?.reset();
       _controller?.forward();
@@ -92,11 +94,44 @@ class _GameScreenState extends State<GameScreen>
               right: 10,
               child: Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.close, color: Colors.black),
-                    onPressed: () {
-                      // Acción para cerrar
-                    },
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            Colors.transparent, // Fondo transparente
+                        padding: const EdgeInsets.all(
+                          16.0,
+                        ), // Área de toque más grande
+                        elevation: 0, // Sin sombra
+                      ),
+                      onPressed: () {
+                        print('Botón X presionado');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Botón X presionado')),
+                        );
+                        try {
+                          print('Intentando navegar a selectimagenO');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => selectimagenO(),
+                            ),
+                          );
+                          print('Navegación a selectimagenO exitosa');
+                        } catch (e) {
+                          print('Error al navegar a selectimagenO: $e');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error al navegar: $e')),
+                          );
+                        }
+                      },
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.black,
+                        size: 40,
+                      ),
+                    ),
                   ),
                   Expanded(
                     child: ClipRRect(
@@ -134,15 +169,13 @@ class _GameScreenState extends State<GameScreen>
               ),
             ),
             if (showSmallSheep &&
-                (_controller == null ||
-                    !_controller!.isAnimating)) // Ovejas pequeñas iniciales
+                (_controller == null || !_controller!.isAnimating))
               const Positioned(
                 top: 120,
                 right: 50,
                 child: Text('🐑🐑', style: TextStyle(fontSize: 40)),
               ),
-            if (_controller != null &&
-                _controller!.isAnimating) // Ovejas pequeñas moviéndose
+            if (_controller != null && _controller!.isAnimating)
               Positioned(
                 left: sheepPosition.dx - 40,
                 top: sheepPosition.dy - 40,
@@ -156,57 +189,71 @@ class _GameScreenState extends State<GameScreen>
                 style: TextStyle(fontSize: 100, color: Colors.orange),
               ),
             ),
-            if (showSheepAtGrass) // Oveja grande en el pasto
+            if (showSheepAtGrass)
               const Positioned(
-                bottom: 20, // Misma posición que el pasto
-                right: 110, // Misma posición que el pasto
+                bottom: 20,
+                right: 110,
                 child: Text('🐑', style: TextStyle(fontSize: 60)),
               ),
             const Positioned(
               bottom: 20,
-              right: 110, // Posición del pasto
+              right: 110,
               child: Text('🌱🌱🌱', style: TextStyle(fontSize: 40)),
             ),
-            // Área para dibujar la línea
-            Positioned.fill(
+            // Área para dibujar la línea (ajustada para no interferir con el botón)
+            Positioned(
+              top:
+                  100, // Dejamos espacio para el botón y el texto de instrucción
+              left: 0,
+              right: 0,
+              bottom: 0,
               child: GestureDetector(
-                onPanStart: (details) {
-                  setState(() {
-                    isDrawing = true;
-                    points.clear();
-                    points.add(details.localPosition);
-                  });
-                },
-                onPanUpdate: (details) {
-                  if (isDrawing) {
-                    setState(() {
-                      points.add(details.localPosition);
-                    });
-                  }
-                },
-                onPanEnd: (details) {
-                  setState(() {
-                    isDrawing = false;
-                  });
-                  startSheepAnimation(); // Inicia la animación de las ovejas
-                },
+                onPanStart:
+                    isGameCompleted
+                        ? null
+                        : (details) {
+                          setState(() {
+                            isDrawing = true;
+                            points.clear();
+                            points.add(details.localPosition);
+                          });
+                        },
+                onPanUpdate:
+                    isGameCompleted
+                        ? null
+                        : (details) {
+                          if (isDrawing) {
+                            setState(() {
+                              points.add(details.localPosition);
+                            });
+                          }
+                        },
+                onPanEnd:
+                    isGameCompleted
+                        ? null
+                        : (details) {
+                          setState(() {
+                            isDrawing = false;
+                          });
+                          startSheepAnimation();
+                        },
                 child: CustomPaint(painter: LinePainter(points)),
               ),
             ),
-            // Botón de flecha (aparece cuando la oveja llega al pasto)
+            // Botón de flecha
             if (showNextButton)
               Positioned(
                 bottom: 40,
                 right: 20,
                 child: FloatingActionButton(
                   onPressed: () {
-                    // Acción para el botón de flecha
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => UnirpiezaO()),
+                    );
                   },
-                  child: const Icon(
-                    Icons.arrow_forward, // Flecha hacia la derecha
-                    color: Colors.white, // Flecha blanca
-                  ),
-                  backgroundColor: Colors.orange, // Botón naranja
+                  child: const Icon(Icons.arrow_forward, color: Colors.white),
+                  backgroundColor: Colors.orange,
                 ),
               ),
           ],
@@ -216,7 +263,6 @@ class _GameScreenState extends State<GameScreen>
   }
 }
 
-// Clase para dibujar la línea
 class LinePainter extends CustomPainter {
   final List<Offset> points;
 

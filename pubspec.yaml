@@ -36,6 +36,9 @@ dependencies:
   flutter_tts: ^4.2.2  # Verifica la última
   font_awesome_flutter: ^10.5.0
   flutter_screenutil: ^5.8.4
+  responsive_framework: ^1.5.1
+  
+  
   
   
   
@@ -156,11 +159,19 @@ flutter:
     - assets/estrella.jpg
     - assets/escalera.jpg
     - assets/crayonE.jpg
+    - assets/letraI.jpg
+    - assets/letraO.jpg
+    - assets/letraU.jpg
     - assets/audios/Regis.mp3
     - assets/audios/dinombre.mp3
     - assets/audios/edad.mp3
     - assets/audios/telefono.mp3
     - assets/audios/avatar.mp3
+    - assets/videos/videoletraA.mp4
+    - assets/videos/videoletraE.mp4
+    - assets/videos/videoletraI.mp4
+    - assets/videos/videoletraO.mp4
+    - assets/videos/videoletraU.mp4
 
   
    

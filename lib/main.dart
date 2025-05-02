@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'registro.dart';
 import 'resnum.dart';
 
@@ -8,7 +9,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key}); // Cambia Key? a super.key para compatibilidad
 
   @override
   Widget build(BuildContext context) {
@@ -18,19 +19,28 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.light,
         scaffoldBackgroundColor: Colors.white,
       ),
+      builder:
+          (context, child) => ResponsiveBreakpoints.builder(
+            child: child!,
+            breakpoints: [
+              const Breakpoint(start: 0, end: 360, name: 'MOBILE'),
+              const Breakpoint(start: 361, end: 600, name: 'TABLET'),
+              const Breakpoint(start: 601, end: 1200, name: 'DESKTOP'),
+            ],
+          ),
       home: const HomeScreen(),
     );
   }
 }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State {
+class _HomeScreenState extends State<HomeScreen> {
   late AudioPlayer player;
 
   @override
@@ -53,47 +63,131 @@ class _HomeScreenState extends State {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-    final double fontScaleFactor = screenSize.width / 400;
-    final double spacingScaleFactor = screenSize.height / 800;
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: EdgeInsets.symmetric(
+              horizontal:
+                  ResponsiveValue<double>(
+                    context,
+                    defaultValue: 16.0,
+                    conditionalValues: const [
+                      Condition.largerThan(name: 'TABLET', value: 32.0),
+                      Condition.largerThan(name: 'DESKTOP', value: 64.0),
+                    ],
+                  ).value!,
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                SizedBox(height: 30 * spacingScaleFactor),
+                SizedBox(
+                  height:
+                      ResponsiveValue<double>(
+                        context,
+                        defaultValue: 30.0,
+                        conditionalValues: const [
+                          Condition.largerThan(name: 'TABLET', value: 40.0),
+                          Condition.largerThan(name: 'DESKTOP', value: 50.0),
+                        ],
+                      ).value!,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
                       'LETRA',
                       style: TextStyle(
-                        fontSize: 40 * fontScaleFactor,
+                        fontSize:
+                            ResponsiveValue<double>(
+                              context,
+                              defaultValue: 40.0,
+                              conditionalValues: const [
+                                Condition.largerThan(
+                                  name: 'TABLET',
+                                  value: 48.0,
+                                ),
+                                Condition.largerThan(
+                                  name: 'DESKTOP',
+                                  value: 56.0,
+                                ),
+                              ],
+                            ).value!,
                         fontWeight: FontWeight.w900,
                         color: Colors.blue,
                         fontFamily: 'Roboto',
                       ),
                     ),
-                    SizedBox(width: 10 * fontScaleFactor),
+                    SizedBox(
+                      width:
+                          ResponsiveValue<double>(
+                            context,
+                            defaultValue: 10.0,
+                            conditionalValues: const [
+                              Condition.largerThan(name: 'TABLET', value: 15.0),
+                              Condition.largerThan(
+                                name: 'DESKTOP',
+                                value: 20.0,
+                              ),
+                            ],
+                          ).value!,
+                    ),
                     Text(
                       'X',
                       style: TextStyle(
-                        fontSize: 46 * fontScaleFactor,
+                        fontSize:
+                            ResponsiveValue<double>(
+                              context,
+                              defaultValue: 46.0,
+                              conditionalValues: const [
+                                Condition.largerThan(
+                                  name: 'TABLET',
+                                  value: 54.0,
+                                ),
+                                Condition.largerThan(
+                                  name: 'DESKTOP',
+                                  value: 62.0,
+                                ),
+                              ],
+                            ).value!,
                         fontWeight: FontWeight.w900,
                         color: Colors.red,
                         fontFamily: 'Roboto',
                       ),
                     ),
-                    SizedBox(width: 10 * fontScaleFactor),
+                    SizedBox(
+                      width:
+                          ResponsiveValue<double>(
+                            context,
+                            defaultValue: 10.0,
+                            conditionalValues: const [
+                              Condition.largerThan(name: 'TABLET', value: 15.0),
+                              Condition.largerThan(
+                                name: 'DESKTOP',
+                                value: 20.0,
+                              ),
+                            ],
+                          ).value!,
+                    ),
                     Text(
                       'LETRA',
                       style: TextStyle(
-                        fontSize: 40 * fontScaleFactor,
+                        fontSize:
+                            ResponsiveValue<double>(
+                              context,
+                              defaultValue: 40.0,
+                              conditionalValues: const [
+                                Condition.largerThan(
+                                  name: 'TABLET',
+                                  value: 48.0,
+                                ),
+                                Condition.largerThan(
+                                  name: 'DESKTOP',
+                                  value: 56.0,
+                                ),
+                              ],
+                            ).value!,
                         fontWeight: FontWeight.w900,
                         color: Colors.blue,
                         fontFamily: 'Roboto',
@@ -101,25 +195,64 @@ class _HomeScreenState extends State {
                     ),
                   ],
                 ),
-                SizedBox(height: 30 * spacingScaleFactor),
+                SizedBox(
+                  height:
+                      ResponsiveValue<double>(
+                        context,
+                        defaultValue: 30.0,
+                        conditionalValues: const [
+                          Condition.largerThan(name: 'TABLET', value: 40.0),
+                          Condition.largerThan(name: 'DESKTOP', value: 50.0),
+                        ],
+                      ).value!,
+                ),
                 ConstrainedBox(
                   constraints: BoxConstraints(
-                    maxHeight: screenSize.height * 0.3,
+                    maxHeight: MediaQuery.of(context).size.height * 0.3,
                   ),
                   child: FractionallySizedBox(
-                    widthFactor: 0.7,
+                    widthFactor:
+                        ResponsiveValue<double>(
+                          context,
+                          defaultValue: 0.7,
+                          conditionalValues: const [
+                            Condition.largerThan(name: 'TABLET', value: 0.5),
+                            Condition.largerThan(name: 'DESKTOP', value: 0.4),
+                          ],
+                        ).value!,
                     child: Image.asset(
                       'assets/registro.jpg',
                       fit: BoxFit.contain,
+                      errorBuilder:
+                          (context, error, stackTrace) =>
+                              const Icon(Icons.error, size: 50),
                     ),
                   ),
                 ),
-                SizedBox(height: 30 * spacingScaleFactor),
+                SizedBox(
+                  height:
+                      ResponsiveValue<double>(
+                        context,
+                        defaultValue: 30.0,
+                        conditionalValues: const [
+                          Condition.largerThan(name: 'TABLET', value: 40.0),
+                          Condition.largerThan(name: 'DESKTOP', value: 50.0),
+                        ],
+                      ).value!,
+                ),
                 IconButton(
                   icon: Icon(
                     Icons.volume_up,
                     color: Colors.black,
-                    size: 36 * fontScaleFactor,
+                    size:
+                        ResponsiveValue<double>(
+                          context,
+                          defaultValue: 36.0,
+                          conditionalValues: const [
+                            Condition.largerThan(name: 'TABLET', value: 42.0),
+                            Condition.largerThan(name: 'DESKTOP', value: 48.0),
+                          ],
+                        ).value!,
                   ),
                   onPressed: () async {
                     try {
@@ -129,63 +262,150 @@ class _HomeScreenState extends State {
                     }
                   },
                 ),
-                SizedBox(height: 20 * spacingScaleFactor),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    _navigateToScreen(context, PantallaInicio());
-                  },
-                  label: Text(
-                    'Registrate',
-                    style: TextStyle(
-                      fontSize: 22 * fontScaleFactor,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFE23B),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 60 * fontScaleFactor,
-                      vertical: 20 * spacingScaleFactor,
-                    ),
-                  ),
-                  icon: Icon(
-                    Icons.arrow_forward,
-                    color: Colors.black,
-                    size: 24 * fontScaleFactor,
-                  ),
+                SizedBox(
+                  height:
+                      ResponsiveValue<double>(
+                        context,
+                        defaultValue: 20.0,
+                        conditionalValues: const [
+                          Condition.largerThan(name: 'TABLET', value: 25.0),
+                          Condition.largerThan(name: 'DESKTOP', value: 30.0),
+                        ],
+                      ).value!,
                 ),
-                SizedBox(height: 20 * spacingScaleFactor),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    _navigateToScreen(context, MyHomePage());
-                  },
-                  label: Text(
-                    'Inicia Sesíon',
-                    style: TextStyle(
-                      fontSize: 22 * fontScaleFactor,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                ResponsiveBreakpoints.of(context).breakpoint.name == 'TABLET' ||
+                        ResponsiveBreakpoints.of(context).breakpoint.name ==
+                            'DESKTOP'
+                    ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildButton(
+                          context,
+                          'Registrate',
+                          const PantallaInicio(),
+                        ),
+                        SizedBox(
+                          width:
+                              ResponsiveValue<double>(
+                                context,
+                                defaultValue: 20.0,
+                                conditionalValues: const [
+                                  Condition.largerThan(
+                                    name: 'TABLET',
+                                    value: 30.0,
+                                  ),
+                                  Condition.largerThan(
+                                    name: 'DESKTOP',
+                                    value: 40.0,
+                                  ),
+                                ],
+                              ).value!,
+                        ),
+                        _buildButton(context, 'Inicia Sesíon', MyHomePage()),
+                      ],
+                    )
+                    : Column(
+                      children: [
+                        _buildButton(
+                          context,
+                          'Registrate',
+                          const PantallaInicio(),
+                        ),
+                        SizedBox(
+                          height:
+                              ResponsiveValue<double>(
+                                context,
+                                defaultValue: 20.0,
+                                conditionalValues: const [
+                                  Condition.largerThan(
+                                    name: 'TABLET',
+                                    value: 25.0,
+                                  ),
+                                  Condition.largerThan(
+                                    name: 'DESKTOP',
+                                    value: 30.0,
+                                  ),
+                                ],
+                              ).value!,
+                        ),
+                        _buildButton(context, 'Inicia Sesíon', MyHomePage()),
+                      ],
                     ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFE23B),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 50 * fontScaleFactor,
-                      vertical: 20 * spacingScaleFactor,
-                    ),
-                  ),
-                  icon: Icon(
-                    Icons.arrow_forward,
-                    color: Colors.black,
-                    size: 24 * fontScaleFactor,
-                  ),
+                SizedBox(
+                  height:
+                      ResponsiveValue<double>(
+                        context,
+                        defaultValue: 30.0,
+                        conditionalValues: const [
+                          Condition.largerThan(name: 'TABLET', value: 40.0),
+                          Condition.largerThan(name: 'DESKTOP', value: 50.0),
+                        ],
+                      ).value!,
                 ),
-                SizedBox(height: 30 * spacingScaleFactor),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildButton(BuildContext context, String label, Widget screen) {
+    return ElevatedButton.icon(
+      onPressed: () {
+        _navigateToScreen(context, screen);
+      },
+      label: Text(
+        label,
+        style: TextStyle(
+          fontSize:
+              ResponsiveValue<double>(
+                context,
+                defaultValue: 22.0,
+                conditionalValues: const [
+                  Condition.largerThan(name: 'TABLET', value: 26.0),
+                  Condition.largerThan(name: 'DESKTOP', value: 30.0),
+                ],
+              ).value!,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFFFFE23B),
+        padding: EdgeInsets.symmetric(
+          horizontal:
+              ResponsiveValue<double>(
+                context,
+                defaultValue: 60.0,
+                conditionalValues: const [
+                  Condition.largerThan(name: 'TABLET', value: 80.0),
+                  Condition.largerThan(name: 'DESKTOP', value: 100.0),
+                ],
+              ).value!,
+          vertical:
+              ResponsiveValue<double>(
+                context,
+                defaultValue: 20.0,
+                conditionalValues: const [
+                  Condition.largerThan(name: 'TABLET', value: 25.0),
+                  Condition.largerThan(name: 'DESKTOP', value: 30.0),
+                ],
+              ).value!,
+        ),
+      ),
+      icon: Icon(
+        Icons.arrow_forward,
+        color: Colors.black,
+        size:
+            ResponsiveValue<double>(
+              context,
+              defaultValue: 24.0,
+              conditionalValues: const [
+                Condition.largerThan(name: 'TABLET', value: 28.0),
+                Condition.largerThan(name: 'DESKTOP', value: 32.0),
+              ],
+            ).value!,
       ),
     );
   }

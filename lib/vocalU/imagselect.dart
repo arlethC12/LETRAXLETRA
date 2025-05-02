@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:letra_x_letra/vocalU/Uescribe.dart';
+import 'package:letra_x_letra/vocalU/unepalabra.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(imagsel());
 }
 
-class MyApp extends StatelessWidget {
+class imagsel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -33,14 +35,10 @@ class _SelectionScreenState extends State<SelectionScreen> {
   ];
 
   List<bool> selected = List.filled(9, false);
-  final int totalSelectable = 5; // 🦄, 🙃, 🍇, 1️⃣, 💅
+  final int totalSelectable = 4; // 🦄, 🍇, 1️⃣, 💅
 
   bool isSelectable(String emoji) {
-    return emoji == '🦄' ||
-        emoji == '🙃' ||
-        emoji == '🍇' ||
-        emoji == '1️⃣' ||
-        emoji == '💅';
+    return emoji == '🦄' || emoji == '🍇' || emoji == '1️⃣' || emoji == '💅';
   }
 
   int getSelectedCount() {
@@ -68,7 +66,10 @@ class _SelectionScreenState extends State<SelectionScreen> {
                   IconButton(
                     icon: Icon(Icons.close, color: Colors.black),
                     onPressed: () {
-                      // Handle close action
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => UescribePage()),
+                      ); // Handle close action
                     },
                   ),
                   Expanded(
@@ -167,7 +168,10 @@ class _SelectionScreenState extends State<SelectionScreen> {
                     padding: EdgeInsets.all(16),
                   ),
                   onPressed: () {
-                    // Handle next action
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => unepla()),
+                    ); // Handle next action
                   },
                   child: Icon(
                     Icons.arrow_forward, // Right arrow

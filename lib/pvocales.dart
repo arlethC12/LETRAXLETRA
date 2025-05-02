@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:letra_x_letra/vocalU/videoletraU.dart';
 import 'dart:async';
 import 'vocalA/vocala.dart';
 import 'vocalE/aprendevocale.dart'; // Importación para aprendevocale.dart
+import 'vocalI/videovocalI.dart'; // Importación para videovocalI.dart
+import 'vocalO/videovocalO.dart';
 
 // Pantalla principal que muestra las vocales
 class VowelsScreen extends StatefulWidget {
@@ -320,11 +323,23 @@ class _VowelsScreenState extends State<VowelsScreen>
                       context,
                       MaterialPageRoute(builder: (context) => VocalEPage()),
                     );
-                  } else if (path == "assets/vocales.jpg") {
+                  } else if (path == "assets/vocalI.jpg") {
+                    // Navega a la pantalla de vocal I
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => VocalIPage()),
+                    );
+                  } else if (path == "assets/vocalO.jpg") {
                     // Navega a la pantalla de vocal E (esto parece incorrecto, ajustar si es necesario)
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => VocalEPage()),
+                      MaterialPageRoute(builder: (context) => VocalOPage()),
+                    );
+                  } else if (path == "assets/vocalU.jpg") {
+                    // Navega a la pantalla de vocal E (esto parece incorrecto, ajustar si es necesario)
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => VocalUPage()),
                     );
                   }
                 },

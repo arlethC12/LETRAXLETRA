@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'caminooveja.dart'; // Importa caminooveja.dart
+import 'Oescribe.dart'; // Importa Oescribe.dart
 
 void main() {
-  runApp(MyApp());
+  runApp(selectimagenO());
 }
 
-class MyApp extends StatelessWidget {
+class selectimagenO extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,13 +24,13 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   // Lista de emojis y su estado (seleccionado o no)
   List<Map<String, dynamic>> emojis = [
-    {'emoji': '🐻', 'startsWithO': false, 'selected': false},
+    {'emoji': '🐻', 'startsWithO': true, 'selected': false}, //oso
     {'emoji': '✏️', 'startsWithO': false, 'selected': false},
     {'emoji': '💻', 'startsWithO': false, 'selected': false},
     {'emoji': '🐑', 'startsWithO': true, 'selected': false}, // Oveja
     {'emoji': '🦧', 'startsWithO': true, 'selected': false}, // Orangután
     {'emoji': '🐴', 'startsWithO': false, 'selected': false},
-    {'emoji': '🦦', 'startsWithO': true, 'selected': false}, // Nutria
+    {'emoji': '🦦', 'startsWithO': false, 'selected': false}, // Nutria
     {'emoji': '👁️', 'startsWithO': true, 'selected': false}, // Ojo
   ];
 
@@ -64,7 +66,11 @@ class _GameScreenState extends State<GameScreen> {
                   IconButton(
                     icon: Icon(Icons.close, color: Colors.black),
                     onPressed: () {
-                      // Acción para cerrar
+                      // Navegar a Oescribe.dart
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => OescribePage()),
+                      );
                     },
                   ),
                   Expanded(
@@ -144,7 +150,11 @@ class _GameScreenState extends State<GameScreen> {
                 right: 20,
                 child: FloatingActionButton(
                   onPressed: () {
-                    // Acción para el botón de flecha
+                    // Navegar a caminooveja.dart
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CaminoOveja()),
+                    );
                   },
                   child: Icon(
                     Icons.arrow_forward, // Flecha hacia la derecha

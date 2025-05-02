@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:letra_x_letra/vocalI/llenacasita.dart'; // Importa llenacasita.dart
+import 'package:letra_x_letra/vocalI/Iescribe.dart'; // Importa Iescribe.dart
 
 void main() {
   runApp(
@@ -71,8 +73,14 @@ class _ColorPuzzleScreenState extends State<ColorPuzzleScreen>
               child: Row(
                 children: [
                   IconButton(
-                    icon: Icon(Icons.close, color: Colors.orange, size: 30),
-                    onPressed: () {},
+                    icon: Icon(
+                      Icons.close,
+                      color: const Color.fromARGB(255, 5, 3, 1),
+                      size: 30,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context); // Regresa a Iescribe.dart
+                    },
                   ),
                   Expanded(
                     child: Padding(
@@ -186,7 +194,13 @@ class _ColorPuzzleScreenState extends State<ColorPuzzleScreen>
                 child: FloatingActionButton(
                   backgroundColor: Colors.orange,
                   onPressed: () {
-                    // Acción al presionar
+                    // Navegar a la pantalla de llenacasita.dart
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LlenaCasitaScreen(),
+                      ),
+                    );
                   },
                   child: Icon(Icons.arrow_forward, color: Colors.white),
                 ),

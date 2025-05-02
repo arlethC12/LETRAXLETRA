@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:letra_x_letra/vocalO/caminooveja.dart';
+import 'package:letra_x_letra/vocalO/helado.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(UnirpiezaO());
 }
 
-class MyApp extends StatelessWidget {
+class UnirpiezaO extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(debugShowCheckedModeBanner: false, home: PuzzleScreen());
@@ -59,7 +61,13 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                 children: [
                   IconButton(
                     icon: Icon(Icons.close, color: Colors.black),
-                    onPressed: () {},
+                    onPressed: () {
+                      // Navegar a Oescribe.dart
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CaminoOveja()),
+                      );
+                    },
                   ),
                   SizedBox(
                     width: 240, // Aumentado de 200 a 250 para alargar
@@ -211,7 +219,13 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // Navegar a Helado.dart
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Helado()),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.orange,
                     shape: RoundedRectangleBorder(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'burbujaE.dart'; // Importa el archivo burbujaE.dart
 
 void main() {
   runApp(const PintaEPantalla());
@@ -201,7 +202,13 @@ class _LetterColoringScreenState extends State<LetterColoringScreen> {
                     shape: const CircleBorder(),
                     padding: const EdgeInsets.all(16),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    // Navega a la pantalla BurbujaEScreen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => BurbujaEScreen()),
+                    );
+                  },
                   child: const Icon(
                     Icons.arrow_forward,
                     color: Colors.white,
