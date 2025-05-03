@@ -98,12 +98,9 @@ class _GameScreenState extends State<GameScreen>
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Colors.transparent, // Fondo transparente
-                        padding: const EdgeInsets.all(
-                          16.0,
-                        ), // Área de toque más grande
-                        elevation: 0, // Sin sombra
+                        backgroundColor: Colors.transparent,
+                        padding: const EdgeInsets.all(16.0),
+                        elevation: 0,
                       ),
                       onPressed: () {
                         print('Botón X presionado');
@@ -129,7 +126,7 @@ class _GameScreenState extends State<GameScreen>
                       child: const Icon(
                         Icons.close,
                         color: Colors.black,
-                        size: 40,
+                        size: 30, // Tamaño reducido de la "X"
                       ),
                     ),
                   ),
@@ -142,6 +139,8 @@ class _GameScreenState extends State<GameScreen>
                         valueColor: const AlwaysStoppedAnimation<Color>(
                           Colors.orange,
                         ),
+                        minHeight:
+                            10, // Barra de progreso más ancha (altura aumentada)
                       ),
                     ),
                   ),
@@ -155,7 +154,10 @@ class _GameScreenState extends State<GameScreen>
               right: 20,
               child: Text(
                 'Traza la línea para que la ovejita pueda comer',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ), // Tamaño de fuente reducido
                 textAlign: TextAlign.center,
               ),
             ),
@@ -165,7 +167,10 @@ class _GameScreenState extends State<GameScreen>
               left: 50,
               child: Text(
                 'O',
-                style: TextStyle(fontSize: 100, color: Colors.orange),
+                style: TextStyle(
+                  fontSize: 80,
+                  color: Colors.orange,
+                ), // Tamaño de letra "O" reducido
               ),
             ),
             if (showSmallSheep &&
@@ -186,7 +191,10 @@ class _GameScreenState extends State<GameScreen>
               left: 50,
               child: Text(
                 'O',
-                style: TextStyle(fontSize: 100, color: Colors.orange),
+                style: TextStyle(
+                  fontSize: 80,
+                  color: Colors.orange,
+                ), // Tamaño de letra "O" reducido
               ),
             ),
             if (showSheepAtGrass)

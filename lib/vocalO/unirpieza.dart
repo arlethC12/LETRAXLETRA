@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:letra_x_letra/vocalO/caminooveja.dart';
-import 'package:letra_x_letra/vocalO/helado.dart';
+import 'package:letra_x_letra/vocalO/memorama.dart';
 
 void main() {
   runApp(UnirpiezaO());
@@ -223,7 +223,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                     // Navegar a Helado.dart
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Helado()),
+                      MaterialPageRoute(builder: (context) => Oso()),
                     );
                   },
                   style: ElevatedButton.styleFrom(

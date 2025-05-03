@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:letra_x_letra/vocalO/Nivel4.dart'; // Importa el archivo Nivel4.dart
-import 'package:letra_x_letra/vocalO/helado.dart'; // Importa palabra.dart (contiene PalabraScreen)
+import 'package:letra_x_letra/vocalO/memorama.dart'; // Importa palabra.dart (contiene PalabraScreen)
 
 void main() {
   runApp(BurbujaOScreen());
@@ -158,7 +158,7 @@ class _BubbleScreenState extends State<BubbleScreen>
                       // Navegar a la pantalla de palabra.dart
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Helado()),
+                        MaterialPageRoute(builder: (context) => Oso()),
                       );
                     },
                   ),

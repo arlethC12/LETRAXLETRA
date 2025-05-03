@@ -77,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Condition.largerThan(name: 'TABLET', value: 32.0),
                       Condition.largerThan(name: 'DESKTOP', value: 64.0),
                     ],
-                  ).value!,
+                  ).value,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -91,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Condition.largerThan(name: 'TABLET', value: 40.0),
                           Condition.largerThan(name: 'DESKTOP', value: 50.0),
                         ],
-                      ).value!,
+                      ).value,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -113,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   value: 56.0,
                                 ),
                               ],
-                            ).value!,
+                            ).value,
                         fontWeight: FontWeight.w900,
                         color: Colors.blue,
                         fontFamily: 'Roboto',
@@ -131,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 value: 20.0,
                               ),
                             ],
-                          ).value!,
+                          ).value,
                     ),
                     Text(
                       'X',
@@ -150,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   value: 62.0,
                                 ),
                               ],
-                            ).value!,
+                            ).value,
                         fontWeight: FontWeight.w900,
                         color: Colors.red,
                         fontFamily: 'Roboto',
@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 value: 20.0,
                               ),
                             ],
-                          ).value!,
+                          ).value,
                     ),
                     Text(
                       'LETRA',
@@ -187,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   value: 56.0,
                                 ),
                               ],
-                            ).value!,
+                            ).value,
                         fontWeight: FontWeight.w900,
                         color: Colors.blue,
                         fontFamily: 'Roboto',
@@ -204,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Condition.largerThan(name: 'TABLET', value: 40.0),
                           Condition.largerThan(name: 'DESKTOP', value: 50.0),
                         ],
-                      ).value!,
+                      ).value,
                 ),
                 ConstrainedBox(
                   constraints: BoxConstraints(
@@ -219,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Condition.largerThan(name: 'TABLET', value: 0.5),
                             Condition.largerThan(name: 'DESKTOP', value: 0.4),
                           ],
-                        ).value!,
+                        ).value,
                     child: Image.asset(
                       'assets/registro.jpg',
                       fit: BoxFit.contain,
@@ -238,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Condition.largerThan(name: 'TABLET', value: 40.0),
                           Condition.largerThan(name: 'DESKTOP', value: 50.0),
                         ],
-                      ).value!,
+                      ).value,
                 ),
                 IconButton(
                   icon: Icon(
@@ -252,7 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Condition.largerThan(name: 'TABLET', value: 42.0),
                             Condition.largerThan(name: 'DESKTOP', value: 48.0),
                           ],
-                        ).value!,
+                        ).value,
                   ),
                   onPressed: () async {
                     try {
@@ -271,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Condition.largerThan(name: 'TABLET', value: 25.0),
                           Condition.largerThan(name: 'DESKTOP', value: 30.0),
                         ],
-                      ).value!,
+                      ).value,
                 ),
                 ResponsiveBreakpoints.of(context).breakpoint.name == 'TABLET' ||
                         ResponsiveBreakpoints.of(context).breakpoint.name ==
@@ -299,7 +299,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     value: 40.0,
                                   ),
                                 ],
-                              ).value!,
+                              ).value,
                         ),
                         _buildButton(context, 'Inicia Sesíon', MyHomePage()),
                       ],
@@ -315,7 +315,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           height:
                               ResponsiveValue<double>(
                                 context,
-                                defaultValue: 20.0,
+                                defaultValue: 18.0,
                                 conditionalValues: const [
                                   Condition.largerThan(
                                     name: 'TABLET',
@@ -326,7 +326,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     value: 30.0,
                                   ),
                                 ],
-                              ).value!,
+                              ).value,
                         ),
                         _buildButton(context, 'Inicia Sesíon', MyHomePage()),
                       ],
@@ -340,7 +340,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Condition.largerThan(name: 'TABLET', value: 40.0),
                           Condition.largerThan(name: 'DESKTOP', value: 50.0),
                         ],
-                      ).value!,
+                      ).value,
                 ),
               ],
             ),
@@ -366,7 +366,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Condition.largerThan(name: 'TABLET', value: 26.0),
                   Condition.largerThan(name: 'DESKTOP', value: 30.0),
                 ],
-              ).value!,
+              ).value,
           fontWeight: FontWeight.bold,
           color: Colors.black,
         ),
@@ -382,7 +382,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Condition.largerThan(name: 'TABLET', value: 80.0),
                   Condition.largerThan(name: 'DESKTOP', value: 100.0),
                 ],
-              ).value!,
+              ).value,
           vertical:
               ResponsiveValue<double>(
                 context,
@@ -391,7 +391,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Condition.largerThan(name: 'TABLET', value: 25.0),
                   Condition.largerThan(name: 'DESKTOP', value: 30.0),
                 ],
-              ).value!,
+              ).value,
         ),
       ),
       icon: Icon(
@@ -405,7 +405,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Condition.largerThan(name: 'TABLET', value: 28.0),
                 Condition.largerThan(name: 'DESKTOP', value: 32.0),
               ],
-            ).value!,
+            ).value,
       ),
     );
   }

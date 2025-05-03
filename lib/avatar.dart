@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart'; // Importa audioplayers
+import 'package:audioplayers/audioplayers.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'dart:async';
-import 'niveles.dart'; // Asegúrate que Niveles reciba imagePath como parámetro
+import 'niveles.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,11 +14,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: CharacterSelectionScreen(),
+      builder:
+          (context, child) => ResponsiveBreakpoints.builder(
+            child: child!,
+            breakpoints: [
+              const Breakpoint(start: 0, end: 450, name: MOBILE),
+              const Breakpoint(start: 451, end: 800, name: TABLET),
+              const Breakpoint(start: 801, end: double.infinity, name: DESKTOP),
+            ],
+          ),
     );
   }
 }
 
-// Pantalla de selección de personaje
 class CharacterSelectionScreen extends StatefulWidget {
   @override
   _CharacterSelectionScreenState createState() =>
@@ -38,10 +47,9 @@ class _CharacterSelectionScreenState extends State<CharacterSelectionScreen> {
     'assets/atapir.jpg',
   ];
 
-  final AudioPlayer _audioPlayer = AudioPlayer(); // Instancia del reproductor
+  final AudioPlayer _audioPlayer = AudioPlayer();
   bool _isPlaying = false;
 
-  // Reproducir o detener audio
   void _toggleAudio() async {
     if (_isPlaying) {
       await _audioPlayer.stop();
@@ -56,7 +64,6 @@ class _CharacterSelectionScreenState extends State<CharacterSelectionScreen> {
     }
   }
 
-  // Liberar recursos del reproductor
   @override
   void dispose() {
     _audioPlayer.stop();
@@ -67,17 +74,38 @@ class _CharacterSelectionScreenState extends State<CharacterSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final padding = EdgeInsets.all(size.width * 0.04);
+    final isMobile = ResponsiveBreakpoints.of(context).isMobile;
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
+
+    final double scaleFactor = isMobile ? 0.8 : (isTablet ? 1.0 : 1.2);
+    final double padding =
+        size.width * (isMobile ? 0.04 : (isTablet ? 0.05 : 0.06));
+    final double spacing =
+        size.height * (isMobile ? 0.02 : (isTablet ? 0.03 : 0.04));
 
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+            size:
+                ResponsiveValue<double>(
+                  context,
+                  defaultValue: 30.0,
+                  conditionalValues: const [
+                    Condition.equals(name: MOBILE, value: 25.0),
+                    Condition.equals(name: TABLET, value: 30.0),
+                    Condition.equals(name: DESKTOP, value: 35.0),
+                  ],
+                ).value,
+          ),
           onPressed: () {
             if (_isPlaying) {
-              _audioPlayer.stop(); // Detenemos el audio al regresar
+              _audioPlayer.stop();
             }
-            Navigator.pop(context); // Regresamos a la pantalla anterior
+            Navigator.pop(context);
           },
         ),
         backgroundColor: Colors.white,
@@ -88,19 +116,60 @@ class _CharacterSelectionScreenState extends State<CharacterSelectionScreen> {
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
-            fontSize: size.width * 0.05,
+            fontSize:
+                ResponsiveValue<double>(
+                  context,
+                  defaultValue: size.width * 0.05,
+                  conditionalValues: const [
+                    Condition.equals(name: MOBILE, value: 18.0),
+                    Condition.equals(name: TABLET, value: 20.0),
+                    Condition.equals(name: DESKTOP, value: 24.0),
+                  ],
+                ).value,
           ),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.volume_up, color: Colors.black),
+            icon: Icon(
+              Icons.volume_up,
+              color: Colors.black,
+              size:
+                  ResponsiveValue<double>(
+                    context,
+                    defaultValue: 30.0,
+                    conditionalValues: const [
+                      Condition.equals(name: MOBILE, value: 25.0),
+                      Condition.equals(name: TABLET, value: 30.0),
+                      Condition.equals(name: DESKTOP, value: 35.0),
+                    ],
+                  ).value,
+            ),
             onPressed: _toggleAudio,
           ),
         ],
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(size.height * 0.03),
+          preferredSize: Size.fromHeight(
+            ResponsiveValue<double>(
+              context,
+              defaultValue: size.height * 0.03,
+              conditionalValues: const [
+                Condition.equals(name: MOBILE, value: 20.0),
+                Condition.equals(name: TABLET, value: 25.0),
+                Condition.equals(name: DESKTOP, value: 30.0),
+              ],
+            ).value,
+          ),
           child: SizedBox(
-            height: size.height * 0.015,
+            height:
+                ResponsiveValue<double>(
+                  context,
+                  defaultValue: size.height * 0.015,
+                  conditionalValues: const [
+                    Condition.equals(name: MOBILE, value: 8.0),
+                    Condition.equals(name: TABLET, value: 10.0),
+                    Condition.equals(name: DESKTOP, value: 12.0),
+                  ],
+                ).value,
             child: LinearProgressIndicator(
               value: 10,
               backgroundColor: Colors.grey[350],
@@ -111,25 +180,45 @@ class _CharacterSelectionScreenState extends State<CharacterSelectionScreen> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: padding,
+          padding: EdgeInsets.all(padding),
           child: LayoutBuilder(
             builder: (context, constraints) {
-              int crossAxisCount = (constraints.maxWidth / 120).floor();
+              int crossAxisCount =
+                  (constraints.maxWidth /
+                          (isMobile ? 100 : (isTablet ? 120 : 140)))
+                      .floor();
               if (crossAxisCount < 2) crossAxisCount = 2;
 
               return GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
-                  crossAxisSpacing: size.width * 0.04,
-                  mainAxisSpacing: size.height * 0.02,
+                  crossAxisSpacing:
+                      ResponsiveValue<double>(
+                        context,
+                        defaultValue: size.width * 0.04,
+                        conditionalValues: const [
+                          Condition.equals(name: MOBILE, value: 15.0),
+                          Condition.equals(name: TABLET, value: 15.0),
+                          Condition.equals(name: DESKTOP, value: 20.0),
+                        ],
+                      ).value,
+                  mainAxisSpacing:
+                      ResponsiveValue<double>(
+                        context,
+                        defaultValue: size.height * 0.02,
+                        conditionalValues: const [
+                          Condition.equals(name: MOBILE, value: 15.0),
+                          Condition.equals(name: TABLET, value: 15.0),
+                          Condition.equals(name: DESKTOP, value: 20.0),
+                        ],
+                      ).value,
                   childAspectRatio: 1,
                 ),
                 itemCount: characterImages.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      _audioPlayer
-                          .stop(); // Detenemos el audio antes de navegar
+                      _audioPlayer.stop();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -142,7 +231,32 @@ class _CharacterSelectionScreenState extends State<CharacterSelectionScreen> {
                     },
                     child: CircleAvatar(
                       backgroundImage: AssetImage(characterImages[index]),
-                      radius: constraints.maxWidth / (crossAxisCount * 2.5),
+                      radius:
+                          ResponsiveValue<double>(
+                            context,
+                            defaultValue:
+                                constraints.maxWidth / (crossAxisCount * 4.0),
+                            conditionalValues: [
+                              Condition.equals(
+                                name: MOBILE,
+                                value:
+                                    constraints.maxWidth /
+                                    (crossAxisCount * 2.8),
+                              ),
+                              Condition.equals(
+                                name: TABLET,
+                                value:
+                                    constraints.maxWidth /
+                                    (crossAxisCount * 2.5),
+                              ),
+                              Condition.equals(
+                                name: DESKTOP,
+                                value:
+                                    constraints.maxWidth /
+                                    (crossAxisCount * 2.3),
+                              ),
+                            ],
+                          ).value,
                     ),
                   );
                 },
@@ -155,7 +269,6 @@ class _CharacterSelectionScreenState extends State<CharacterSelectionScreen> {
   }
 }
 
-// Pantalla de carga tras seleccionar un personaje
 class LoadingScreen extends StatefulWidget {
   final String imagePath;
 
@@ -208,6 +321,13 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final isMobile = ResponsiveBreakpoints.of(context).isMobile;
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
+
+    final double scaleFactor = isMobile ? 0.8 : (isTablet ? 1.0 : 1.2);
+    final double spacing =
+        size.height * (isMobile ? 0.03 : (isTablet ? 0.04 : 0.05));
 
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 255, 197, 36),
@@ -220,7 +340,16 @@ class _LoadingScreenState extends State<LoadingScreen> {
                 Text(
                   "Bienvenido",
                   style: TextStyle(
-                    fontSize: size.width * 0.08,
+                    fontSize:
+                        ResponsiveValue<double>(
+                          context,
+                          defaultValue: size.width * 0.08,
+                          conditionalValues: const [
+                            Condition.equals(name: MOBILE, value: 24.0),
+                            Condition.equals(name: TABLET, value: 30.0),
+                            Condition.equals(name: DESKTOP, value: 36.0),
+                          ],
+                        ).value,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -232,7 +361,16 @@ class _LoadingScreenState extends State<LoadingScreen> {
                       TextSpan(
                         text: "LETRA ",
                         style: TextStyle(
-                          fontSize: size.width * 0.08,
+                          fontSize:
+                              ResponsiveValue<double>(
+                                context,
+                                defaultValue: size.width * 0.08,
+                                conditionalValues: const [
+                                  Condition.equals(name: MOBILE, value: 24.0),
+                                  Condition.equals(name: TABLET, value: 30.0),
+                                  Condition.equals(name: DESKTOP, value: 36.0),
+                                ],
+                              ).value,
                           fontWeight: FontWeight.bold,
                           color: Colors.blue,
                         ),
@@ -240,7 +378,16 @@ class _LoadingScreenState extends State<LoadingScreen> {
                       TextSpan(
                         text: "X",
                         style: TextStyle(
-                          fontSize: size.width * 0.08,
+                          fontSize:
+                              ResponsiveValue<double>(
+                                context,
+                                defaultValue: size.width * 0.08,
+                                conditionalValues: const [
+                                  Condition.equals(name: MOBILE, value: 24.0),
+                                  Condition.equals(name: TABLET, value: 30.0),
+                                  Condition.equals(name: DESKTOP, value: 36.0),
+                                ],
+                              ).value,
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
                         ),
@@ -248,7 +395,16 @@ class _LoadingScreenState extends State<LoadingScreen> {
                       TextSpan(
                         text: " LETRA",
                         style: TextStyle(
-                          fontSize: size.width * 0.08,
+                          fontSize:
+                              ResponsiveValue<double>(
+                                context,
+                                defaultValue: size.width * 0.08,
+                                conditionalValues: const [
+                                  Condition.equals(name: MOBILE, value: 24.0),
+                                  Condition.equals(name: TABLET, value: 30.0),
+                                  Condition.equals(name: DESKTOP, value: 36.0),
+                                ],
+                              ).value,
                           fontWeight: FontWeight.bold,
                           color: Colors.blue,
                         ),
@@ -256,22 +412,69 @@ class _LoadingScreenState extends State<LoadingScreen> {
                     ],
                   ),
                 ),
-              SizedBox(height: size.height * 0.03),
+              SizedBox(height: spacing),
               Image.asset(
                 loadingImages[currentImageIndex],
-                height: size.height * 0.25,
+                height:
+                    ResponsiveValue<double>(
+                      context,
+                      defaultValue: size.height * 0.25,
+                      conditionalValues: const [
+                        Condition.equals(name: MOBILE, value: 150.0),
+                        Condition.equals(name: TABLET, value: 200.0),
+                        Condition.equals(name: DESKTOP, value: 250.0),
+                      ],
+                    ).value,
                 fit: BoxFit.contain,
               ),
-              SizedBox(height: size.height * 0.03),
+              SizedBox(height: spacing),
               Container(
-                width: size.width * 0.7,
-                height: size.height * 0.04,
+                width:
+                    ResponsiveValue<double>(
+                      context,
+                      defaultValue: size.width * 0.7,
+                      conditionalValues: const [
+                        Condition.equals(name: MOBILE, value: 200.0),
+                        Condition.equals(name: TABLET, value: 300.0),
+                        Condition.equals(name: DESKTOP, value: 400.0),
+                      ],
+                    ).value,
+                height:
+                    ResponsiveValue<double>(
+                      context,
+                      defaultValue: size.height * 0.04,
+                      conditionalValues: const [
+                        Condition.equals(name: MOBILE, value: 20.0),
+                        Condition.equals(name: TABLET, value: 30.0),
+                        Condition.equals(name: DESKTOP, value: 40.0),
+                      ],
+                    ).value,
                 decoration: BoxDecoration(
                   color: Color.fromARGB(255, 255, 175, 55),
-                  borderRadius: BorderRadius.circular(size.width * 0.04),
+                  borderRadius: BorderRadius.circular(
+                    ResponsiveValue<double>(
+                      context,
+                      defaultValue: size.width * 0.04,
+                      conditionalValues: const [
+                        Condition.equals(name: MOBILE, value: 10.0),
+                        Condition.equals(name: TABLET, value: 15.0),
+                        Condition.equals(name: DESKTOP, value: 20.0),
+                      ],
+                    ).value,
+                  ),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(size.width * 0.04),
+                  borderRadius: BorderRadius.circular(
+                    ResponsiveValue<double>(
+                      context,
+                      defaultValue: size.width * 0.04,
+                      conditionalValues: const [
+                        Condition.equals(name: MOBILE, value: 10.0),
+                        Condition.equals(name: TABLET, value: 15.0),
+                        Condition.equals(name: DESKTOP, value: 20.0),
+                      ],
+                    ).value,
+                  ),
                   child: LinearProgressIndicator(
                     value: _progress,
                     backgroundColor: Colors.grey[300],
@@ -279,11 +482,20 @@ class _LoadingScreenState extends State<LoadingScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: size.height * 0.05),
+              SizedBox(height: spacing * 1.5),
               Text(
                 "Cargando...",
                 style: TextStyle(
-                  fontSize: size.width * 0.06,
+                  fontSize:
+                      ResponsiveValue<double>(
+                        context,
+                        defaultValue: size.width * 0.06,
+                        conditionalValues: const [
+                          Condition.equals(name: MOBILE, value: 16.0),
+                          Condition.equals(name: TABLET, value: 20.0),
+                          Condition.equals(name: DESKTOP, value: 24.0),
+                        ],
+                      ).value,
                   fontWeight: FontWeight.bold,
                 ),
               ),

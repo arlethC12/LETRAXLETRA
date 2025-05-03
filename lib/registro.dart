@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:responsive_framework/responsive_framework.dart';
 import 'resga.dart';
 
 void main() {
@@ -15,6 +16,15 @@ class MiApp extends StatelessWidget {
     return MaterialApp(
       home: const PantallaInicio(),
       debugShowCheckedModeBanner: false,
+      builder:
+          (context, child) => ResponsiveBreakpoints.builder(
+            child: child!,
+            breakpoints: [
+              const Breakpoint(start: 0, end: 460, name: MOBILE),
+              const Breakpoint(start: 451, end: 800, name: TABLET),
+              const Breakpoint(start: 801, end: double.infinity, name: DESKTOP),
+            ],
+          ),
     );
   }
 }
@@ -72,23 +82,37 @@ class _PantallaInicioState extends State<PantallaInicio> {
 
   void _navigateToScreen(BuildContext context, Widget screen) async {
     await player.stop();
-    _speech.stop(); // Detener reconocimiento si está activo
+    _speech.stop();
     Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final isMobile = ResponsiveBreakpoints.of(context).isMobile;
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+    // ignore: unused_local_variable
+    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
+
+    // Factores de escala para tamaños dinámicos
+    final double scaleFactor = isMobile ? 0.8 : (isTablet ? 1.0 : 1.2);
+    final double padding =
+        size.width * (isMobile ? 0.04 : (isTablet ? 0.05 : 0.06));
+    final double spacing =
+        size.height * (isMobile ? 0.02 : (isTablet ? 0.03 : 0.04));
 
     return Scaffold(
+      backgroundColor: Colors.white, // Fondo blanco para el Scaffold
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(size.height * 0.08),
+        preferredSize: Size.fromHeight(
+          size.height * (isMobile ? 0.06 : (isTablet ? 0.08 : 0.1)),
+        ),
         child: AppBar(
           leading: IconButton(
             icon: Icon(
               Icons.arrow_back,
               color: Colors.black,
-              size: size.width * 0.09,
+              size: 24 * scaleFactor,
             ),
             onPressed: () async {
               await player.stop();
@@ -103,109 +127,112 @@ class _PantallaInicioState extends State<PantallaInicio> {
                 value: 0.5,
                 backgroundColor: Colors.grey.shade300,
                 valueColor: const AlwaysStoppedAnimation<Color>(Colors.yellow),
-                minHeight: size.height * 0.015,
+                minHeight:
+                    size.height * (isMobile ? 0.01 : (isTablet ? 0.015 : 0.02)),
               ),
             ],
           ),
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.white, // Fondo blanco para la AppBar
           elevation: 0,
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(size.width * 0.04),
-            child: Column(
-              children: [
-                SizedBox(height: size.height * 0.02),
-                Center(
-                  child: Image.asset(
-                    'assets/nombre.jpg',
-                    width: size.width * 0.8,
-                    height: size.height * 0.35,
-                    fit: BoxFit.contain,
+          padding: EdgeInsets.all(padding),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: spacing),
+              Center(
+                child: Image.asset(
+                  'assets/nombre.jpg',
+                  width: size.width * (isMobile ? 0.7 : (isTablet ? 0.6 : 0.5)),
+                  height:
+                      size.height * (isMobile ? 0.3 : (isTablet ? 0.35 : 0.4)),
+                  fit: BoxFit.contain,
+                ),
+              ),
+              SizedBox(height: spacing * 0.5),
+              IconButton(
+                icon: Icon(
+                  Icons.volume_up,
+                  color: Colors.black,
+                  size: 38 * scaleFactor,
+                ),
+                onPressed: () async {
+                  try {
+                    await player.play(AssetSource('audios/dinombre.mp3'));
+                  } catch (e) {
+                    print("Error al reproducir audio: $e");
+                  }
+                },
+              ),
+              SizedBox(height: spacing),
+              Text(
+                "¿Cuál es tu nombre?",
+                style: TextStyle(
+                  fontSize: 25 * scaleFactor,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: spacing * 1.5),
+              TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  hintText: "Tu nombre es...",
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isListening ? Icons.mic : Icons.mic_none,
+                      color: Colors.black,
+                      size: 24 * scaleFactor,
+                    ),
+                    onPressed: _listen,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12 * scaleFactor),
                   ),
                 ),
-                SizedBox(height: size.height * 0.01),
-                IconButton(
-                  icon: Icon(
-                    Icons.volume_up,
-                    color: Colors.black,
-                    size: size.width * 0.08,
+              ),
+              SizedBox(height: spacing * 2),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.yellow,
+                  foregroundColor: Colors.black,
+                  padding: EdgeInsets.symmetric(
+                    vertical: 12 * scaleFactor,
+                    horizontal: 24 * scaleFactor,
                   ),
-                  onPressed: () async {
-                    try {
-                      await player.play(AssetSource('audios/dinombre.mp3'));
-                    } catch (e) {
-                      print("Error al reproducir audio: $e");
-                    }
-                  },
-                ),
-                SizedBox(height: size.height * 0.015),
-                Text(
-                  "¿Cuál es tu nombre?",
-                  style: TextStyle(
-                    fontSize: size.width * 0.06,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12 * scaleFactor),
                   ),
                 ),
-                SizedBox(height: size.height * 0.03),
-                TextField(
-                  controller: _controller,
-                  decoration: InputDecoration(
-                    hintText: "Tu nombre es...",
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isListening ? Icons.mic : Icons.mic_none,
-                        color: Colors.black,
-                        size: size.width * 0.06,
+                onPressed: () {
+                  _navigateToScreen(context, ResponsiveScreen());
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Continuar",
+                      style: TextStyle(
+                        fontSize: 18 * scaleFactor,
+                        fontWeight: FontWeight.bold,
                       ),
-                      onPressed: _listen,
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(size.width * 0.03),
+                    SizedBox(width: 8 * scaleFactor),
+                    Icon(
+                      Icons.arrow_forward,
+                      color: Colors.black,
+                      size: 24 * scaleFactor,
                     ),
-                  ),
+                  ],
                 ),
-                SizedBox(height: size.height * 0.04),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.yellow,
-                    foregroundColor: Colors.black,
-                    padding: EdgeInsets.symmetric(
-                      vertical: size.height * 0.02,
-                      horizontal: size.width * 0.05,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(size.width * 0.03),
-                    ),
-                  ),
-                  onPressed: () {
-                    _navigateToScreen(context, ResponsiveScreen());
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "Continuar",
-                        style: TextStyle(
-                          fontSize: size.width * 0.045,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(width: size.width * 0.02),
-                      Icon(
-                        Icons.arrow_forward,
-                        color: Colors.black,
-                        size: size.width * 0.06,
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: size.height * 0.03),
-              ],
-            ),
+              ),
+              SizedBox(height: spacing),
+            ],
           ),
         ),
       ),

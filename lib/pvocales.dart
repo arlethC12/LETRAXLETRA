@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:letra_x_letra/vocalU/videoletraU.dart';
 import 'dart:async';
 import 'vocalA/vocala.dart';
-import 'vocalE/aprendevocale.dart'; // Importación para aprendevocale.dart
-import 'vocalI/videovocalI.dart'; // Importación para videovocalI.dart
+import 'vocalE/aprendevocale.dart';
+import 'vocalI/videovocalI.dart';
 import 'vocalO/videovocalO.dart';
+import 'niveles.dart';
 
-// Pantalla principal que muestra las vocales
 class VowelsScreen extends StatefulWidget {
-  final String characterImagePath; // Ruta de imagen del personaje elegido
-  final String username; // Nombre de usuario
+  final String characterImagePath;
+  final String username;
 
   VowelsScreen({required this.characterImagePath, required this.username});
 
@@ -19,17 +20,15 @@ class VowelsScreen extends StatefulWidget {
 
 class _VowelsScreenState extends State<VowelsScreen>
     with SingleTickerProviderStateMixin {
-  // Tamaños iniciales de cada imagen de vocal, ajustados dinámicamente
   late Map<String, double> _sizes;
-  late double _baseSize; // Tamaño base para las imágenes de vocales
-  late double _enlargedSize; // Tamaño al hacer clic
+  late double _baseSize;
+  late double _enlargedSize;
 
-  late AnimationController _controller; // Controlador de animación
-  late Animation<double> _glowAnimation; // Animación de brillo para huellas
-  int _currentFootprintIndex = 0; // Índice actual de huella resaltada
-  late Timer _timer; // Timer para animación de huellas
+  late AnimationController _controller;
+  late Animation<double> _glowAnimation;
+  int _currentFootprintIndex = 0;
+  late Timer _timer;
 
-  // Cambia el tamaño de la vocal seleccionada al hacer clic
   void _onVowelPressed(String path) {
     setState(() {
       _sizes.keys.forEach((key) {
@@ -42,7 +41,6 @@ class _VowelsScreenState extends State<VowelsScreen>
   void initState() {
     super.initState();
 
-    // Inicializar tamaños dinámicos (se ajustarán en build con MediaQuery)
     _baseSize = 0;
     _enlargedSize = 0;
     _sizes = {
@@ -54,7 +52,6 @@ class _VowelsScreenState extends State<VowelsScreen>
       "assets/vocales.jpg": _baseSize,
     };
 
-    // Inicializa la animación del brillo de las huellas
     _controller = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 500),
@@ -62,7 +59,6 @@ class _VowelsScreenState extends State<VowelsScreen>
 
     _glowAnimation = Tween<double>(begin: 0, end: 1).animate(_controller);
 
-    // Temporizador que cambia la huella resaltada cada 300ms
     _timer = Timer.periodic(Duration(milliseconds: 300), (timer) {
       if (mounted) {
         setState(() {
@@ -80,145 +76,375 @@ class _VowelsScreenState extends State<VowelsScreen>
     super.dispose();
   }
 
-  // Lista de posiciones (coordenadas) de las huellas, ajustadas dinámicamente
   List<Offset> footprintPositions = [];
 
   @override
   Widget build(BuildContext context) {
-    // Obtener el tamaño de la pantalla
     final size = MediaQuery.of(context).size;
+    final isMobile = ResponsiveBreakpoints.of(context).isMobile;
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
 
-    // Ajustar tamaños de vocales según el ancho de la pantalla
-    _baseSize = size.width * 0.22; // 22% del ancho
-    _enlargedSize = size.width * 0.3; // 30% del ancho al hacer clic
+    final double scaleFactor = isMobile ? 0.8 : (isTablet ? 1.0 : 1.2);
+
+    _baseSize =
+        ResponsiveValue<double>(
+          context,
+          defaultValue: size.width * 0.18,
+          conditionalValues: const [
+            Condition.equals(name: MOBILE, value: 98.0),
+            Condition.equals(name: TABLET, value: 130.0),
+            Condition.equals(name: DESKTOP, value: 150.0),
+          ],
+        ).value;
+    _enlargedSize =
+        ResponsiveValue<double>(
+          context,
+          defaultValue: size.width * 0.25,
+          conditionalValues: const [
+            Condition.equals(name: MOBILE, value: 100.0),
+            Condition.equals(name: TABLET, value: 160.0),
+            Condition.equals(name: DESKTOP, value: 200.0),
+          ],
+        ).value;
     _sizes.updateAll(
       (key, value) => _sizes[key] == _enlargedSize ? _enlargedSize : _baseSize,
     );
 
-    // Ajustar posiciones de las huellas dinámicamente
     footprintPositions = [
-      Offset(size.width * 0.28, size.height * 0.20),
-      Offset(size.width * 0.35, size.height * 0.22),
-      Offset(size.width * 0.42, size.height * 0.25),
-      Offset(size.width * 0.48, size.height * 0.28),
-      Offset(size.width * 0.42, size.height * 0.32),
-      Offset(size.width * 0.35, size.height * 0.35),
-      Offset(size.width * 0.28, size.height * 0.38),
-      Offset(size.width * 0.32, size.height * 0.42),
-      Offset(size.width * 0.38, size.height * 0.46),
-      Offset(size.width * 0.44, size.height * 0.50),
-      Offset(size.width * 0.50, size.height * 0.54),
-      Offset(size.width * 0.54, size.height * 0.58),
-      Offset(size.width * 0.48, size.height * 0.62),
-      Offset(size.width * 0.40, size.height * 0.66),
-      Offset(size.width * 0.32, size.height * 0.70),
-      Offset(size.width * 0.36, size.height * 0.74),
-      Offset(size.width * 0.42, size.height * 0.78),
-      Offset(size.width * 0.48, size.height * 0.82),
+      Offset(size.width * 0.35, size.height * 0.30),
+      Offset(size.width * 0.40, size.height * 0.34),
+      Offset(size.width * 0.45, size.height * 0.38),
+      Offset(size.width * 0.50, size.height * 0.42),
+      Offset(size.width * 0.45, size.height * 0.46),
+      Offset(size.width * 0.40, size.height * 0.50),
+      Offset(size.width * 0.35, size.height * 0.54),
+      Offset(size.width * 0.40, size.height * 0.58),
+      Offset(size.width * 0.45, size.height * 0.62),
+      Offset(size.width * 0.50, size.height * 0.66),
+      Offset(size.width * 0.45, size.height * 0.70),
+      Offset(size.width * 0.40, size.height * 0.74),
+      Offset(size.width * 0.35, size.height * 0.78),
+      Offset(size.width * 0.40, size.height * 0.82),
+      Offset(size.width * 0.45, size.height * 0.86),
+      Offset(size.width * 0.50, size.height * 0.90),
     ];
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(size.height * 0.08), // 8% del alto
-        child: AppBar(
-          backgroundColor: Color.fromARGB(255, 189, 162, 139),
-          elevation: 0,
-          title: Row(
-            children: [
-              CircleAvatar(
-                radius: size.width * 0.05, // Escala según el ancho
-                backgroundImage: AssetImage(widget.characterImagePath),
-              ),
-              SizedBox(width: size.width * 0.03),
-              Text(
-                widget.username,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: size.width * 0.045, // Escala según el ancho
-                ),
-              ),
-            ],
-          ),
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-              size: size.width * 0.07, // Escala según el ancho
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Stack(
-            children: [
-              SizedBox(height: size.height * 0.03),
-              _buildVowelSectionTitle(),
-              _buildImagesAndFootprints(),
-              Positioned(
-                right: size.width * 0.05,
-                top: size.height * 0.15,
-                child: Image.asset(
-                  'assets/tiger.png',
-                  height: size.height * 0.18, // 18% del alto
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
         backgroundColor: Colors.white,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black,
-        items: [
-          BottomNavigationBarItem(
-            icon: Image.asset('assets/boca.jpg', height: size.height * 0.05),
-            label: '',
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(
+            ResponsiveValue<double>(
+              context,
+              defaultValue: size.height * 0.08,
+              conditionalValues: const [
+                Condition.equals(name: MOBILE, value: 60.0),
+                Condition.equals(name: TABLET, value: 70.0),
+                Condition.equals(name: DESKTOP, value: 80.0),
+              ],
+            ).value,
           ),
-          BottomNavigationBarItem(
-            icon: Image.asset('assets/micro.jpg', height: size.height * 0.05),
-            label: '',
+          child: AppBar(
+            backgroundColor: Color.fromARGB(255, 189, 162, 139),
+            elevation: 0,
+            title: Row(
+              children: [
+                CircleAvatar(
+                  radius:
+                      ResponsiveValue<double>(
+                        context,
+                        defaultValue: size.width * 0.05,
+                        conditionalValues: const [
+                          Condition.equals(name: MOBILE, value: 25.0),
+                          Condition.equals(name: TABLET, value: 30.0),
+                          Condition.equals(name: DESKTOP, value: 35.0),
+                        ],
+                      ).value,
+                  backgroundImage: AssetImage(widget.characterImagePath),
+                ),
+                SizedBox(
+                  width:
+                      ResponsiveValue<double>(
+                        context,
+                        defaultValue: size.width * 0.03,
+                        conditionalValues: const [
+                          Condition.equals(name: MOBILE, value: 10.0),
+                          Condition.equals(name: TABLET, value: 12.0),
+                          Condition.equals(name: DESKTOP, value: 15.0),
+                        ],
+                      ).value,
+                ),
+                Text(
+                  widget.username,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize:
+                        ResponsiveValue<double>(
+                          context,
+                          defaultValue: size.width * 0.045,
+                          conditionalValues: const [
+                            Condition.equals(name: MOBILE, value: 18.0),
+                            Condition.equals(name: TABLET, value: 20.0),
+                            Condition.equals(name: DESKTOP, value: 22.0),
+                          ],
+                        ).value,
+                  ),
+                ),
+              ],
+            ),
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+                size:
+                    ResponsiveValue<double>(
+                      context,
+                      defaultValue: size.width * 0.07,
+                      conditionalValues: const [
+                        Condition.equals(name: MOBILE, value: 30.0),
+                        Condition.equals(name: TABLET, value: 35.0),
+                        Condition.equals(name: DESKTOP, value: 40.0),
+                      ],
+                    ).value,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Image.asset('assets/home.jpg', height: size.height * 0.05),
-            label: '',
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Stack(
+              children: [
+                SizedBox(
+                  height:
+                      ResponsiveValue<double>(
+                        context,
+                        defaultValue: size.height * 0.05,
+                        conditionalValues: const [
+                          Condition.equals(name: MOBILE, value: 30.0),
+                          Condition.equals(name: TABLET, value: 40.0),
+                          Condition.equals(name: DESKTOP, value: 50.0),
+                        ],
+                      ).value,
+                ),
+                _buildVowelSectionTitle(),
+                _buildImagesAndFootprints(),
+                Positioned(
+                  right:
+                      ResponsiveValue<double>(
+                        context,
+                        defaultValue: size.width * 0.05,
+                        conditionalValues: const [
+                          Condition.equals(name: MOBILE, value: 20.0),
+                          Condition.equals(name: TABLET, value: 40.0),
+                          Condition.equals(name: DESKTOP, value: 60.0),
+                        ],
+                      ).value,
+                  top:
+                      ResponsiveValue<double>(
+                        context,
+                        defaultValue: size.height * 0.25,
+                        conditionalValues: const [
+                          Condition.equals(name: MOBILE, value: 120.0),
+                          Condition.equals(name: TABLET, value: 150.0),
+                          Condition.equals(name: DESKTOP, value: 180.0),
+                        ],
+                      ).value,
+                  child: Image.asset(
+                    'assets/tiger.png',
+                    height:
+                        ResponsiveValue<double>(
+                          context,
+                          defaultValue: size.height * 0.18,
+                          conditionalValues: const [
+                            Condition.equals(name: MOBILE, value: 120.0),
+                            Condition.equals(name: TABLET, value: 150.0),
+                            Condition.equals(name: DESKTOP, value: 180.0),
+                          ],
+                        ).value,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ],
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Image.asset('assets/nota.jpg', height: size.height * 0.05),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset('assets/juego.png', height: size.height * 0.05),
-            label: '',
-          ),
-        ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Colors.black,
+          currentIndex: 2,
+          items: [
+            BottomNavigationBarItem(
+              icon: Image.asset(
+                'assets/boca.jpg',
+                height:
+                    ResponsiveValue<double>(
+                      context,
+                      defaultValue: size.height * 0.05,
+                      conditionalValues: const [
+                        Condition.equals(name: MOBILE, value: 35.0),
+                        Condition.equals(name: TABLET, value: 40.0),
+                        Condition.equals(name: DESKTOP, value: 50.0),
+                      ],
+                    ).value,
+              ),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Image.asset(
+                'assets/micro.jpg',
+                height:
+                    ResponsiveValue<double>(
+                      context,
+                      defaultValue: size.height * 0.05,
+                      conditionalValues: const [
+                        Condition.equals(name: MOBILE, value: 35.0),
+                        Condition.equals(name: TABLET, value: 40.0),
+                        Condition.equals(name: DESKTOP, value: 50.0),
+                      ],
+                    ).value,
+              ),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Image.asset(
+                'assets/home.jpg',
+                height:
+                    ResponsiveValue<double>(
+                      context,
+                      defaultValue: size.height * 0.05,
+                      conditionalValues: const [
+                        Condition.equals(name: MOBILE, value: 35.0),
+                        Condition.equals(name: TABLET, value: 40.0),
+                        Condition.equals(name: DESKTOP, value: 50.0),
+                      ],
+                    ).value,
+              ),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Image.asset(
+                'assets/nota.jpg',
+                height:
+                    ResponsiveValue<double>(
+                      context,
+                      defaultValue: size.height * 0.05,
+                      conditionalValues: const [
+                        Condition.equals(name: MOBILE, value: 35.0),
+                        Condition.equals(name: TABLET, value: 40.0),
+                        Condition.equals(name: DESKTOP, value: 50.0),
+                      ],
+                    ).value,
+              ),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Image.asset(
+                'assets/juego.png',
+                height:
+                    ResponsiveValue<double>(
+                      context,
+                      defaultValue: size.height * 0.05,
+                      conditionalValues: const [
+                        Condition.equals(name: MOBILE, value: 35.0),
+                        Condition.equals(name: TABLET, value: 40.0),
+                        Condition.equals(name: DESKTOP, value: 50.0),
+                      ],
+                    ).value,
+              ),
+              label: '',
+            ),
+          ],
+          onTap: (index) {
+            if (index == 2) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) => Niveles(
+                        characterImagePath: widget.characterImagePath,
+                        username: widget.username,
+                      ),
+                ),
+              );
+            }
+          },
+        ),
       ),
     );
   }
 
-  // Construye el encabezado con el nombre de la unidad y sección
   Widget _buildVowelSectionTitle() {
     final size = MediaQuery.of(context).size;
 
     return Column(
       children: [
-        SizedBox(height: size.height * 0.03),
+        SizedBox(
+          height:
+              ResponsiveValue<double>(
+                context,
+                defaultValue: size.height * 0.03,
+                conditionalValues: const [
+                  Condition.equals(name: MOBILE, value: 20.0),
+                  Condition.equals(name: TABLET, value: 25.0),
+                  Condition.equals(name: DESKTOP, value: 30.0),
+                ],
+              ).value,
+        ),
         Container(
           padding: EdgeInsets.symmetric(
-            vertical: size.height * 0.015,
-            horizontal: size.width * 0.04,
+            vertical:
+                ResponsiveValue<double>(
+                  context,
+                  defaultValue: size.height * 0.015,
+                  conditionalValues: const [
+                    Condition.equals(name: MOBILE, value: 10.0),
+                    Condition.equals(name: TABLET, value: 12.0),
+                    Condition.equals(name: DESKTOP, value: 15.0),
+                  ],
+                ).value,
+            horizontal:
+                ResponsiveValue<double>(
+                  context,
+                  defaultValue: size.width * 0.04,
+                  conditionalValues: const [
+                    Condition.equals(name: MOBILE, value: 20.0),
+                    Condition.equals(name: TABLET, value: 25.0),
+                    Condition.equals(name: DESKTOP, value: 30.0),
+                  ],
+                ).value,
           ),
-          margin: EdgeInsets.symmetric(horizontal: size.width * 0.05),
+          margin: EdgeInsets.symmetric(
+            horizontal:
+                ResponsiveValue<double>(
+                  context,
+                  defaultValue: size.width * 0.05,
+                  conditionalValues: const [
+                    Condition.equals(name: MOBILE, value: 25.0),
+                    Condition.equals(name: TABLET, value: 30.0),
+                    Condition.equals(name: DESKTOP, value: 50.0),
+                  ],
+                ).value,
+          ),
           decoration: BoxDecoration(
             color: const Color.fromARGB(238, 235, 179, 27),
-            borderRadius: BorderRadius.circular(size.width * 0.04),
+            borderRadius: BorderRadius.circular(
+              ResponsiveValue<double>(
+                context,
+                defaultValue: size.width * 0.04,
+                conditionalValues: const [
+                  Condition.equals(name: MOBILE, value: 15.0),
+                  Condition.equals(name: TABLET, value: 20.0),
+                  Condition.equals(name: DESKTOP, value: 25.0),
+                ],
+              ).value,
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -229,7 +455,16 @@ class _VowelsScreenState extends State<VowelsScreen>
                   Text(
                     "Unidad 1, Sección 1",
                     style: TextStyle(
-                      fontSize: size.width * 0.045,
+                      fontSize:
+                          ResponsiveValue<double>(
+                            context,
+                            defaultValue: size.width * 0.045,
+                            conditionalValues: const [
+                              Condition.equals(name: MOBILE, value: 18.0),
+                              Condition.equals(name: TABLET, value: 20.0),
+                              Condition.equals(name: DESKTOP, value: 22.0),
+                            ],
+                          ).value,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
@@ -237,7 +472,16 @@ class _VowelsScreenState extends State<VowelsScreen>
                   Text(
                     "Vocales",
                     style: TextStyle(
-                      fontSize: size.width * 0.045,
+                      fontSize:
+                          ResponsiveValue<double>(
+                            context,
+                            defaultValue: size.width * 0.045,
+                            conditionalValues: const [
+                              Condition.equals(name: MOBILE, value: 18.0),
+                              Condition.equals(name: TABLET, value: 20.0),
+                              Condition.equals(name: DESKTOP, value: 22.0),
+                            ],
+                          ).value,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
@@ -245,8 +489,26 @@ class _VowelsScreenState extends State<VowelsScreen>
                 ],
               ),
               Container(
-                width: size.width * 0.12,
-                height: size.width * 0.12,
+                width:
+                    ResponsiveValue<double>(
+                      context,
+                      defaultValue: size.width * 0.12,
+                      conditionalValues: const [
+                        Condition.equals(name: MOBILE, value: 50.0),
+                        Condition.equals(name: TABLET, value: 60.0),
+                        Condition.equals(name: DESKTOP, value: 70.0),
+                      ],
+                    ).value,
+                height:
+                    ResponsiveValue<double>(
+                      context,
+                      defaultValue: size.width * 0.12,
+                      conditionalValues: const [
+                        Condition.equals(name: MOBILE, value: 50.0),
+                        Condition.equals(name: TABLET, value: 60.0),
+                        Condition.equals(name: DESKTOP, value: 70.0),
+                      ],
+                    ).value,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   image: DecorationImage(
@@ -260,49 +522,57 @@ class _VowelsScreenState extends State<VowelsScreen>
         ),
         Container(
           color: Colors.white,
-          child: SizedBox(height: size.height * 0.03),
+          child: SizedBox(
+            height:
+                ResponsiveValue<double>(
+                  context,
+                  defaultValue: size.height * 0.03,
+                  conditionalValues: const [
+                    Condition.equals(name: MOBILE, value: 10.0),
+                    Condition.equals(name: TABLET, value: 25.0),
+                    Condition.equals(name: DESKTOP, value: 30.0),
+                  ],
+                ).value,
+          ),
         ),
       ],
     );
   }
 
-  // Construye las imágenes de las vocales y las huellas animadas
   Widget _buildImagesAndFootprints() {
     final size = MediaQuery.of(context).size;
 
-    // Ajustar posiciones de las vocales para que coincidan con el diseño de la imagen
     final List<Map<String, dynamic>> elements = [
       {
         "path": "assets/vocalA.jpg",
-        "position": Offset(size.width * 0.03, size.height * 0.18),
+        "position": Offset(size.width * 0.05, size.height * 0.20),
       },
       {
         "path": "assets/vocalE.jpg",
-        "position": Offset(size.width * 0.65, size.height * 0.30),
+        "position": Offset(size.width * 0.70, size.height * 0.35),
       },
       {
         "path": "assets/vocalI.jpg",
-        "position": Offset(size.width * 0.03, size.height * 0.38),
+        "position": Offset(size.width * 0.05, size.height * 0.45),
       },
       {
         "path": "assets/vocalO.jpg",
-        "position": Offset(size.width * 0.65, size.height * 0.46),
+        "position": Offset(size.width * 0.70, size.height * 0.55),
       },
       {
         "path": "assets/vocalU.jpg",
-        "position": Offset(size.width * 0.03, size.height * 0.54),
+        "position": Offset(size.width * 0.05, size.height * 0.70),
       },
       {
         "path": "assets/vocales.jpg",
-        "position": Offset(size.width * 0.65, size.height * 0.60),
+        "position": Offset(size.width * 0.70, size.height * 0.80),
       },
     ];
 
     return SizedBox(
-      height: size.height, // Asegurar que el Stack tenga suficiente altura
+      height: size.height,
       child: Stack(
         children: [
-          // Dibuja cada imagen de vocal
           ...elements.map((element) {
             final path = element["path"] as String;
             return Positioned(
@@ -310,33 +580,28 @@ class _VowelsScreenState extends State<VowelsScreen>
               top: (element["position"] as Offset).dy,
               child: GestureDetector(
                 onTap: () {
-                  _onVowelPressed(path); // Cambia el tamaño
+                  _onVowelPressed(path);
                   if (path == "assets/vocalA.jpg") {
-                    // Navega a la pantalla de vocal A
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => VocalAPage()),
                     );
                   } else if (path == "assets/vocalE.jpg") {
-                    // Navega a la pantalla de aprendizaje de vocal E
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => VocalEPage()),
                     );
                   } else if (path == "assets/vocalI.jpg") {
-                    // Navega a la pantalla de vocal I
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => VocalIPage()),
                     );
                   } else if (path == "assets/vocalO.jpg") {
-                    // Navega a la pantalla de vocal E (esto parece incorrecto, ajustar si es necesario)
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => VocalOPage()),
                     );
                   } else if (path == "assets/vocalU.jpg") {
-                    // Navega a la pantalla de vocal E (esto parece incorrecto, ajustar si es necesario)
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => VocalUPage()),
@@ -348,13 +613,32 @@ class _VowelsScreenState extends State<VowelsScreen>
                     if (path == "assets/vocales.jpg")
                       Image.asset(
                         'assets/corona.png',
-                        height: size.height * 0.04, // 4% del alto
+                        height:
+                            ResponsiveValue<double>(
+                              context,
+                              defaultValue: size.height * 0.04,
+                              conditionalValues: const [
+                                Condition.equals(name: MOBILE, value: 30.0),
+                                Condition.equals(name: TABLET, value: 40.0),
+                                Condition.equals(name: DESKTOP, value: 50.0),
+                              ],
+                            ).value,
                       ),
                     Container(
                       width: _sizes[path],
                       height: _sizes[path],
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(size.width * 0.03),
+                        borderRadius: BorderRadius.circular(
+                          ResponsiveValue<double>(
+                            context,
+                            defaultValue: size.width * 0.03,
+                            conditionalValues: const [
+                              Condition.equals(name: MOBILE, value: 15.0),
+                              Condition.equals(name: TABLET, value: 20.0),
+                              Condition.equals(name: DESKTOP, value: 25.0),
+                            ],
+                          ).value,
+                        ),
                         color: Colors.lightBlueAccent,
                         image: DecorationImage(
                           image: AssetImage(path),
@@ -362,14 +646,34 @@ class _VowelsScreenState extends State<VowelsScreen>
                         ),
                       ),
                     ),
-                    SizedBox(height: size.height * 0.01),
+                    SizedBox(
+                      height:
+                          ResponsiveValue<double>(
+                            context,
+                            defaultValue: size.height * 0.01,
+                            conditionalValues: const [
+                              Condition.equals(name: MOBILE, value: 10.0),
+                              Condition.equals(name: TABLET, value: 12.0),
+                              Condition.equals(name: DESKTOP, value: 15.0),
+                            ],
+                          ).value,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(
                         5,
                         (index) => Icon(
                           Icons.star,
-                          size: size.width * 0.04,
+                          size:
+                              ResponsiveValue<double>(
+                                context,
+                                defaultValue: size.width * 0.04,
+                                conditionalValues: const [
+                                  Condition.equals(name: MOBILE, value: 20.0),
+                                  Condition.equals(name: TABLET, value: 25.0),
+                                  Condition.equals(name: DESKTOP, value: 30.0),
+                                ],
+                              ).value,
                           color: const Color.fromARGB(255, 253, 232, 38),
                         ),
                       ),
@@ -379,14 +683,22 @@ class _VowelsScreenState extends State<VowelsScreen>
               ),
             );
           }).toList(),
-
-          // Dibuja las huellas con efecto de animación
           ...footprintPositions.asMap().entries.map((entry) {
             final index = entry.key;
             final position = entry.value;
             return Positioned(
               left: position.dx,
-              top: position.dy - (size.height * 0.04),
+              top:
+                  position.dy -
+                  ResponsiveValue<double>(
+                    context,
+                    defaultValue: size.height * 0.04,
+                    conditionalValues: const [
+                      Condition.equals(name: MOBILE, value: 25.0),
+                      Condition.equals(name: TABLET, value: 30.0),
+                      Condition.equals(name: DESKTOP, value: 35.0),
+                    ],
+                  ).value,
               child: AnimatedBuilder(
                 animation: _glowAnimation,
                 builder: (context, child) {
@@ -403,14 +715,44 @@ class _VowelsScreenState extends State<VowelsScreen>
                             color: Colors.yellow.withOpacity(
                               _currentFootprintIndex == index ? 0.6 : 0,
                             ),
-                            blurRadius: size.width * 0.03,
-                            spreadRadius: size.width * 0.005,
+                            blurRadius:
+                                ResponsiveValue<double>(
+                                  context,
+                                  defaultValue: size.width * 0.03,
+                                  conditionalValues: const [
+                                    Condition.equals(name: MOBILE, value: 15.0),
+                                    Condition.equals(name: TABLET, value: 20.0),
+                                    Condition.equals(
+                                      name: DESKTOP,
+                                      value: 25.0,
+                                    ),
+                                  ],
+                                ).value,
+                            spreadRadius:
+                                ResponsiveValue<double>(
+                                  context,
+                                  defaultValue: size.width * 0.005,
+                                  conditionalValues: const [
+                                    Condition.equals(name: MOBILE, value: 3.0),
+                                    Condition.equals(name: TABLET, value: 4.0),
+                                    Condition.equals(name: DESKTOP, value: 5.0),
+                                  ],
+                                ).value,
                           ),
                         ],
                       ),
                       child: Icon(
                         Icons.pets,
-                        size: size.width * 0.06,
+                        size:
+                            ResponsiveValue<double>(
+                              context,
+                              defaultValue: size.width * 0.06,
+                              conditionalValues: const [
+                                Condition.equals(name: MOBILE, value: 30.0),
+                                Condition.equals(name: TABLET, value: 35.0),
+                                Condition.equals(name: DESKTOP, value: 40.0),
+                              ],
+                            ).value,
                         color: Colors.black,
                       ),
                     ),
