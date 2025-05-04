@@ -9,7 +9,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key}); // Cambia Key? a super.key para compatibilidad
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -301,7 +301,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ],
                               ).value,
                         ),
-                        _buildButton(context, 'Inicia Sesíon', MyHomePage()),
+                        _buildButton(
+                          context,
+                          'Inicia Sesión',
+                          ResnumScreen(nombre: '', edad: ''),
+                        ),
                       ],
                     )
                     : Column(
@@ -328,7 +332,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ],
                               ).value,
                         ),
-                        _buildButton(context, 'Inicia Sesíon', MyHomePage()),
+                        _buildButton(
+                          context,
+                          'Inicia Sesión',
+                          const ResnumScreen(nombre: '', edad: ''),
+                        ),
                       ],
                     ),
                 SizedBox(

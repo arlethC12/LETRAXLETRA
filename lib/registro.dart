@@ -1,8 +1,12 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:responsive_framework/responsive_framework.dart';
-import 'resga.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'resga.dart'; // Asegúrate de que este archivo existe
 
 void main() {
   runApp(const MiApp());
@@ -21,7 +25,7 @@ class MiApp extends StatelessWidget {
             child: child!,
             breakpoints: [
               const Breakpoint(start: 0, end: 460, name: MOBILE),
-              const Breakpoint(start: 451, end: 800, name: TABLET),
+              const Breakpoint(start: 461, end: 800, name: TABLET),
               const Breakpoint(start: 801, end: double.infinity, name: DESKTOP),
             ],
           ),
@@ -42,6 +46,7 @@ class _PantallaInicioState extends State<PantallaInicio> {
   bool _isListening = false;
   String _text = '';
   final TextEditingController _controller = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -55,6 +60,7 @@ class _PantallaInicioState extends State<PantallaInicio> {
     player.stop();
     player.dispose();
     _speech.stop();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -80,10 +86,11 @@ class _PantallaInicioState extends State<PantallaInicio> {
     }
   }
 
-  void _navigateToScreen(BuildContext context, Widget screen) async {
-    await player.stop();
-    _speech.stop();
-    Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
+  void _navigateToNextScreen(String nombre) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Resga(nombre: nombre)),
+    );
   }
 
   @override
@@ -91,10 +98,7 @@ class _PantallaInicioState extends State<PantallaInicio> {
     final size = MediaQuery.of(context).size;
     final isMobile = ResponsiveBreakpoints.of(context).isMobile;
     final isTablet = ResponsiveBreakpoints.of(context).isTablet;
-    // ignore: unused_local_variable
-    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
 
-    // Factores de escala para tamaños dinámicos
     final double scaleFactor = isMobile ? 0.8 : (isTablet ? 1.0 : 1.2);
     final double padding =
         size.width * (isMobile ? 0.04 : (isTablet ? 0.05 : 0.06));
@@ -102,7 +106,7 @@ class _PantallaInicioState extends State<PantallaInicio> {
         size.height * (isMobile ? 0.02 : (isTablet ? 0.03 : 0.04));
 
     return Scaffold(
-      backgroundColor: Colors.white, // Fondo blanco para el Scaffold
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(
           size.height * (isMobile ? 0.06 : (isTablet ? 0.08 : 0.1)),
@@ -132,7 +136,7 @@ class _PantallaInicioState extends State<PantallaInicio> {
               ),
             ],
           ),
-          backgroundColor: Colors.white, // Fondo blanco para la AppBar
+          backgroundColor: Colors.white,
           elevation: 0,
         ),
       ),
@@ -141,7 +145,6 @@ class _PantallaInicioState extends State<PantallaInicio> {
           padding: EdgeInsets.all(padding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(height: spacing),
               Center(
@@ -209,9 +212,21 @@ class _PantallaInicioState extends State<PantallaInicio> {
                     borderRadius: BorderRadius.circular(12 * scaleFactor),
                   ),
                 ),
-                onPressed: () {
-                  _navigateToScreen(context, ResponsiveScreen());
-                },
+                onPressed:
+                    _isLoading
+                        ? null
+                        : () {
+                          final nombre = _controller.text.trim();
+                          if (nombre.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Por favor, ingresa tu nombre'),
+                              ),
+                            );
+                            return;
+                          }
+                          _navigateToNextScreen(nombre);
+                        },
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -235,6 +250,23 @@ class _PantallaInicioState extends State<PantallaInicio> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+// Aquí se añade la clase ResponsiveScreen con el parámetro `nombre`
+class ResponsiveScreen extends StatelessWidget {
+  final String nombre;
+
+  const ResponsiveScreen({Key? key, required this.nombre}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Pantalla Responsive')),
+      body: Center(
+        child: Text('Hola $nombre', style: const TextStyle(fontSize: 24)),
       ),
     );
   }

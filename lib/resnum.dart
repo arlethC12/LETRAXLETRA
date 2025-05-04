@@ -2,23 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'avatar.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    const ResnumScreen(nombre: 'Juan', edad: '5'),
+  ); // Example values, replace with actual navigation
 }
 
-class MyApp extends StatelessWidget {
+class ResnumScreen extends StatelessWidget {
+  final String nombre;
+  final String edad;
+
+  const ResnumScreen({super.key, required this.nombre, required this.edad});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
+      home: MyHomePage(nombre: nombre, edad: edad),
       builder:
           (context, child) => ResponsiveBreakpoints.builder(
             child: child!,
             breakpoints: [
-              const Breakpoint(start: 0, end: 500, name: MOBILE),
+              const Breakpoint(start: 0, end: 450, name: MOBILE),
               const Breakpoint(start: 451, end: 800, name: TABLET),
               const Breakpoint(start: 801, end: double.infinity, name: DESKTOP),
             ],
@@ -28,6 +37,11 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
+  final String nombre;
+  final String edad;
+
+  const MyHomePage({super.key, required this.nombre, required this.edad});
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -37,6 +51,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _controller = TextEditingController();
   late stt.SpeechToText _speech;
   bool _isListening = false;
+  bool _isLoading = false;
+  bool _isLoginMode = true;
 
   @override
   void initState() {
@@ -70,6 +86,104 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> _loginUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://192.168.1.34:3000/usuario/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'password': _controller.text.trim()}),
+      );
+
+      if (response.statusCode == 200) {
+        final userData = jsonDecode(response.body);
+        _player.stop();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) =>
+                    CharacterSelectionScreen(nombre: userData['nombre']),
+          ),
+        );
+      } else {
+        final errorMessage =
+            jsonDecode(response.body)['mensaje'] ?? 'Número no encontrado';
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error de conexión con el servidor')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _registerUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://192.168.1.34:3000/usuario'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'nombre': widget.nombre.trim(),
+          'edad': widget.edad.trim(),
+          'password': _controller.text.trim(),
+          'cve_rol': 3,
+          'cve_grado':
+              int.tryParse(widget.edad.trim()) != null &&
+                      int.parse(widget.edad.trim()) <= 6
+                  ? int.parse(widget.edad.trim())
+                  : 1,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        _player.stop();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => CharacterSelectionScreen(nombre: widget.nombre),
+          ),
+        );
+      } else {
+        final errorMessage =
+            jsonDecode(response.body)['message'] ??
+            'Error al registrar el usuario';
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error de conexión con el servidor')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _toggleMode() {
+    setState(() {
+      _isLoginMode = !_isLoginMode;
+      _controller.clear();
+    });
+  }
+
   @override
   void dispose() {
     _player.stop();
@@ -84,11 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final size = MediaQuery.of(context).size;
     final isMobile = ResponsiveBreakpoints.of(context).isMobile;
     final isTablet = ResponsiveBreakpoints.of(context).isTablet;
-    // ignore: unused_local_variable
-    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
 
-    // ignore: unused_local_variable
-    final double scaleFactor = isMobile ? 0.8 : (isTablet ? 1.0 : 1.2);
     final double padding =
         size.width * (isMobile ? 0.07 : (isTablet ? 0.08 : 0.09));
     final double spacing =
@@ -99,6 +209,13 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        title: Text(
+          _isLoginMode ? 'Iniciar Sesión' : 'Registrarse',
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
@@ -282,15 +399,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 SizedBox(height: spacing * 2),
                 ElevatedButton(
-                  onPressed: () {
-                    _player.stop();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CharacterSelectionScreen(),
-                      ),
-                    );
-                  },
+                  onPressed:
+                      _controller.text.trim().isEmpty || _isLoading
+                          ? null
+                          : _isLoginMode
+                          ? _loginUser
+                          : _registerUser,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.yellow,
                     foregroundColor: Colors.black,
@@ -330,52 +444,104 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Continuar',
-                        style: TextStyle(
-                          fontSize:
-                              ResponsiveValue<double>(
-                                context,
-                                defaultValue: size.width * 0.045,
-                                conditionalValues: const [
-                                  Condition.equals(name: MOBILE, value: 14.0),
-                                  Condition.equals(name: TABLET, value: 16.0),
-                                  Condition.equals(name: DESKTOP, value: 18.0),
-                                ],
-                              ).value,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(
-                        width:
-                            ResponsiveValue<double>(
-                              context,
-                              defaultValue: 8.0,
-                              conditionalValues: const [
-                                Condition.equals(name: MOBILE, value: 6.0),
-                                Condition.equals(name: TABLET, value: 8.0),
-                                Condition.equals(name: DESKTOP, value: 10.0),
-                              ],
-                            ).value,
-                      ),
-                      Icon(
-                        Icons.arrow_forward,
-                        size:
-                            ResponsiveValue<double>(
-                              context,
-                              defaultValue: 24.0,
-                              conditionalValues: const [
-                                Condition.equals(name: MOBILE, value: 20.0),
-                                Condition.equals(name: TABLET, value: 24.0),
-                                Condition.equals(name: DESKTOP, value: 28.0),
-                              ],
-                            ).value,
-                        color: Colors.black,
-                      ),
-                    ],
+                  child:
+                      _isLoading
+                          ? const CircularProgressIndicator(color: Colors.black)
+                          : Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                _isLoginMode ? 'Iniciar Sesión' : 'Registrarse',
+                                style: TextStyle(
+                                  fontSize:
+                                      ResponsiveValue<double>(
+                                        context,
+                                        defaultValue: size.width * 0.045,
+                                        conditionalValues: const [
+                                          Condition.equals(
+                                            name: MOBILE,
+                                            value: 14.0,
+                                          ),
+                                          Condition.equals(
+                                            name: TABLET,
+                                            value: 16.0,
+                                          ),
+                                          Condition.equals(
+                                            name: DESKTOP,
+                                            value: 18.0,
+                                          ),
+                                        ],
+                                      ).value,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(
+                                width:
+                                    ResponsiveValue<double>(
+                                      context,
+                                      defaultValue: 8.0,
+                                      conditionalValues: const [
+                                        Condition.equals(
+                                          name: MOBILE,
+                                          value: 6.0,
+                                        ),
+                                        Condition.equals(
+                                          name: TABLET,
+                                          value: 8.0,
+                                        ),
+                                        Condition.equals(
+                                          name: DESKTOP,
+                                          value: 10.0,
+                                        ),
+                                      ],
+                                    ).value,
+                              ),
+                              Icon(
+                                Icons.arrow_forward,
+                                size:
+                                    ResponsiveValue<double>(
+                                      context,
+                                      defaultValue: 24.0,
+                                      conditionalValues: const [
+                                        Condition.equals(
+                                          name: MOBILE,
+                                          value: 20.0,
+                                        ),
+                                        Condition.equals(
+                                          name: TABLET,
+                                          value: 24.0,
+                                        ),
+                                        Condition.equals(
+                                          name: DESKTOP,
+                                          value: 28.0,
+                                        ),
+                                      ],
+                                    ).value,
+                                color: Colors.black,
+                              ),
+                            ],
+                          ),
+                ),
+                SizedBox(height: spacing),
+                TextButton(
+                  onPressed: _toggleMode,
+                  child: Text(
+                    _isLoginMode
+                        ? '¿No tienes cuenta? Regístrate'
+                        : '¿Ya tienes cuenta? Inicia sesión',
+                    style: TextStyle(
+                      fontSize:
+                          ResponsiveValue<double>(
+                            context,
+                            defaultValue: size.width * 0.04,
+                            conditionalValues: const [
+                              Condition.equals(name: MOBILE, value: 14.0),
+                              Condition.equals(name: TABLET, value: 16.0),
+                              Condition.equals(name: DESKTOP, value: 18.0),
+                            ],
+                          ).value,
+                      color: Colors.blue,
+                    ),
                   ),
                 ),
               ],

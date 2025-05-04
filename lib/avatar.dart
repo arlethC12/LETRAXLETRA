@@ -5,15 +5,17 @@ import 'dart:async';
 import 'niveles.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: CharacterSelectionScreen(),
+      home: const CharacterSelectionScreen(nombre: 'invitado'),
       builder:
           (context, child) => ResponsiveBreakpoints.builder(
             child: child!,
@@ -28,6 +30,10 @@ class MyApp extends StatelessWidget {
 }
 
 class CharacterSelectionScreen extends StatefulWidget {
+  final String nombre;
+
+  const CharacterSelectionScreen({super.key, required this.nombre});
+
   @override
   _CharacterSelectionScreenState createState() =>
       _CharacterSelectionScreenState();
@@ -173,7 +179,7 @@ class _CharacterSelectionScreenState extends State<CharacterSelectionScreen> {
             child: LinearProgressIndicator(
               value: 10,
               backgroundColor: Colors.grey[350],
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow),
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.yellow),
             ),
           ),
         ),
@@ -225,6 +231,7 @@ class _CharacterSelectionScreenState extends State<CharacterSelectionScreen> {
                           builder:
                               (context) => LoadingScreen(
                                 imagePath: characterImages[index],
+                                nombre: widget.nombre,
                               ),
                         ),
                       );
@@ -271,8 +278,13 @@ class _CharacterSelectionScreenState extends State<CharacterSelectionScreen> {
 
 class LoadingScreen extends StatefulWidget {
   final String imagePath;
+  final String nombre;
 
-  LoadingScreen({required this.imagePath});
+  const LoadingScreen({
+    super.key,
+    required this.imagePath,
+    required this.nombre,
+  });
 
   @override
   _LoadingScreenState createState() => _LoadingScreenState();
@@ -295,7 +307,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   }
 
   void _startLoading() {
-    Timer.periodic(Duration(milliseconds: 500), (timer) {
+    Timer.periodic(const Duration(milliseconds: 500), (timer) {
       setState(() {
         _progress += 0.2;
         currentImageIndex = (currentImageIndex + 1) % loadingImages.length;
@@ -309,7 +321,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
               builder:
                   (context) => Niveles(
                     characterImagePath: widget.imagePath,
-                    username: 'Invitado',
+                    username: widget.nombre,
                   ),
             ),
           );
@@ -330,7 +342,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
         size.height * (isMobile ? 0.03 : (isTablet ? 0.04 : 0.05));
 
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 197, 36),
+      backgroundColor: const Color.fromARGB(255, 255, 197, 36),
       body: SafeArea(
         child: Center(
           child: Column(
@@ -338,7 +350,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
             children: [
               if (_progress < 1.0)
                 Text(
-                  "Bienvenido",
+                  "Bienvenid@, ${widget.nombre}",
                   style: TextStyle(
                     fontSize:
                         ResponsiveValue<double>(
@@ -450,7 +462,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
                       ],
                     ).value,
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 255, 175, 55),
+                  color: const Color.fromARGB(255, 255, 175, 55),
                   borderRadius: BorderRadius.circular(
                     ResponsiveValue<double>(
                       context,
@@ -478,7 +490,9 @@ class _LoadingScreenState extends State<LoadingScreen> {
                   child: LinearProgressIndicator(
                     value: _progress,
                     backgroundColor: Colors.grey[300],
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                      Colors.white,
+                    ),
                   ),
                 ),
               ),
