@@ -19,7 +19,10 @@ class MyApp extends StatelessWidget {
         '/letter_tracing': (context) => LetterTracingScreen(),
         '/compalabra': (context) => CompalabraScreen(),
         '/vocala':
-            (context) => const VocalAPage(), // Añade la ruta para vocala.dart
+            (context) => const VocalAPage(
+              username: '',
+              characterImagePath: '',
+            ), // Añade la ruta para vocala.dart
       },
     );
   }

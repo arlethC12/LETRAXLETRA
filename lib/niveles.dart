@@ -1,30 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'pvocales.dart';
+import 'main.dart';
 
 class Niveles extends StatelessWidget {
   final String characterImagePath;
   final String username;
 
-  Niveles({required this.characterImagePath, required this.username});
+  const Niveles({
+    Key? key,
+    required this.characterImagePath,
+    required this.username,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomeScreen(
-        characterImagePath: characterImagePath,
-        username: username,
-      ),
-      builder:
-          (context, child) => ResponsiveBreakpoints.builder(
-            child: child!,
-            breakpoints: [
-              const Breakpoint(start: 0, end: 450, name: MOBILE),
-              const Breakpoint(start: 451, end: 800, name: TABLET),
-              const Breakpoint(start: 801, end: double.infinity, name: DESKTOP),
-            ],
-          ),
+    return HomeScreen(
+      characterImagePath: characterImagePath,
+      username: username,
     );
   }
 }
@@ -33,18 +28,85 @@ class HomeScreen extends StatelessWidget {
   final String characterImagePath;
   final String username;
 
-  HomeScreen({required this.characterImagePath, required this.username});
+  const HomeScreen({
+    Key? key,
+    required this.characterImagePath,
+    required this.username,
+  }) : super(key: key);
+
+  // Show logout confirmation dialog and handle logout
+  Future<void> _handleLogout(BuildContext context) async {
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Cerrar Sesión'),
+            content: const Text('¿Estás seguro de que quieres cerrar sesión?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('No'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Sí'),
+              ),
+            ],
+          ),
+    );
+
+    if (confirm == true) {
+      await _logout(context);
+    }
+  }
+
+  // Logout function to call the API and clear token
+  Future<void> _logout(BuildContext context) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      if (token == null) {
+        // No token found, proceed to main screen
+        _navigateToMain(context);
+        return;
+      }
+
+      final response = await http.post(
+        Uri.parse('YOUR_API_BASE_URL/usuario/logout'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 200) {
+        // Clear token on successful logout
+        await prefs.remove('auth_token');
+        _navigateToMain(context);
+      } else {
+        // Show error message
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Error al cerrar sesión')));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Error del servidor')));
+    }
+  }
+
+  // Navigate to main screen
+  void _navigateToMain(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const MyApp()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final isMobile = ResponsiveBreakpoints.of(context).isMobile;
     final isTablet = ResponsiveBreakpoints.of(context).isTablet;
-    // ignore: unused_local_variable
-    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
-
-    // ignore: unused_local_variable
-    final double scaleFactor = isMobile ? 0.8 : (isTablet ? 1.0 : 1.2);
     final double padding =
         size.width * (isMobile ? 0.05 : (isTablet ? 0.06 : 0.07));
     final double spacing =
@@ -65,50 +127,95 @@ class HomeScreen extends StatelessWidget {
           ).value,
         ),
         child: AppBar(
-          backgroundColor: Color.fromARGB(255, 189, 162, 139),
+          backgroundColor: const Color.fromARGB(255, 189, 162, 139),
           elevation: 0,
           title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              CircleAvatar(
-                radius:
-                    ResponsiveValue<double>(
-                      context,
-                      defaultValue: size.width * 0.05,
-                      conditionalValues: const [
-                        Condition.equals(name: MOBILE, value: 20.0),
-                        Condition.equals(name: TABLET, value: 25.0),
-                        Condition.equals(name: DESKTOP, value: 30.0),
-                      ],
-                    ).value,
-                backgroundImage: AssetImage(characterImagePath),
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius:
+                        ResponsiveValue<double>(
+                          context,
+                          defaultValue: size.width * 0.05,
+                          conditionalValues: const [
+                            Condition.equals(name: MOBILE, value: 20.0),
+                            Condition.equals(name: TABLET, value: 25.0),
+                            Condition.equals(name: DESKTOP, value: 30.0),
+                          ],
+                        ).value,
+                    backgroundImage: AssetImage(
+                      characterImagePath.isNotEmpty &&
+                              characterImagePath.contains('assets/')
+                          ? characterImagePath
+                          : 'assets/default.jpg',
+                    ),
+                  ),
+                  SizedBox(
+                    width:
+                        ResponsiveValue<double>(
+                          context,
+                          defaultValue: size.width * 0.03,
+                          conditionalValues: const [
+                            Condition.equals(name: MOBILE, value: 8.0),
+                            Condition.equals(name: TABLET, value: 10.0),
+                            Condition.equals(name: DESKTOP, value: 12.0),
+                          ],
+                        ).value,
+                  ),
+                  Text(
+                    username,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize:
+                          ResponsiveValue<double>(
+                            context,
+                            defaultValue: size.width * 0.045,
+                            conditionalValues: const [
+                              Condition.equals(name: MOBILE, value: 15.0),
+                              Condition.equals(name: TABLET, value: 16.0),
+                              Condition.equals(name: DESKTOP, value: 18.0),
+                            ],
+                          ).value,
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(
-                width:
-                    ResponsiveValue<double>(
-                      context,
-                      defaultValue: size.width * 0.03,
-                      conditionalValues: const [
-                        Condition.equals(name: MOBILE, value: 8.0),
-                        Condition.equals(name: TABLET, value: 10.0),
-                        Condition.equals(name: DESKTOP, value: 12.0),
-                      ],
-                    ).value,
-              ),
-              Text(
-                username,
-                style: TextStyle(
+              PopupMenuButton<String>(
+                icon: Icon(
+                  Icons.settings,
                   color: Colors.black,
-                  fontSize:
+                  size:
                       ResponsiveValue<double>(
                         context,
-                        defaultValue: size.width * 0.045,
+                        defaultValue: size.width * 0.06,
                         conditionalValues: const [
-                          Condition.equals(name: MOBILE, value: 15.0),
-                          Condition.equals(name: TABLET, value: 16.0),
-                          Condition.equals(name: DESKTOP, value: 18.0),
+                          Condition.equals(name: MOBILE, value: 24.0),
+                          Condition.equals(name: TABLET, value: 28.0),
+                          Condition.equals(name: DESKTOP, value: 32.0),
                         ],
                       ).value,
                 ),
+                onSelected: (String value) async {
+                  if (value == 'edit_profile') {
+                    // Navigate to edit profile screen
+                    // Add your navigation logic here
+                  } else if (value == 'logout') {
+                    await _handleLogout(context);
+                  }
+                },
+                itemBuilder:
+                    (BuildContext context) => <PopupMenuEntry<String>>[
+                      const PopupMenuItem<String>(
+                        value: 'edit_profile',
+                        child: Text('Editar Perfil'),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'logout',
+                        child: Text('Cerrar Sesión'),
+                      ),
+                    ],
               ),
             ],
           ),
@@ -286,16 +393,31 @@ class HomeScreen extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final isMobile = ResponsiveBreakpoints.of(context).isMobile;
     final isTablet = ResponsiveBreakpoints.of(context).isTablet;
-    // ignore: unused_local_variable
-    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
-
-    // ignore: unused_local_variable
-    final double scaleFactor = isMobile ? 0.8 : (isTablet ? 1.0 : 1.2);
     final double imageSize =
         size.width * (isMobile ? 0.35 : (isTablet ? 0.4 : 0.45));
 
     return GestureDetector(
-      onTap: isLocked ? null : onTap,
+      onTap:
+          isLocked
+              ? () {
+                showDialog(
+                  context: context,
+                  builder:
+                      (context) => AlertDialog(
+                        title: const Text('Nivel Bloqueado'),
+                        content: Text(
+                          'Completa el nivel anterior para desbloquear $title.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                );
+              }
+              : onTap,
       child: Container(
         height:
             ResponsiveValue<double>(
@@ -308,7 +430,7 @@ class HomeScreen extends StatelessWidget {
               ],
             ).value,
         decoration: BoxDecoration(
-          color: Color(0xFFFFC107),
+          color: const Color(0xFFFFC107),
           borderRadius: BorderRadius.circular(
             ResponsiveValue<double>(
               context,
@@ -338,7 +460,7 @@ class HomeScreen extends StatelessWidget {
                       ],
                     ).value,
               ),
-              onPressed: () {},
+              onPressed: () {}, // Add audio playback if needed
             ),
             Expanded(
               child: Column(
@@ -414,7 +536,7 @@ class HomeScreen extends StatelessWidget {
                             color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 2,
                             blurRadius: 5,
-                            offset: Offset(0, 3),
+                            offset: const Offset(0, 3),
                           ),
                         ],
                       ),

@@ -3,7 +3,11 @@ import 'package:video_player/video_player.dart';
 import 'Oescribe.dart'; // Importación ajustada para Oescribe.dart
 
 class VocalOPage extends StatelessWidget {
-  const VocalOPage({super.key});
+  const VocalOPage({
+    super.key,
+    required String characterImagePath,
+    required String username,
+  });
 
   @override
   Widget build(BuildContext context) {

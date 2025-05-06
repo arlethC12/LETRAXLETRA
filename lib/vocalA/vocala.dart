@@ -3,7 +3,11 @@ import 'package:video_player/video_player.dart';
 import 'escriba.dart'; // Asegúrate de que la ruta sea correcta
 
 class VocalAPage extends StatelessWidget {
-  const VocalAPage({super.key});
+  const VocalAPage({
+    super.key,
+    required String characterImagePath,
+    required String username,
+  });
 
   @override
   Widget build(BuildContext context) {

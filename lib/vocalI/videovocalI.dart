@@ -3,7 +3,11 @@ import 'package:video_player/video_player.dart';
 import 'Iescribe.dart'; // Importación corregida para Iescribe.dart
 
 class VocalIPage extends StatelessWidget {
-  const VocalIPage({super.key});
+  const VocalIPage({
+    super.key,
+    required String characterImagePath,
+    required String username,
+  });
 
   @override
   Widget build(BuildContext context) {

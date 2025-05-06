@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:letra_x_letra/pvocales.dart';
-
-void main() {
-  runApp(const MyApp());
-}
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -12,16 +9,47 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: JaguarWalkingScreen(characterImagePath: 'assets/caminajaguar.jpg'),
+      home: FutureBuilder<Map<String, String>>(
+        future: _loadSavedData(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            final characterImagePath =
+                snapshot.data?['characterImagePath'] ??
+                'assets/caminajaguar.jpg';
+            final username = snapshot.data?['username'] ?? 'invitado';
+            return JaguarWalkingScreen(
+              characterImagePath: characterImagePath,
+              username: username,
+              vowelPath: null, // No vowel selected for initial load
+            );
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      ),
     );
+  }
+
+  Future<Map<String, String>> _loadSavedData() async {
+    final prefs = await SharedPreferences.getInstance();
+    return {
+      'characterImagePath':
+          prefs.getString('characterImagePath') ?? 'assets/caminajaguar.jpg',
+      'username': prefs.getString('username') ?? 'invitado',
+    };
   }
 }
 
 class JaguarWalkingScreen extends StatefulWidget {
   final String characterImagePath;
+  final String username;
+  final String? vowelPath;
 
-  const JaguarWalkingScreen({Key? key, required this.characterImagePath})
-    : super(key: key);
+  const JaguarWalkingScreen({
+    Key? key,
+    required this.characterImagePath,
+    required this.username,
+    this.vowelPath,
+  }) : super(key: key);
 
   @override
   _JaguarWalkingScreenState createState() => _JaguarWalkingScreenState();
@@ -49,6 +77,14 @@ class _JaguarWalkingScreenState extends State<JaguarWalkingScreen>
         });
       }
     });
+
+    _saveData();
+  }
+
+  Future<void> _saveData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('characterImagePath', widget.characterImagePath);
+    await prefs.setString('username', widget.username);
   }
 
   @override
@@ -62,17 +98,15 @@ class _JaguarWalkingScreenState extends State<JaguarWalkingScreen>
     ).animate(_controller);
 
     _controller.forward();
-    // Redirigir después de que la animación termine
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        // Reemplaza la pantalla actual con la nueva
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder:
                 (context) => VowelsScreen(
                   characterImagePath: widget.characterImagePath,
-                  username: 'invitado', // Cambia esto por el nombre del usuario
+                  username: widget.username,
                 ),
           ),
         );
@@ -139,7 +173,7 @@ class _JaguarWalkingScreenState extends State<JaguarWalkingScreen>
                 child: SizedBox(
                   width: 150,
                   child: Image.asset(
-                    widget.characterImagePath,
+                    'assets/caminajaguar.jpg', // Use caminajaguar.jpg during animation
                     fit: BoxFit.contain,
                   ),
                 ),

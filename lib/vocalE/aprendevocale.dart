@@ -3,7 +3,11 @@ import 'package:video_player/video_player.dart';
 import 'Eescribe.dart'; // Asegúrate de que esta importación sea correcta
 
 class VocalEPage extends StatelessWidget {
-  const VocalEPage({super.key});
+  const VocalEPage({
+    super.key,
+    required String characterImagePath,
+    required String username,
+  });
 
   @override
   Widget build(BuildContext context) {

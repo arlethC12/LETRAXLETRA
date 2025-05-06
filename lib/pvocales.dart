@@ -584,27 +584,57 @@ class _VowelsScreenState extends State<VowelsScreen>
                   if (path == "assets/vocalA.jpg") {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => VocalAPage()),
+                      MaterialPageRoute(
+                        builder:
+                            (context) => VocalAPage(
+                              characterImagePath: '',
+                              username: '',
+                            ),
+                      ),
                     );
                   } else if (path == "assets/vocalE.jpg") {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => VocalEPage()),
+                      MaterialPageRoute(
+                        builder:
+                            (context) => VocalEPage(
+                              characterImagePath: '',
+                              username: '',
+                            ),
+                      ),
                     );
                   } else if (path == "assets/vocalI.jpg") {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => VocalIPage()),
+                      MaterialPageRoute(
+                        builder:
+                            (context) => VocalIPage(
+                              characterImagePath: '',
+                              username: '',
+                            ),
+                      ),
                     );
                   } else if (path == "assets/vocalO.jpg") {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => VocalOPage()),
+                      MaterialPageRoute(
+                        builder:
+                            (context) => VocalOPage(
+                              characterImagePath: '',
+                              username: '',
+                            ),
+                      ),
                     );
                   } else if (path == "assets/vocalU.jpg") {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => VocalUPage()),
+                      MaterialPageRoute(
+                        builder:
+                            (context) => VocalUPage(
+                              characterImagePath: '',
+                              username: '',
+                            ),
+                      ),
                     );
                   }
                 },

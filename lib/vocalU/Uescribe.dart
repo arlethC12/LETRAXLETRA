@@ -175,7 +175,11 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const VocalUPage(),
+                          builder:
+                              (context) => const VocalUPage(
+                                characterImagePath: '',
+                                username: '',
+                              ),
                         ),
                       );
                     },
