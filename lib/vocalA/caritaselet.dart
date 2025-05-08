@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart'; // Added for audio playback
 import 'unirimag.dart'; // Importa el archivo unirimag.dart
 import 'selectimagen.dart'; // Importa selectimagen.dart
 
@@ -38,6 +39,14 @@ class _SelectionScreenState extends State<SelectionScreen> {
     {'path': 'assets/bate.jpg', 'hasSmiley': false, 'name': 'bate.jpg'},
     {'path': 'assets/vaca.jpg', 'hasSmiley': false, 'name': 'vaca.jpg'},
   ];
+
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Added for audio playback
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose(); // Dispose audio player
+    super.dispose();
+  }
 
   void _toggleSmiley(int index) {
     String imageName = gridItems[index]['name'] ?? '';
@@ -114,7 +123,14 @@ class _SelectionScreenState extends State<SelectionScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.volume_up, color: Colors.black, size: 24),
+                  IconButton(
+                    icon: Icon(Icons.volume_up, color: Colors.black, size: 24),
+                    onPressed: () async {
+                      await _audioPlayer.play(
+                        AssetSource('audios/VocalA/Di el nombre de cada.m4a'),
+                      ); // Play audio
+                    },
+                  ),
                   SizedBox(width: 8),
                   Flexible(
                     child: Text(

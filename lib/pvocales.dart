@@ -7,12 +7,18 @@ import 'vocalE/aprendevocale.dart';
 import 'vocalI/videovocalI.dart';
 import 'vocalO/videovocalO.dart';
 import 'niveles.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class VowelsScreen extends StatefulWidget {
   final String characterImagePath;
   final String username;
 
-  VowelsScreen({required this.characterImagePath, required this.username});
+  const VowelsScreen({
+    Key? key,
+    required this.characterImagePath,
+    required this.username,
+  }) : super(key: key);
 
   @override
   _VowelsScreenState createState() => _VowelsScreenState();
@@ -29,6 +35,8 @@ class _VowelsScreenState extends State<VowelsScreen>
   int _currentFootprintIndex = 0;
   late Timer _timer;
 
+  String _subjectName = "Cargando..."; // Placeholder for subject name
+
   void _onVowelPressed(String path) {
     setState(() {
       _sizes.keys.forEach((key) {
@@ -40,6 +48,10 @@ class _VowelsScreenState extends State<VowelsScreen>
   @override
   void initState() {
     super.initState();
+    // Log para depurar los datos recibidos
+    print(
+      'VowelsScreen: Initialized with - characterImagePath: ${widget.characterImagePath}, username: ${widget.username}',
+    );
 
     _baseSize = 0;
     _enlargedSize = 0;
@@ -67,6 +79,45 @@ class _VowelsScreenState extends State<VowelsScreen>
         });
       }
     });
+
+    _fetchSubject(); // Fetch subject data on initialization
+  }
+
+  // Fetch subject data from backend
+  Future<void> _fetchSubject() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://192.168.1.69:3000/materias/1'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          // Expecting an array response from the backend
+          if (data is List && data.isNotEmpty) {
+            _subjectName = data[0]['nombre'] ?? 'Español';
+          } else if (data is Map) {
+            _subjectName = data['nombre'] ?? 'Español';
+          } else {
+            _subjectName = 'Español'; // Fallback if response is unexpected
+          }
+          print('VowelsScreen: Subject fetched - $_subjectName');
+        });
+      } else {
+        print(
+          'VowelsScreen: API Error - Status Code ${response.statusCode}, Body: ${response.body}',
+        );
+        setState(() {
+          _subjectName = 'Español'; // Fallback to default subject name on error
+        });
+      }
+    } catch (e) {
+      print('VowelsScreen: Exception fetching subject - $e');
+      setState(() {
+        _subjectName =
+            'Español'; // Fallback to default subject name on exception
+      });
+    }
   }
 
   @override
@@ -162,7 +213,11 @@ class _VowelsScreenState extends State<VowelsScreen>
                           Condition.equals(name: DESKTOP, value: 35.0),
                         ],
                       ).value,
-                  backgroundImage: AssetImage(widget.characterImagePath),
+                  backgroundImage: AssetImage(
+                    widget.characterImagePath.isNotEmpty
+                        ? widget.characterImagePath
+                        : 'assets/caminajaguar.jpg',
+                  ),
                 ),
                 SizedBox(
                   width:
@@ -177,7 +232,7 @@ class _VowelsScreenState extends State<VowelsScreen>
                       ).value,
                 ),
                 Text(
-                  widget.username,
+                  widget.username.isNotEmpty ? widget.username : 'invitado',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize:
@@ -363,6 +418,9 @@ class _VowelsScreenState extends State<VowelsScreen>
           ],
           onTap: (index) {
             if (index == 2) {
+              print(
+                'VowelsScreen: Navigating to Niveles with - characterImagePath: ${widget.characterImagePath}, username: ${widget.username}',
+              );
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -412,11 +470,11 @@ class _VowelsScreenState extends State<VowelsScreen>
             horizontal:
                 ResponsiveValue<double>(
                   context,
-                  defaultValue: size.width * 0.04,
+                  defaultValue: size.width * 0.02,
                   conditionalValues: const [
-                    Condition.equals(name: MOBILE, value: 20.0),
-                    Condition.equals(name: TABLET, value: 25.0),
-                    Condition.equals(name: DESKTOP, value: 30.0),
+                    Condition.equals(name: MOBILE, value: 10.0),
+                    Condition.equals(name: TABLET, value: 15.0),
+                    Condition.equals(name: DESKTOP, value: 20.0),
                   ],
                 ).value,
           ),
@@ -424,11 +482,11 @@ class _VowelsScreenState extends State<VowelsScreen>
             horizontal:
                 ResponsiveValue<double>(
                   context,
-                  defaultValue: size.width * 0.05,
+                  defaultValue: size.width * 0.03,
                   conditionalValues: const [
-                    Condition.equals(name: MOBILE, value: 25.0),
-                    Condition.equals(name: TABLET, value: 30.0),
-                    Condition.equals(name: DESKTOP, value: 50.0),
+                    Condition.equals(name: MOBILE, value: 15.0),
+                    Condition.equals(name: TABLET, value: 20.0),
+                    Condition.equals(name: DESKTOP, value: 30.0),
                   ],
                 ).value,
           ),
@@ -449,64 +507,68 @@ class _VowelsScreenState extends State<VowelsScreen>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Unidad 1, Sección 1",
-                    style: TextStyle(
-                      fontSize:
-                          ResponsiveValue<double>(
-                            context,
-                            defaultValue: size.width * 0.045,
-                            conditionalValues: const [
-                              Condition.equals(name: MOBILE, value: 18.0),
-                              Condition.equals(name: TABLET, value: 20.0),
-                              Condition.equals(name: DESKTOP, value: 22.0),
-                            ],
-                          ).value,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "$_subjectName: Unidad 1, Sección 1",
+                      style: TextStyle(
+                        fontSize:
+                            ResponsiveValue<double>(
+                              context,
+                              defaultValue: size.width * 0.045,
+                              conditionalValues: const [
+                                Condition.equals(name: MOBILE, value: 16.0),
+                                Condition.equals(name: TABLET, value: 18.0),
+                                Condition.equals(name: DESKTOP, value: 20.0),
+                              ],
+                            ).value,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  Text(
-                    "Vocales",
-                    style: TextStyle(
-                      fontSize:
-                          ResponsiveValue<double>(
-                            context,
-                            defaultValue: size.width * 0.045,
-                            conditionalValues: const [
-                              Condition.equals(name: MOBILE, value: 18.0),
-                              Condition.equals(name: TABLET, value: 20.0),
-                              Condition.equals(name: DESKTOP, value: 22.0),
-                            ],
-                          ).value,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                    Text(
+                      "Vocales",
+                      style: TextStyle(
+                        fontSize:
+                            ResponsiveValue<double>(
+                              context,
+                              defaultValue: size.width * 0.045,
+                              conditionalValues: const [
+                                Condition.equals(name: MOBILE, value: 16.0),
+                                Condition.equals(name: TABLET, value: 18.0),
+                                Condition.equals(name: DESKTOP, value: 20.0),
+                              ],
+                            ).value,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               Container(
                 width:
                     ResponsiveValue<double>(
                       context,
-                      defaultValue: size.width * 0.12,
+                      defaultValue: size.width * 0.08,
                       conditionalValues: const [
-                        Condition.equals(name: MOBILE, value: 50.0),
-                        Condition.equals(name: TABLET, value: 60.0),
-                        Condition.equals(name: DESKTOP, value: 70.0),
+                        Condition.equals(name: MOBILE, value: 40.0),
+                        Condition.equals(name: TABLET, value: 50.0),
+                        Condition.equals(name: DESKTOP, value: 60.0),
                       ],
                     ).value,
                 height:
                     ResponsiveValue<double>(
                       context,
-                      defaultValue: size.width * 0.12,
+                      defaultValue: size.width * 0.08,
                       conditionalValues: const [
-                        Condition.equals(name: MOBILE, value: 50.0),
-                        Condition.equals(name: TABLET, value: 60.0),
-                        Condition.equals(name: DESKTOP, value: 70.0),
+                        Condition.equals(name: MOBILE, value: 40.0),
+                        Condition.equals(name: TABLET, value: 50.0),
+                        Condition.equals(name: DESKTOP, value: 60.0),
                       ],
                     ).value,
                 decoration: BoxDecoration(
@@ -581,14 +643,17 @@ class _VowelsScreenState extends State<VowelsScreen>
               child: GestureDetector(
                 onTap: () {
                   _onVowelPressed(path);
+                  print(
+                    'VowelsScreen: Navigating to vowel page for $path with - characterImagePath: ${widget.characterImagePath}, username: ${widget.username}',
+                  );
                   if (path == "assets/vocalA.jpg") {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder:
                             (context) => VocalAPage(
-                              characterImagePath: '',
-                              username: '',
+                              characterImagePath: widget.characterImagePath,
+                              username: widget.username,
                             ),
                       ),
                     );
@@ -598,8 +663,8 @@ class _VowelsScreenState extends State<VowelsScreen>
                       MaterialPageRoute(
                         builder:
                             (context) => VocalEPage(
-                              characterImagePath: '',
-                              username: '',
+                              characterImagePath: widget.characterImagePath,
+                              username: widget.username,
                             ),
                       ),
                     );
@@ -609,8 +674,8 @@ class _VowelsScreenState extends State<VowelsScreen>
                       MaterialPageRoute(
                         builder:
                             (context) => VocalIPage(
-                              characterImagePath: '',
-                              username: '',
+                              characterImagePath: widget.characterImagePath,
+                              username: widget.username,
                             ),
                       ),
                     );
@@ -620,8 +685,8 @@ class _VowelsScreenState extends State<VowelsScreen>
                       MaterialPageRoute(
                         builder:
                             (context) => VocalOPage(
-                              characterImagePath: '',
-                              username: '',
+                              characterImagePath: widget.characterImagePath,
+                              username: widget.username,
                             ),
                       ),
                     );
@@ -631,8 +696,8 @@ class _VowelsScreenState extends State<VowelsScreen>
                       MaterialPageRoute(
                         builder:
                             (context) => VocalUPage(
-                              characterImagePath: '',
-                              username: '',
+                              characterImagePath: widget.characterImagePath,
+                              username: widget.username,
                             ),
                       ),
                     );

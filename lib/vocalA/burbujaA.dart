@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:audioplayers/audioplayers.dart'; // Added for audio playback
 import 'nivellogrado.dart';
 import 'unirimag.dart';
 
@@ -25,6 +26,14 @@ class _BubbleScreenState extends State<BubbleScreen>
   int poppedAs = 0;
   int totalAs = 0;
   late AnimationController _floatController;
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Added for audio playback
+
+  @override
+  void dispose() {
+    _floatController.dispose();
+    _audioPlayer.dispose(); // Dispose audio player
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -87,12 +96,6 @@ class _BubbleScreenState extends State<BubbleScreen>
         totalAs++;
       }
     }
-  }
-
-  @override
-  void dispose() {
-    _floatController.dispose();
-    super.dispose();
   }
 
   void popBubble(int index) {
@@ -187,7 +190,14 @@ class _BubbleScreenState extends State<BubbleScreen>
               left: 20,
               child: Row(
                 children: [
-                  Icon(Icons.volume_up, color: Colors.black, size: 24),
+                  IconButton(
+                    icon: Icon(Icons.volume_up, color: Colors.black, size: 24),
+                    onPressed: () async {
+                      await _audioPlayer.play(
+                        AssetSource('audios/VocalA/Explota las burbujas.m4a'),
+                      ); // Play audio
+                    },
+                  ),
                   SizedBox(width: 8),
                   Text(
                     'Explota las burbujas de la letra a',

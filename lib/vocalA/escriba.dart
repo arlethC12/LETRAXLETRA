@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart'; // Added for audio playback
 import 'compalabra.dart'; // Asegúrate de que compalabra.dart esté en la misma carpeta o ajusta la ruta
 import 'vocala.dart'; // Importa vocala.dart (ajusta la ruta si es necesario)
 
@@ -43,6 +44,13 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
   bool isUpperCase = true;
   bool isUpperCaseCompleted = false; // Track uppercase A completion
   bool isLowerCaseCompleted = false; // Track lowercase a completion
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Added for audio playback
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose(); // Dispose audio player
+    super.dispose();
+  }
 
   // Regiones clave para la "A" mayúscula
   List<Rect> getKeyRegionsForUpperCaseA(Size canvasSize) {
@@ -189,7 +197,14 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  const Icon(Icons.volume_up, color: Colors.black),
+                  IconButton(
+                    icon: const Icon(Icons.volume_up, color: Colors.black),
+                    onPressed: () async {
+                      await _audioPlayer.play(
+                        AssetSource('audios/VocalA/Escribe la letra A.m4a'),
+                      ); // Play audio
+                    },
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'Escribe la letra ${isUpperCase ? "A" : "a"}',

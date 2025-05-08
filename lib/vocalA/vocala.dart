@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:audioplayers/audioplayers.dart'; // Added for audio playback
 import 'escriba.dart'; // Asegúrate de que la ruta sea correcta
 
 class VocalAPage extends StatelessWidget {
@@ -26,6 +27,7 @@ class _WriteScreenState extends State<WriteScreen> {
   late VideoPlayerController _videoController;
   late Future<void> _initializeVideoPlayerFuture;
   bool _isVideoCompleted = false;
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Added for audio playback
 
   @override
   void initState() {
@@ -51,6 +53,7 @@ class _WriteScreenState extends State<WriteScreen> {
   void dispose() {
     _videoController.removeListener(_videoListener);
     _videoController.dispose();
+    _audioPlayer.dispose(); // Dispose audio player
     super.dispose();
   }
 
@@ -103,8 +106,10 @@ class _WriteScreenState extends State<WriteScreen> {
                       color: Colors.black87,
                       size: 40,
                     ),
-                    onPressed: () {
-                      // Función para reproducir sonido si deseas agregarla
+                    onPressed: () async {
+                      await _audioPlayer.play(
+                        AssetSource('audios/VocalA/Como se escribe la A.m4a'),
+                      ); // Updated path
                     },
                   ),
                   const Text(

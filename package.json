@@ -2,16 +2,12 @@
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
-<<<<<<< HEAD
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-=======
->>>>>>> 2f1f3736f73cbf82567e522060857f818645f49a
     "express-rate-limit": "^7.5.0",
     "express-validator": "^7.2.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-<<<<<<< HEAD
     "pg": "^8.15.6"
   },
   "name": "letraxletra-1",
@@ -37,8 +33,4 @@
     "url": "https://github.com/arlethC12/LETRAXLETRA/issues"
   },
   "homepage": "https://github.com/arlethC12/LETRAXLETRA#readme"
-=======
-    "winston": "^3.17.0"
-  }
->>>>>>> 2f1f3736f73cbf82567e522060857f818645f49a
 }

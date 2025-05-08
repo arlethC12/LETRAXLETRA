@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart'; // Added for audio playback
 import 'selectimagen.dart'; // Importa selectimagen.dart
 
 class CompalabraScreen extends StatelessWidget {
@@ -16,6 +17,13 @@ class LessonScreen extends StatefulWidget {
 class _LessonScreenState extends State<LessonScreen> {
   String? selectedLetter;
   bool isCorrect = false;
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Added for audio playback
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose(); // Dispose audio player
+    super.dispose();
+  }
 
   void checkAnswer(String letter) {
     setState(() {
@@ -74,7 +82,13 @@ class _LessonScreenState extends State<LessonScreen> {
                     children: [
                       IconButton(
                         icon: Icon(Icons.volume_up, size: 30),
-                        onPressed: () {},
+                        onPressed: () async {
+                          await _audioPlayer.play(
+                            AssetSource(
+                              'audios/VocalA/Arrastre la letra y .m4a',
+                            ),
+                          ); // Play audio
+                        },
                       ),
                       SizedBox(width: 10),
                       Flexible(

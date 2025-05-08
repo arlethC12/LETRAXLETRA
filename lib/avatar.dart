@@ -3,6 +3,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'dart:async';
 import 'niveles.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -303,7 +304,17 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   void initState() {
     super.initState();
+    _saveData();
     _startLoading();
+  }
+
+  Future<void> _saveData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('characterImagePath', widget.imagePath);
+    await prefs.setString('username', widget.nombre);
+    print(
+      'LoadingScreen: Saved data - characterImagePath: ${widget.imagePath}, username: ${widget.nombre}',
+    );
   }
 
   void _startLoading() {
@@ -314,7 +325,9 @@ class _LoadingScreenState extends State<LoadingScreen> {
         if (_progress >= 1.0) {
           timer.cancel();
           _progress = 1.0;
-
+          print(
+            'LoadingScreen: Navigating to Niveles with - characterImagePath: ${widget.imagePath}, username: ${widget.nombre}',
+          );
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(

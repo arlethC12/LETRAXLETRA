@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart'; // Added for audio playback
 import 'burbujaA.dart'; // Importación del archivo burbujaA
 import 'caritaselet.dart'; // Importación del archivo caritaselet
 
@@ -33,6 +34,13 @@ class _MatchingScreenState extends State<MatchingScreen> {
 
   Map<int, int> connections = {};
   int? selectedEmojiIndex;
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Added for audio playback
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose(); // Dispose audio player
+    super.dispose();
+  }
 
   // Verificar si todas las uniones están completas
   bool get _isLessonComplete {
@@ -96,7 +104,14 @@ class _MatchingScreenState extends State<MatchingScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.volume_up, color: Colors.black, size: 24),
+                  IconButton(
+                    icon: Icon(Icons.volume_up, color: Colors.black, size: 24),
+                    onPressed: () async {
+                      await _audioPlayer.play(
+                        AssetSource('audios/VocalA/Une con una línea lo.m4a'),
+                      ); // Play audio
+                    },
+                  ),
                   SizedBox(width: 8),
                   Flexible(
                     child: Text(

@@ -185,7 +185,11 @@ class _LevelCompleteScreenState extends State<LevelCompleteScreen>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => MyApp(),
+                          builder:
+                              (context) => JaguarWalkingScreen(
+                                characterImagePath: '',
+                                username: '',
+                              ),
                         ), // Redirige a CargarJaguarScreen
                       );
                     },

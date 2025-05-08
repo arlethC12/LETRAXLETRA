@@ -102,6 +102,38 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  // Show popup menu for profile options
+  void _showProfileMenu(BuildContext context, Offset position) {
+    final RenderBox overlay =
+        Overlay.of(context)!.context.findRenderObject() as RenderBox;
+    showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        position.dx,
+        position.dy,
+        overlay.size.width - position.dx,
+        overlay.size.height - position.dy,
+      ),
+      items: <PopupMenuEntry<String>>[
+        const PopupMenuItem<String>(
+          value: 'edit_profile',
+          child: Text('Editar Perfil'),
+        ),
+        const PopupMenuItem<String>(
+          value: 'logout',
+          child: Text('Cerrar Sesión'),
+        ),
+      ],
+    ).then((String? value) async {
+      if (value == 'edit_profile') {
+        // Navigate to edit profile screen
+        // Add your navigation logic here
+      } else if (value == 'logout') {
+        await _handleLogout(context);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -134,22 +166,27 @@ class HomeScreen extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  CircleAvatar(
-                    radius:
-                        ResponsiveValue<double>(
-                          context,
-                          defaultValue: size.width * 0.05,
-                          conditionalValues: const [
-                            Condition.equals(name: MOBILE, value: 20.0),
-                            Condition.equals(name: TABLET, value: 25.0),
-                            Condition.equals(name: DESKTOP, value: 30.0),
-                          ],
-                        ).value,
-                    backgroundImage: AssetImage(
-                      characterImagePath.isNotEmpty &&
-                              characterImagePath.contains('assets/')
-                          ? characterImagePath
-                          : 'assets/default.jpg',
+                  GestureDetector(
+                    onTapDown: (TapDownDetails details) {
+                      _showProfileMenu(context, details.globalPosition);
+                    },
+                    child: CircleAvatar(
+                      radius:
+                          ResponsiveValue<double>(
+                            context,
+                            defaultValue: size.width * 0.05,
+                            conditionalValues: const [
+                              Condition.equals(name: MOBILE, value: 20.0),
+                              Condition.equals(name: TABLET, value: 25.0),
+                              Condition.equals(name: DESKTOP, value: 30.0),
+                            ],
+                          ).value,
+                      backgroundImage: AssetImage(
+                        characterImagePath.isNotEmpty &&
+                                characterImagePath.contains('assets/')
+                            ? characterImagePath
+                            : 'assets/default.jpg',
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -181,41 +218,6 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
-              PopupMenuButton<String>(
-                icon: Icon(
-                  Icons.settings,
-                  color: Colors.black,
-                  size:
-                      ResponsiveValue<double>(
-                        context,
-                        defaultValue: size.width * 0.06,
-                        conditionalValues: const [
-                          Condition.equals(name: MOBILE, value: 24.0),
-                          Condition.equals(name: TABLET, value: 28.0),
-                          Condition.equals(name: DESKTOP, value: 32.0),
-                        ],
-                      ).value,
-                ),
-                onSelected: (String value) async {
-                  if (value == 'edit_profile') {
-                    // Navigate to edit profile screen
-                    // Add your navigation logic here
-                  } else if (value == 'logout') {
-                    await _handleLogout(context);
-                  }
-                },
-                itemBuilder:
-                    (BuildContext context) => <PopupMenuEntry<String>>[
-                      const PopupMenuItem<String>(
-                        value: 'edit_profile',
-                        child: Text('Editar Perfil'),
-                      ),
-                      const PopupMenuItem<String>(
-                        value: 'logout',
-                        child: Text('Cerrar Sesión'),
-                      ),
-                    ],
               ),
             ],
           ),

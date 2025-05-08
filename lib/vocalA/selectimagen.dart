@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart'; // Added for audio playback
 import 'caritaselet.dart'; // Importar el archivo de la nueva pantalla
 import 'compalabra.dart'; // Importar el archivo de la pantalla anterior
 
@@ -24,6 +25,13 @@ class SelectionScreen extends StatefulWidget {
 class _SelectionScreenState extends State<SelectionScreen> {
   String? selectedImage;
   final String correctImage = 'abeja.jpg';
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Added for audio playback
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose(); // Dispose audio player
+    super.dispose();
+  }
 
   void _onImageTap(String imageName) {
     setState(() {
@@ -95,7 +103,16 @@ class _SelectionScreenState extends State<SelectionScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.volume_up, color: Colors.black),
+                    IconButton(
+                      icon: Icon(Icons.volume_up, color: Colors.black),
+                      onPressed: () async {
+                        await _audioPlayer.play(
+                          AssetSource(
+                            'audios/VocalA/Sonido Zumbido de Abeja (mp3cut.net).mp3',
+                          ),
+                        ); // Play audio
+                      },
+                    ),
                     SizedBox(width: 8),
                     Text('abeja', style: TextStyle(fontSize: 18)),
                   ],

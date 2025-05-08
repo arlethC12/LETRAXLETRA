@@ -169,11 +169,19 @@ flutter:
     - assets/audios/edad.mp3
     - assets/audios/telefono.mp3
     - assets/audios/avatar.mp3
+    - assets/audios/VocalA/Arrastre la letra y .m4a
+    - assets/audios/VocalA/Como se escribe la A.m4a
+    - assets/audios/VocalA/Di el nombre de cada.m4a
+    - assets/audios/VocalA/Escribe la letra A.m4a
+    - assets/audios/VocalA/Explota las burbujas.m4a
+    - assets/audios/VocalA/Sonido Zumbido de Abeja (mp3cut.net).mp3
+    - assets/audios/VocalA/Une con una línea lo.m4a
     - assets/videos/videoletraA.mp4
     - assets/videos/videoletraE.mp4
     - assets/videos/videoletraI.mp4
     - assets/videos/videoletraO.mp4
     - assets/videos/videoletraU.mp4
+   
 
   
    
