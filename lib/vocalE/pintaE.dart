@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart'; // Importa el paquete audioplayers
 import 'burbujaE.dart'; // Importa el archivo burbujaE.dart
 
 void main() {
@@ -35,6 +36,7 @@ class _LetterColoringScreenState extends State<LetterColoringScreen> {
   late List<List<bool>> isColored;
   late List<List<double>> coloringProgress; // Progreso de coloreado
   bool allColored = false;
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Instancia de AudioPlayer
 
   @override
   void initState() {
@@ -47,6 +49,23 @@ class _LetterColoringScreenState extends State<LetterColoringScreen> {
       letters.length,
       (i) => List.generate(letters[i].length, (j) => 0.0),
     );
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose(); // Libera los recursos del reproductor
+    super.dispose();
+  }
+
+  // Función para reproducir el audio
+  Future<void> _playAudio() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalE/selecciona el círcul.mp3'),
+      );
+    } catch (e) {
+      print('Error al reproducir el audio: $e');
+    }
   }
 
   void checkAllColored() {
@@ -90,13 +109,39 @@ class _LetterColoringScreenState extends State<LetterColoringScreen> {
                 ],
               ),
             ),
-            // Instruction text
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(
-                'Selecciona la letra mayúscula y minúscula\npintando el color que corresponde',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
+            // Instruction text with speaker icon
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.volume_up,
+                      color: Colors.black,
+                      size: 30,
+                    ),
+                    onPressed: _playAudio, // Reproduce el audio al presionar
+                  ),
+                  const SizedBox(width: 4), // Espacio entre el ícono y el texto
+                  Flexible(
+                    child: Text(
+                      'Selecciona la letra mayúscula y minúscula pintando el color que corresponde',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 14, // Tamaño ajustado
+                        color: Colors.black,
+                      ),
+                      maxLines: 2, // Permite hasta 2 líneas
+                      overflow:
+                          TextOverflow.ellipsis, // Maneja el desbordamiento
+                    ),
+                  ),
+                ],
               ),
             ),
             // Image at the top

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart'; // Importa el paquete audioplayers
 import 'package:letra_x_letra/vocalI/llenacasita.dart'; // Importa llenacasita.dart (contiene LlenaCasitaScreen)
 import 'package:letra_x_letra/vocalI/palabra.dart'; // Importa palabra.dart (contiene PalabraScreen)
 
@@ -22,6 +23,24 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
     'middle': false,
     'bottom': false,
   };
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Instancia de AudioPlayer
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose(); // Libera los recursos del reproductor
+    super.dispose();
+  }
+
+  // Función para reproducir el audio
+  Future<void> _playAudio() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalI/toca las piezas del .m4a'),
+      );
+    } catch (e) {
+      print('Error al reproducir el audio: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,9 +86,35 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
               ],
             ),
             SizedBox(height: 20),
-            Text(
-              'Arma el siguiente rompecabezas',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.volume_up,
+                      color: Colors.black,
+                      size: 24,
+                    ),
+                    onPressed: _playAudio, // Reproduce el audio al presionar
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      'Arma el siguiente rompecabezas',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 2, // Permite hasta 2 líneas
+                      overflow:
+                          TextOverflow.ellipsis, // Maneja el desbordamiento
+                    ),
+                  ),
+                ],
+              ),
             ),
             SizedBox(height: 20),
             Expanded(

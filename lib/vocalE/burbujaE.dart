@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:audioplayers/audioplayers.dart'; // Importa el paquete audioplayers
 import 'nivel2.dart'; // Importa el archivo nivel2.dart
 
 void main() {
@@ -24,6 +25,7 @@ class _BubbleScreenState extends State<BubbleScreen>
   int poppedEs = 0;
   int totalEs = 0;
   late AnimationController _floatController;
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Instancia de AudioPlayer
 
   @override
   void initState() {
@@ -91,7 +93,19 @@ class _BubbleScreenState extends State<BubbleScreen>
   @override
   void dispose() {
     _floatController.dispose();
+    _audioPlayer.dispose(); // Libera los recursos del reproductor
     super.dispose();
+  }
+
+  // Función para reproducir el audio
+  Future<void> _playAudio() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalE/Explota las burbujas.mp3'),
+      );
+    } catch (e) {
+      print('Error al reproducir el audio: $e');
+    }
   }
 
   void popBubble(int index) {
@@ -179,19 +193,37 @@ class _BubbleScreenState extends State<BubbleScreen>
             Positioned(
               top: 60,
               left: 20,
-              child: Row(
-                children: [
-                  Icon(Icons.volume_up, color: Colors.black, size: 24),
-                  SizedBox(width: 8),
-                  Text(
-                    'Explota las burbujas de la letra e',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+              right: 20,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        Icons.volume_up,
+                        color: Colors.black,
+                        size: 24,
+                      ),
+                      onPressed: _playAudio, // Reproduce el audio al presionar
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        'Explota las burbujas de la letra E',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                        maxLines: 2, // Permite hasta 2 líneas
+                        overflow:
+                            TextOverflow.ellipsis, // Maneja el desbordamiento
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             for (int i = 0; i < bubbles.length; i++)

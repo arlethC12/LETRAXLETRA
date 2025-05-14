@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'caminooveja.dart'; // Importa caminooveja.dart
-import 'Oescribe.dart'; // Importa Oescribe.dart
+import 'caminooveja.dart';
+import 'Oescribe.dart';
+import 'package:audioplayers/audioplayers.dart'; // Importar audioplayers
 
 void main() {
   runApp(selectimagenO());
@@ -9,10 +10,7 @@ void main() {
 class selectimagenO extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false, // Quita la etiqueta de debug
-      home: GameScreen(),
-    );
+    return MaterialApp(debugShowCheckedModeBanner: false, home: GameScreen());
   }
 }
 
@@ -24,7 +22,7 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   // Lista de emojis y su estado (seleccionado o no)
   List<Map<String, dynamic>> emojis = [
-    {'emoji': '🐻', 'startsWithO': true, 'selected': false}, //oso
+    {'emoji': '🐻', 'startsWithO': true, 'selected': false}, // Oso
     {'emoji': '✏️', 'startsWithO': false, 'selected': false},
     {'emoji': '💻', 'startsWithO': false, 'selected': false},
     {'emoji': '🐑', 'startsWithO': true, 'selected': false}, // Oveja
@@ -35,6 +33,24 @@ class _GameScreenState extends State<GameScreen> {
   ];
 
   bool showNextButton = false;
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Instancia de AudioPlayer
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose(); // Liberar recursos del audio
+    super.dispose();
+  }
+
+  // Función para reproducir el audio
+  Future<void> _playAudio() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalO/rodea con un circulo.m4a'),
+      );
+    } catch (e) {
+      print('Error al reproducir el audio: $e');
+    }
+  }
 
   // Verifica si todos los emojis que empiezan con "O" están seleccionados
   void checkCompletion() {
@@ -66,7 +82,6 @@ class _GameScreenState extends State<GameScreen> {
                   IconButton(
                     icon: Icon(Icons.close, color: Colors.black),
                     onPressed: () {
-                      // Navegar a Oescribe.dart
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => OescribePage()),
@@ -75,30 +90,43 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                   Expanded(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(
-                        12,
-                      ), // Bordes redondeados
+                      borderRadius: BorderRadius.circular(12),
                       child: LinearProgressIndicator(
-                        value: 0.3, // Valor fijo para la barra de progreso
+                        value: 0.3,
                         backgroundColor: Colors.grey[300],
                         valueColor: AlwaysStoppedAnimation<Color>(
                           Colors.orange,
-                        ), // Color naranja
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            // Texto de instrucción
+            // Texto de instrucción con ícono de bocina
             Positioned(
               top: 60,
               left: 20,
               right: 20,
-              child: Text(
-                'Rodea con un círculo las figuras que empiecen con la letra O',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.volume_up, color: Colors.black, size: 24),
+                    onPressed: _playAudio, // Reproducir audio al presionar
+                  ),
+                  SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      'Rodea con un círculo las figuras que empiecen con la letra O',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
               ),
             ),
             // Grid de emojis
@@ -150,17 +178,13 @@ class _GameScreenState extends State<GameScreen> {
                 right: 20,
                 child: FloatingActionButton(
                   onPressed: () {
-                    // Navegar a caminooveja.dart
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => CaminoOveja()),
                     );
                   },
-                  child: Icon(
-                    Icons.arrow_forward, // Flecha hacia la derecha
-                    color: Colors.white, // Flecha blanca
-                  ),
-                  backgroundColor: Colors.orange, // Botón naranja
+                  child: Icon(Icons.arrow_forward, color: Colors.white),
+                  backgroundColor: Colors.orange,
                 ),
               ),
           ],

@@ -107,6 +107,7 @@ class _JaguarWalkingScreenState extends State<JaguarWalkingScreen>
                 (context) => VowelsScreen(
                   characterImagePath: widget.characterImagePath,
                   username: widget.username,
+                  token: '',
                 ),
           ),
         );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart'; // Importa el paquete audioplayers
 import 'package:letra_x_letra/vocalI/pintai.dart'; // Importa pintai.dart (contiene ColorPuzzleScreen)
 import 'package:letra_x_letra/vocalI/videovocalI.dart'; // Importa videovocalI.dart
 
@@ -34,6 +35,24 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
   bool isUpperCase = true;
   bool isUpperCaseCompleted = false; // Track uppercase I completion
   bool isLowerCaseCompleted = false; // Track lowercase i completion
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Instancia de AudioPlayer
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose(); // Libera los recursos del reproductor
+    super.dispose();
+  }
+
+  // Función para reproducir el audio
+  Future<void> _playAudio() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalI/Escribe la letra I .m4a'),
+      );
+    } catch (e) {
+      print('Error al reproducir el audio: $e');
+    }
+  }
 
   // Regiones clave para la "I" mayúscula
   List<Rect> getKeyRegionsForUpperCaseI(Size canvasSize) {
@@ -208,14 +227,31 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
 
             // Instrucción
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Icon(Icons.volume_up, color: Colors.black),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.volume_up,
+                      color: Colors.black,
+                      size: 24,
+                    ),
+                    onPressed: _playAudio, // Reproduce el audio al presionar
+                  ),
                   const SizedBox(width: 8),
-                  Text(
-                    'Escribe la letra ${isUpperCase ? "I" : "i"}',
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                  Flexible(
+                    child: Text(
+                      'Escribe la letra ${isUpperCase ? "I" : "i"}',
+                      style: const TextStyle(fontSize: 16, color: Colors.black),
+                      maxLines: 2, // Permite hasta 2 líneas
+                      overflow:
+                          TextOverflow.ellipsis, // Maneja el desbordamiento
+                    ),
                   ),
                 ],
               ),

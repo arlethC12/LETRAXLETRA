@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:letra_x_letra/vocalO/seleccionaimagen.dart';
 import 'package:letra_x_letra/vocalO/unirpieza.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 void main() {
   runApp(CaminoOveja());
@@ -20,17 +21,17 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen>
     with SingleTickerProviderStateMixin {
-  List<Offset> points = []; // Lista para almacenar los puntos de la línea
+  List<Offset> points = [];
   bool isDrawing = false;
-  bool showSheepAtGrass =
-      false; // Controla la aparición de la oveja en el pasto
-  bool showSmallSheep = true; // Controla la visibilidad de las ovejas pequeñas
-  bool showNextButton = false; // Controla la aparición del botón con flecha
-  bool isGameCompleted = false; // Controla el estado del juego
-  Offset sheepPosition = Offset.zero; // Posición actual de las ovejas pequeñas
+  bool showSheepAtGrass = false;
+  bool showSmallSheep = true;
+  bool showNextButton = false;
+  bool isGameCompleted = false;
+  Offset sheepPosition = Offset.zero;
   AnimationController? _controller;
   Animation<double>? _animation;
   int currentPointIndex = 0;
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Audio player instance
 
   @override
   void initState() {
@@ -60,15 +61,18 @@ class _GameScreenState extends State<GameScreen>
                 showSmallSheep = false;
                 showSheepAtGrass = true;
                 showNextButton = true;
-                isGameCompleted = true; // Marca el juego como completado
+                isGameCompleted = true;
               });
             }
           });
+    // Play audio on init
+    _playAudio();
   }
 
   @override
   void dispose() {
     _controller?.dispose();
+    _audioPlayer.dispose(); // Dispose audio player
     super.dispose();
   }
 
@@ -81,15 +85,29 @@ class _GameScreenState extends State<GameScreen>
     }
   }
 
+  // Function to play audio
+  Future<void> _playAudio() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalO/Traza la línea para .m4a'),
+      );
+    } catch (e) {
+      print('Error playing audio: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error playing audio: $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Stack(
           children: [
-            // Barra de progreso y "X"
+            // Barra de progreso y "X" (adjusted top position)
             Positioned(
-              top: 10,
+              top: 20, // Increased from 10 to 20
               left: 10,
               right: 10,
               child: Row(
@@ -126,7 +144,7 @@ class _GameScreenState extends State<GameScreen>
                       child: const Icon(
                         Icons.close,
                         color: Colors.black,
-                        size: 30, // Tamaño reducido de la "X"
+                        size: 30,
                       ),
                     ),
                   ),
@@ -139,26 +157,36 @@ class _GameScreenState extends State<GameScreen>
                         valueColor: const AlwaysStoppedAnimation<Color>(
                           Colors.orange,
                         ),
-                        minHeight:
-                            10, // Barra de progreso más ancha (altura aumentada)
+                        minHeight: 10,
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            // Texto de instrucción
-            const Positioned(
-              top: 60,
+            // Texto de instrucción con ícono de audio (adjusted top position)
+            Positioned(
+              top: 80, // Increased from 60 to 80
               left: 20,
               right: 20,
-              child: Text(
-                'Traza la línea para que la ovejita pueda comer',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ), // Tamaño de fuente reducido
-                textAlign: TextAlign.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.volume_up, size: 24),
+                    onPressed: _playAudio, // Replay audio on tap
+                  ),
+                  const Flexible(
+                    child: Text(
+                      'Traza la línea para que la ovejita pueda comer',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
               ),
             ),
             // Elementos de la pantalla
@@ -167,10 +195,7 @@ class _GameScreenState extends State<GameScreen>
               left: 50,
               child: Text(
                 'O',
-                style: TextStyle(
-                  fontSize: 80,
-                  color: Colors.orange,
-                ), // Tamaño de letra "O" reducido
+                style: TextStyle(fontSize: 80, color: Colors.orange),
               ),
             ),
             if (showSmallSheep &&
@@ -191,10 +216,7 @@ class _GameScreenState extends State<GameScreen>
               left: 50,
               child: Text(
                 'O',
-                style: TextStyle(
-                  fontSize: 80,
-                  color: Colors.orange,
-                ), // Tamaño de letra "O" reducido
+                style: TextStyle(fontSize: 80, color: Colors.orange),
               ),
             ),
             if (showSheepAtGrass)
@@ -208,10 +230,9 @@ class _GameScreenState extends State<GameScreen>
               right: 110,
               child: Text('🌱🌱🌱', style: TextStyle(fontSize: 40)),
             ),
-            // Área para dibujar la línea (ajustada para no interferir con el botón)
+            // Área para dibujar la línea
             Positioned(
-              top:
-                  100, // Dejamos espacio para el botón y el texto de instrucción
+              top: 100,
               left: 0,
               right: 0,
               bottom: 0,

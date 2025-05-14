@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:audioplayers/audioplayers.dart'; // Importa el paquete audioplayers
 import 'Iescribe.dart'; // Importación corregida para Iescribe.dart
 
 class VocalIPage extends StatelessWidget {
@@ -26,6 +27,7 @@ class _WriteScreenState extends State<WriteScreen> {
   late VideoPlayerController _videoController;
   late Future<void> _initializeVideoPlayerFuture;
   bool _isVideoCompleted = false;
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Instancia de AudioPlayer
 
   @override
   void initState() {
@@ -51,7 +53,19 @@ class _WriteScreenState extends State<WriteScreen> {
   void dispose() {
     _videoController.removeListener(_videoListener);
     _videoController.dispose();
+    _audioPlayer.dispose(); // Libera los recursos del reproductor
     super.dispose();
+  }
+
+  // Función para reproducir el audio
+  Future<void> _playAudio() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalI/Como se escribe la l.m4a'),
+      );
+    } catch (e) {
+      print('Error al reproducir el audio: $e');
+    }
   }
 
   @override
@@ -94,28 +108,35 @@ class _WriteScreenState extends State<WriteScreen> {
           Column(
             children: [
               const SizedBox(height: 15),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.volume_up,
-                      color: Colors.black87,
-                      size: 40,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(
+                        Icons.volume_up,
+                        color: Colors.black87,
+                        size: 40,
+                      ),
+                      onPressed: _playAudio, // Reproduce el audio al presionar
                     ),
-                    onPressed: () {
-                      // Función para reproducir sonido si deseas agregarla
-                    },
-                  ),
-                  const Text(
-                    'Aprende como se escribe la letra I',
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
+                    Flexible(
+                      child: Text(
+                        'Aprende como se escribe la letra I',
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 16, // Reducido para mejor ajuste
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2, // Permite hasta 2 líneas
+                        overflow:
+                            TextOverflow.ellipsis, // Maneja el desbordamiento
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 75),
               FutureBuilder(

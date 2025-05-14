@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:letra_x_letra/vocalU/unepalabra.dart';
-import 'package:letra_x_letra/vocalU/unepalabra.dart';
 import 'package:letra_x_letra/vocalU/BurbujaU.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 void main() {
   runApp(const llenaU());
@@ -29,17 +29,39 @@ class UvasScreen extends StatefulWidget {
 class _UvasScreenState extends State<UvasScreen> {
   int filledCircles = 0;
   final int totalCircles = 10;
-  List<bool> buttonVisibility = List.generate(
-    10,
-    (_) => true,
-  ); // Track visibility of each "U" button
+  List<bool> buttonVisibility = List.generate(10, (_) => true);
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
+  @override
+  void initState() {
+    super.initState();
+    _audioPlayer.setSource(
+      AssetSource('audios/VocalU/SELECCIONA LAS LETRA.m4a'),
+    );
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
 
   void _fillNextCircle(int index) {
     if (filledCircles < totalCircles && buttonVisibility[index]) {
       setState(() {
         filledCircles++;
-        buttonVisibility[index] = false; // Hide the tapped button
+        buttonVisibility[index] = false;
       });
+    }
+  }
+
+  void _playAudio() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalU/SELECCIONA LAS LETRA.m4a'),
+      );
+    } catch (e) {
+      print("Error playing audio: $e");
     }
   }
 
@@ -81,12 +103,35 @@ class _UvasScreenState extends State<UvasScreen> {
                 ],
               ),
             ),
-            // Instruction text
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: Text(
-                "Coloca las letras que contengan la 'U'",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            // Speaker icon and instruction text
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 8.0,
+                horizontal: 16.0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.volume_up,
+                      size: 30,
+                      color: Colors.black,
+                    ),
+                    onPressed: _playAudio,
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      "Coloca las letras que contengan la 'U'",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
               ),
             ),
             // U shape and grapes emoji
@@ -120,7 +165,7 @@ class _UvasScreenState extends State<UvasScreen> {
                         ),
                         child: const Text("U", style: TextStyle(fontSize: 18)),
                       )
-                      : const SizedBox.shrink(); // Hide the button after it's tapped
+                      : const SizedBox.shrink();
                 }),
               ),
             ),
@@ -168,15 +213,12 @@ class UShapePainter extends CustomPainter {
 
     const circleRadius = 15.0;
     final positions = [
-      // Left vertical line of U
       Offset(size.width * 0.2, size.height * 0.1),
       Offset(size.width * 0.2, size.height * 0.3),
       Offset(size.width * 0.2, size.height * 0.5),
       Offset(size.width * 0.2, size.height * 0.7),
-      // Bottom curve of U
       Offset(size.width * 0.4, size.height * 0.9),
       Offset(size.width * 0.6, size.height * 0.9),
-      // Right vertical line of U
       Offset(size.width * 0.8, size.height * 0.7),
       Offset(size.width * 0.8, size.height * 0.5),
       Offset(size.width * 0.8, size.height * 0.3),

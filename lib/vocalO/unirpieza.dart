@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:letra_x_letra/vocalO/caminooveja.dart';
 import 'package:letra_x_letra/vocalO/memorama.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 void main() {
   runApp(UnirpiezaO());
@@ -21,6 +22,33 @@ class PuzzleScreen extends StatefulWidget {
 class _PuzzleScreenState extends State<PuzzleScreen> {
   List<Map<String, dynamic>?> puzzleSlots = [null, null, null, null];
   bool isPuzzleComplete = false;
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Audio player instance
+
+  @override
+  void initState() {
+    super.initState();
+    _playAudio(); // Play audio when screen loads
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose(); // Dispose audio player
+    super.dispose();
+  }
+
+  // Function to play audio
+  Future<void> _playAudio() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalO/Arma el siguiente ro.m4a'),
+      );
+    } catch (e) {
+      print('Error playing audio: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error playing audio: $e')));
+    }
+  }
 
   void checkPuzzleCompletion() {
     if (puzzleSlots[0]?['piece'] == 'bear' &&
@@ -62,7 +90,6 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                   IconButton(
                     icon: Icon(Icons.close, color: Colors.black),
                     onPressed: () {
-                      // Navegar a Oescribe.dart
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => CaminoOveja()),
@@ -70,8 +97,8 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                     },
                   ),
                   SizedBox(
-                    width: 240, // Aumentado de 200 a 250 para alargar
-                    height: 10, // Altura explícita para hacerla más gruesa
+                    width: 240,
+                    height: 10,
                     child: LinearProgressIndicator(
                       value: 0.5,
                       backgroundColor: Colors.grey[300],
@@ -84,9 +111,21 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
               ),
             ),
             SizedBox(height: 20),
-            Text(
-              'Arma el siguiente rompecabezas',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            // Row with speaker icon and instruction text
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.volume_up, size: 24),
+                  onPressed: _playAudio, // Replay audio on tap
+                ),
+                const Flexible(
+                  child: Text(
+                    'Arma el siguiente rompecabezas',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 20),
             Container(
@@ -220,7 +259,6 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    // Navegar a Helado.dart
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => Oso()),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart'; // Importa el paquete audioplayers
 import 'pintaE.dart'; // Asegúrate que esté en la misma carpeta o ajusta la ruta si es necesario
 
 void main() {
@@ -26,8 +27,26 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   List<String?> circleIcons = List.filled(11, null);
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Instancia de AudioPlayer
 
   bool get isEFilled => !circleIcons.contains(null);
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose(); // Libera los recursos del reproductor
+    super.dispose();
+  }
+
+  // Función para reproducir el audio
+  Future<void> _playAudio() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalE/Arrastra las imagene.mp3'),
+      );
+    } catch (e) {
+      print('Error al reproducir el audio: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,10 +76,39 @@ class _GameScreenState extends State<GameScreen> {
                 ],
               ),
             ),
-            const Text(
-              'Selecciona la imagen que empieza con la\nletra y ponlos en los círculos vacíos',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, color: Colors.black),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.volume_up,
+                      color: Colors.black,
+                      size: 30,
+                    ),
+                    onPressed: _playAudio, // Reproduce el audio al presionar
+                  ),
+                  const SizedBox(
+                    width: 4,
+                  ), // Espacio reducido entre el ícono y el texto
+                  Flexible(
+                    child: Text(
+                      'Selecciona la imagen que empieza con la letra E y ponlos en los círculos vacíos',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 12, // Tamaño ajustado para legibilidad
+                        color: Colors.black,
+                      ),
+                      maxLines: 2, // Permite hasta 2 líneas
+                      overflow:
+                          TextOverflow
+                              .ellipsis, // Maneja el desbordamiento con puntos suspensivos
+                    ),
+                  ),
+                ],
+              ),
             ),
             LetterEWithCircles(
               circleIcons: circleIcons,
@@ -86,7 +134,6 @@ class _GameScreenState extends State<GameScreen> {
                 padding: const EdgeInsets.only(bottom: 20.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    // Aquí navegamos a la pantalla de pintaE
                     Navigator.push(
                       context,
                       MaterialPageRoute(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'Oescribe.dart'; // Importación ajustada para Oescribe.dart
+import 'package:audioplayers/audioplayers.dart'; // Importar audioplayers
+import 'Oescribe.dart';
 
 class VocalOPage extends StatelessWidget {
   const VocalOPage({
@@ -26,6 +27,7 @@ class _WriteScreenState extends State<WriteScreen> {
   late VideoPlayerController _videoController;
   late Future<void> _initializeVideoPlayerFuture;
   bool _isVideoCompleted = false;
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Instancia de AudioPlayer
 
   @override
   void initState() {
@@ -51,7 +53,19 @@ class _WriteScreenState extends State<WriteScreen> {
   void dispose() {
     _videoController.removeListener(_videoListener);
     _videoController.dispose();
+    _audioPlayer.dispose(); // Liberar recursos del audio
     super.dispose();
+  }
+
+  // Función para reproducir el audio
+  Future<void> _playAudio() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalO/aprende como se escr.m4a'),
+      );
+    } catch (e) {
+      print('Error al reproducir el audio: $e');
+    }
   }
 
   @override
@@ -64,14 +78,14 @@ class _WriteScreenState extends State<WriteScreen> {
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.black87, size: 30),
           onPressed: () {
-            print('Close button pressed'); // Debug print
-            Navigator.pop(context); // Should navigate back to pvocales.dart
+            print('Close button pressed');
+            Navigator.pop(context);
           },
         ),
         title: ClipRRect(
           borderRadius: BorderRadius.circular(12),
           child: LinearProgressIndicator(
-            value: 0.1, // Ajusta este valor si es necesario
+            value: 0.1,
             backgroundColor: Colors.grey[300],
             valueColor: const AlwaysStoppedAnimation<Color>(Colors.orange),
             minHeight: 8,
@@ -93,9 +107,7 @@ class _WriteScreenState extends State<WriteScreen> {
                       color: Colors.black87,
                       size: 40,
                     ),
-                    onPressed: () {
-                      // Función para reproducir sonido si deseas agregarla
-                    },
+                    onPressed: _playAudio, // Llamar a la función de audio
                   ),
                   const Text(
                     'Aprende como se escribe la letra O',

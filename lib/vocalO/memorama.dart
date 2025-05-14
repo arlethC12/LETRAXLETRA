@@ -1,46 +1,56 @@
-// Importación de paquetes necesarios
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:letra_x_letra/vocalO/unirpieza.dart';
 import 'package:letra_x_letra/vocalO/BurbujaO.dart';
+import 'package:audioplayers/audioplayers.dart'; // Importar audioplayers
 
-// Función principal que ejecuta la app
 void main() {
   runApp(Oso());
 }
 
-// Widget principal que lanza la pantalla del memorama
 class Oso extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // Oculta la etiqueta de debug
-      home: MemoramaScreen(), // Pantalla principal
+      debugShowCheckedModeBanner: false,
+      home: MemoramaScreen(),
     );
   }
 }
 
-// Widget con estado para controlar el juego
 class MemoramaScreen extends StatefulWidget {
   @override
   _MemoramaScreenState createState() => _MemoramaScreenState();
 }
 
 class _MemoramaScreenState extends State<MemoramaScreen> {
-  List<CardItem> cards = []; // Lista de cartas
-  List<bool> isFlipped = []; // Estado de cada carta (volteada o no)
-  List<bool> isMatched = []; // Estado de coincidencia de las cartas
-  int firstCardIndex = -1; // Índice de la primera carta seleccionada
-  int secondCardIndex = -1; // Índice de la segunda carta seleccionada
-  bool isProcessing = false; // Controla si se está evaluando un par
+  List<CardItem> cards = [];
+  List<bool> isFlipped = [];
+  List<bool> isMatched = [];
+  int firstCardIndex = -1;
+  int secondCardIndex = -1;
+  bool isProcessing = false;
+
+  // Agregar controlador de audio
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
     super.initState();
-    initializeCards(); // Inicializa las cartas al iniciar
+    initializeCards();
   }
 
-  // Inicializa y mezcla las cartas del memorama
+  // Función para reproducir el audio
+  Future<void> _playSound() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalO/completa el siguient.m4a'),
+      ); // Ruta del archivo de audio
+    } catch (e) {
+      print('Error al reproducir el audio: $e');
+    }
+  }
+
   void initializeCards() {
     final items = [
       {'text': 'O', 'emoji': 'O'},
@@ -50,7 +60,6 @@ class _MemoramaScreenState extends State<MemoramaScreen> {
       {'text': 'Oveja', 'emoji': '🐑'},
     ];
 
-    // Se duplican las cartas para tener pares y luego se mezclan
     cards =
         List<CardItem>.from(
             items.map(
@@ -72,14 +81,12 @@ class _MemoramaScreenState extends State<MemoramaScreen> {
               ),
             ),
           )
-          ..shuffle(); // Mezcla aleatoriamente
+          ..shuffle();
 
-    // Inicializa listas de control
     isFlipped = List<bool>.filled(cards.length, false);
     isMatched = List<bool>.filled(cards.length, false);
   }
 
-  // Función que se ejecuta al voltear una carta
   void flipCard(int index) {
     if (isMatched[index] || isFlipped[index] || isProcessing) return;
 
@@ -87,33 +94,26 @@ class _MemoramaScreenState extends State<MemoramaScreen> {
       isFlipped[index] = true;
     });
 
-    // Si es la primera carta seleccionada
     if (firstCardIndex == -1) {
       firstCardIndex = index;
-    }
-    // Si es la segunda carta seleccionada
-    else if (secondCardIndex == -1 && firstCardIndex != index) {
+    } else if (secondCardIndex == -1 && firstCardIndex != index) {
       secondCardIndex = index;
       setState(() {
         isProcessing = true;
       });
 
-      // Espera un segundo para mostrar las cartas volteadas
       Future.delayed(Duration(seconds: 1), () {
         bool isMatch =
             cards[firstCardIndex].emoji == cards[secondCardIndex].emoji;
 
         setState(() {
-          // Si las cartas coinciden
           if (isMatch) {
             isMatched[firstCardIndex] = true;
             isMatched[secondCardIndex] = true;
           } else {
-            // Si no coinciden, se voltean de nuevo
             isFlipped[firstCardIndex] = false;
             isFlipped[secondCardIndex] = false;
           }
-          // Reinicia los índices
           firstCardIndex = -1;
           secondCardIndex = -1;
           isProcessing = false;
@@ -122,7 +122,12 @@ class _MemoramaScreenState extends State<MemoramaScreen> {
     }
   }
 
-  // Construcción visual de la pantalla del memorama
+  @override
+  void dispose() {
+    _audioPlayer.dispose(); // Liberar recursos del reproductor de audio
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,7 +135,6 @@ class _MemoramaScreenState extends State<MemoramaScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            // Botón de cerrar y regresar a la pantalla anterior
             Positioned(
               top: 10,
               left: 10,
@@ -144,11 +148,10 @@ class _MemoramaScreenState extends State<MemoramaScreen> {
                 },
               ),
             ),
-            // Barra de progreso al lado del botón de cerrar
             Positioned(
               top: 25,
               left: 70,
-              width: 250, // Ancho fijo para la barra de progreso
+              width: 250,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: LinearProgressIndicator(
@@ -159,23 +162,23 @@ class _MemoramaScreenState extends State<MemoramaScreen> {
                 ),
               ),
             ),
-            // Contenido principal
             Center(
               child: Padding(
-                padding: EdgeInsets.only(
-                  top: 8,
-                ), // Ajuste para subir el contenido
+                padding: EdgeInsets.only(top: 8),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Ícono de bocina y texto
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.volume_up,
-                          color: const Color.fromARGB(255, 10, 10, 9),
-                          size: 30,
+                        IconButton(
+                          icon: Icon(
+                            Icons.volume_up,
+                            color: const Color.fromARGB(255, 10, 10, 9),
+                            size: 30,
+                          ),
+                          onPressed:
+                              _playSound, // Llamar a la función para reproducir el audio
                         ),
                         SizedBox(width: 10),
                         Text(
@@ -189,12 +192,11 @@ class _MemoramaScreenState extends State<MemoramaScreen> {
                       ],
                     ),
                     SizedBox(height: 20),
-                    // Rejilla de cartas
                     GridView.builder(
                       shrinkWrap: true,
                       padding: EdgeInsets.all(10),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4, // 4 columnas
+                        crossAxisCount: 4,
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
                       ),
@@ -225,7 +227,6 @@ class _MemoramaScreenState extends State<MemoramaScreen> {
                         );
                       },
                     ),
-                    // Muestra mensaje de completado y botón para continuar
                     if (isMatched.every((matched) => matched))
                       Padding(
                         padding: EdgeInsets.only(top: 20),
@@ -273,11 +274,10 @@ class _MemoramaScreenState extends State<MemoramaScreen> {
   }
 }
 
-// Clase que representa cada carta del memorama
 class CardItem {
-  final String text; // Texto descriptivo
-  final String emoji; // Emoji o símbolo que representa
-  final bool isImage; // Indica si es imagen o letra
+  final String text;
+  final String emoji;
+  final bool isImage;
 
   CardItem({required this.text, required this.emoji, required this.isImage});
 }

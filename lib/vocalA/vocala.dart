@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:audioplayers/audioplayers.dart'; // Added for audio playback
-import 'escriba.dart'; // Asegúrate de que la ruta sea correcta
+import 'package:audioplayers/audioplayers.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+import 'escriba.dart';
 
 class VocalAPage extends StatelessWidget {
   const VocalAPage({
@@ -27,7 +30,8 @@ class _WriteScreenState extends State<WriteScreen> {
   late VideoPlayerController _videoController;
   late Future<void> _initializeVideoPlayerFuture;
   bool _isVideoCompleted = false;
-  final AudioPlayer _audioPlayer = AudioPlayer(); // Added for audio playback
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  String? _exerciseId; // Variable para almacenar el ID del ejercicio
 
   @override
   void initState() {
@@ -36,16 +40,74 @@ class _WriteScreenState extends State<WriteScreen> {
       'assets/videos/videoletraA.mp4',
     );
     _initializeVideoPlayerFuture = _videoController.initialize();
-    _videoController.setLooping(false); // Disable looping to detect video end
+    _videoController.setLooping(false);
     _videoController.addListener(_videoListener);
+
+    _fetchExerciseId(); // Llamar a la función para obtener el ID del ejercicio
   }
 
-  void _videoListener() {
+  // Función para obtener el ID del ejercicio desde el backend
+  Future<void> _fetchExerciseId() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://192.168.1.69:3000/ejercicios/1'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      print('Estado de la respuesta: ${response.statusCode}');
+      print('Cuerpo de la respuesta: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _exerciseId = data['cve_ejercicio']; // Asignar el ID del ejercicio
+        });
+        print('✅ ID del ejercicio obtenido: $_exerciseId');
+      } else if (response.statusCode == 404) {
+        print(
+          '❌ Ejercicio no encontrado (404). Verifica que exista en la base de datos.',
+        );
+      } else {
+        print('❌ Error al obtener el ID del ejercicio: ${response.body}');
+      }
+    } catch (error) {
+      print('❌ Error de conexión al obtener el ID del ejercicio: $error');
+    }
+  }
+
+  void _videoListener() async {
     if (_videoController.value.position >= _videoController.value.duration &&
         !_isVideoCompleted) {
       setState(() {
         _isVideoCompleted = true;
       });
+
+      // Llamada al backend para guardar progreso
+      try {
+        final response = await http.post(
+          Uri.parse('http://192.168.1.69:3000/progresos'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'cve_usuario': '1', // Reemplaza con el ID del usuario real
+            'cve_leccion': _exerciseId, // Usar el ID del ejercicio obtenido
+            'completado': true,
+            'imagen_url': '', // Opcional
+            'audio_url': '', // Opcional
+            'metadata': {
+              'pantalla': 'VocalAPage',
+              'timestamp': DateTime.now().toIso8601String(),
+            },
+          }),
+        );
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          print('✅ Progreso guardado o actualizado');
+        } else {
+          print('❌ Error al guardar el progreso: ${response.body}');
+        }
+      } catch (error) {
+        print('❌ Error de conexión al guardar el progreso: $error');
+      }
     }
   }
 
@@ -53,7 +115,7 @@ class _WriteScreenState extends State<WriteScreen> {
   void dispose() {
     _videoController.removeListener(_videoListener);
     _videoController.dispose();
-    _audioPlayer.dispose(); // Dispose audio player
+    _audioPlayer.dispose();
     super.dispose();
   }
 
@@ -96,7 +158,7 @@ class _WriteScreenState extends State<WriteScreen> {
         children: [
           Column(
             children: [
-              const SizedBox(height: 15), // Kept as is for top spacing
+              const SizedBox(height: 15),
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -109,20 +171,31 @@ class _WriteScreenState extends State<WriteScreen> {
                     onPressed: () async {
                       await _audioPlayer.play(
                         AssetSource('audios/VocalA/Como se escribe la A.m4a'),
-                      ); // Updated path
+                      );
                     },
                   ),
                   const Text(
-                    'Aprende como se estribe la letra A',
+                    'Aprende como se escribe la letra A',
                     style: TextStyle(
                       color: Colors.black87,
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
+                  const SizedBox(height: 10),
+                  if (_exerciseId !=
+                      null) // Mostrar el ID del ejercicio si está disponible
+                    Text(
+                      'ID del ejercicio: $_exerciseId',
+                      style: const TextStyle(
+                        color: Colors.black87,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
                 ],
               ),
-              const SizedBox(height: 75), // Kept as provided
+              const SizedBox(height: 75),
               FutureBuilder(
                 future: _initializeVideoPlayerFuture,
                 builder: (context, snapshot) {
@@ -173,7 +246,7 @@ class _WriteScreenState extends State<WriteScreen> {
                   }
                 },
               ),
-              const Expanded(child: SizedBox()), // Fills remaining space below
+              const Expanded(child: SizedBox()),
             ],
           ),
         ],

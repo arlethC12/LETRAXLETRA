@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:letra_x_letra/vocalU/imagselect.dart'; // Importa seleccionaimagen.dart
-import 'package:letra_x_letra/vocalU/videoletraU.dart'; // Importa videovocalU.dart
+import 'package:letra_x_letra/vocalU/imagselect.dart';
+import 'package:letra_x_letra/vocalU/videoletraU.dart';
+import 'package:audioplayers/audioplayers.dart'; // Import audioplayers
 
 void main() {
   runApp(const UescribePage());
 }
 
-// Definimos una clase raíz para gestionar el MaterialApp
 class UescribePage extends StatelessWidget {
   const UescribePage({super.key});
 
@@ -32,31 +32,51 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
   bool isValid = false;
   String feedbackMessage = 'Dibuja la letra U.';
   bool isUpperCase = true;
-  bool isUpperCaseCompleted = false; // Track uppercase U completion
-  bool isLowerCaseCompleted = false; // Track lowercase u completion
+  bool isUpperCaseCompleted = false;
+  bool isLowerCaseCompleted = false;
+  late AudioPlayer _audioPlayer; // AudioPlayer for playing sound
 
-  // Regiones clave para la "U" mayúscula
+  @override
+  void initState() {
+    super.initState();
+    _audioPlayer = AudioPlayer(); // Initialize AudioPlayer
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose(); // Dispose AudioPlayer to free resources
+    super.dispose();
+  }
+
+  // Function to play the audio
+  Future<void> _playSound() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalU/MIRA LA IMAGEN Y DIB.m4a'),
+      );
+    } catch (e) {
+      print('Error playing audio: $e');
+    }
+  }
+
+  // Existing methods (getKeyRegionsForUpperCaseU, getKeyRegionsForLowerCaseU, validateDrawing) remain unchanged
   List<Rect> getKeyRegionsForUpperCaseU(Size canvasSize) {
     double width = canvasSize.width;
     double height = canvasSize.height;
-    double margin = 25.0; // Margen de tolerancia
+    double margin = 25.0;
 
-    // Definimos regiones para la U mayúscula: dos líneas verticales y una curva inferior
     return [
-      // Línea vertical izquierda (desde arriba hacia abajo)
       Rect.fromLTWH(
         0.25 * width - margin,
         0.2 * height,
         0.1 * width + 2 * margin,
         0.5 * height,
       ),
-      // Curva inferior (centro inferior)
       Rect.fromCenter(
         center: Offset(0.5 * width, 0.7 * height),
         width: 0.3 * width + 2 * margin,
         height: 0.2 * height + 2 * margin,
       ),
-      // Línea vertical derecha (desde abajo hacia arriba)
       Rect.fromLTWH(
         0.65 * width - margin,
         0.2 * height,
@@ -66,28 +86,23 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
     ];
   }
 
-  // Regiones clave para la "u" minúscula
   List<Rect> getKeyRegionsForLowerCaseU(Size canvasSize) {
     double width = canvasSize.width;
     double height = canvasSize.height;
-    double margin = 20.0; // Margen de tolerancia
+    double margin = 20.0;
 
-    // Definimos regiones para la u minúscula: dos líneas cortas y una curva inferior
     return [
-      // Línea vertical izquierda (más corta)
       Rect.fromLTWH(
         0.35 * width - margin,
         0.4 * height,
         0.1 * width + 2 * margin,
         0.3 * height,
       ),
-      // Curva inferior (centro inferior, más pequeña)
       Rect.fromCenter(
         center: Offset(0.5 * width, 0.7 * height),
         width: 0.2 * width + 2 * margin,
         height: 0.15 * height + 2 * margin,
       ),
-      // Línea vertical derecha (con posible pequeña extensión)
       Rect.fromLTWH(
         0.55 * width - margin,
         0.4 * height,
@@ -97,7 +112,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
     ];
   }
 
-  // Validar el dibujo
   void validateDrawing(Size canvasSize) {
     if (points.isEmpty) {
       setState(() {
@@ -122,7 +136,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
       }
     }
 
-    // Requerir al menos 10 puntos en cada región para considerarlas cubiertas
     bool allRegionsCovered = true;
     for (int i = 0; i < pointsInRegion.length; i++) {
       if (pointsInRegion[i] < 10) {
@@ -157,7 +170,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Barra superior
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 16.0,
@@ -171,7 +183,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                       color: Color.fromARGB(255, 0, 0, 0),
                     ),
                     onPressed: () {
-                      // Navegar a la pantalla de videoletraU.dart
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -205,13 +216,15 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                 ],
               ),
             ),
-
-            // Instrucción
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  const Icon(Icons.volume_up, color: Colors.black),
+                  IconButton(
+                    // Changed from Icon to IconButton
+                    icon: const Icon(Icons.volume_up, color: Colors.black),
+                    onPressed: _playSound, // Play audio when pressed
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'Escribe la letra ${isUpperCase ? "U" : "u"}',
@@ -220,8 +233,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                 ],
               ),
             ),
-
-            // Imagen de referencia
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: SizedBox(
@@ -234,8 +245,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                 ),
               ),
             ),
-
-            // Retroalimentación
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
@@ -246,8 +255,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                 ),
               ),
             ),
-
-            // Botón para alternar entre U y u
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
@@ -289,8 +296,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                 ],
               ),
             ),
-
-            // Pizarra para dibujar
             Expanded(
               child: LayoutBuilder(
                 builder: (context, constraints) {
@@ -311,7 +316,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                       ),
                       child: Stack(
                         children: [
-                          // Área de dibujo
                           Positioned.fill(
                             child: GestureDetector(
                               onPanUpdate: (details) {
@@ -345,7 +349,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                               ),
                             ),
                           ),
-                          // Lápiz
                           if (currentPencilPos != null)
                             Positioned(
                               left: currentPencilPos!.dx - 12,
@@ -363,8 +366,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                 },
               ),
             ),
-
-            // Botones
             Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: 16.0,
@@ -399,7 +400,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                   if (isLessonCompleted)
                     ElevatedButton.icon(
                       onPressed: () {
-                        // Navegar a la pantalla de imagselect.dart
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => imagsel()),

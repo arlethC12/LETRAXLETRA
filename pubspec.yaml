@@ -164,6 +164,7 @@ flutter:
     - assets/letraI.jpg
     - assets/letraO.jpg
     - assets/letraU.jpg
+    - assets/jaguiprog.png
     - assets/audios/Regis.mp3
     - assets/audios/dinombre.mp3
     - assets/audios/edad.mp3
@@ -176,12 +177,39 @@ flutter:
     - assets/audios/VocalA/Explota las burbujas.m4a
     - assets/audios/VocalA/Sonido Zumbido de Abeja (mp3cut.net).mp3
     - assets/audios/VocalA/Une con una línea lo.m4a
+    - assets/audios/VocalE/Arrastra la vocal co.mp3
+    - assets/audios/VocalE/Arrastra las imagene.mp3
+    - assets/audios/VocalE/Da play en el video .mp3
+    - assets/audios/VocalE/Explota las burbujas.mp3
+    - assets/audios/VocalE/selecciona el círcul.mp3
+    - assets/audios/VocalE/Escribe en la pizarr.mp3
+    - assets/audios/VocalI/Colorea la letra I m (1).m4a
+    - assets/audios/VocalI/Como se escribe la l.m4a
+    - assets/audios/VocalI/Escribe la letra I .m4a
+    - assets/audios/VocalI/completa la palabra .m4a
+    - assets/audios/VocalI/Explota las burbujas.m4a
+    - assets/audios/VocalI/Selecciona la imagen.m4a
+    - assets/audios/VocalI/toca las piezas del .m4a
+    - assets/audios/VocalO/aprende como se escr.m4a
+    - assets/audios/VocalO/Escribe la letra o.m4a
+    - assets/audios/VocalO/rodea con un circulo.m4a
+    - assets/audios/VocalO/Traza la línea para .m4a
+    - assets/audios/VocalO/Arma el siguiente ro.m4a
+    - assets/audios/VocalO/completa el siguient.m4a
+    - assets/audios/VocalO/explota las burbujas (1).m4a
+    - assets/audios/VocalU/Da pley en el video .m4a
+    - assets/audios/VocalU/MIRA LA IMAGEN Y DIB.m4a
+    - assets/audios/VocalU/SELECCIONA LAS IMAGE.m4a
+    - assets/audios/VocalU/SELECCIONA LAS LETRA.m4a
+    - assets/audios/VocalU/SELECCIONA LAS IMAGE.m4a
+    - assets/audios/VocalU/Explota las burbujas.m4a
     - assets/videos/videoletraA.mp4
     - assets/videos/videoletraE.mp4
     - assets/videos/videoletraI.mp4
     - assets/videos/videoletraO.mp4
     - assets/videos/videoletraU.mp4
-   
+    - assets/audios/continu.mp3
+
 
   
    

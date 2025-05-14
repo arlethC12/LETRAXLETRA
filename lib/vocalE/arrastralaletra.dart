@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'rellenaE.dart'; // <<--- Aquí importamos la otra pantalla
+import 'package:audioplayers/audioplayers.dart'; // Importa el paquete audioplayers
+import 'rellenaE.dart'; // Importa la otra pantalla
 
 void main() {
   runApp(DragLetterScreen());
@@ -22,6 +23,27 @@ class VocabularyScreen extends StatefulWidget {
 
 class _VocabularyScreenState extends State<VocabularyScreen> {
   List<bool> filledBoxes = [false, false, false, false];
+
+  // Agrega el reproductor de audio
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
+  @override
+  void dispose() {
+    _audioPlayer
+        .dispose(); // Libera recursos del reproductor al cerrar la pantalla
+    super.dispose();
+  }
+
+  // Función para reproducir el audio
+  Future<void> _playAudio() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalE/Arrastra la vocal co.mp3'),
+      );
+    } catch (e) {
+      print('Error al reproducir el audio: $e');
+    }
+  }
 
   void updateFilledStatus(int index) {
     setState(() {
@@ -56,12 +78,26 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
       ),
       body: Column(
         children: [
+          // Instrucción con ícono de bocina
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Arrastra las vocales al pictograma correspondiente.',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.volume_up, color: Colors.black),
+                  onPressed:
+                      _playAudio, // Llama a la función para reproducir el audio
+                ),
+                const SizedBox(width: 8),
+                const Flexible(
+                  child: Text(
+                    'Arrastra la vocal con la que comienza cada imagen al pictograma correspondiente.',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:letra_x_letra/vocalU/imagselect.dart';
 import 'package:letra_x_letra/vocalU/llenaU.dart';
 
@@ -10,7 +11,7 @@ class unepla extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // Elimina la etiqueta de debug
+      debugShowCheckedModeBanner: false,
       home: WordCompletionGame(),
     );
   }
@@ -22,9 +23,10 @@ class WordCompletionGame extends StatefulWidget {
 }
 
 class _WordCompletionGameState extends State<WordCompletionGame> {
-  List<String?> slots = [null, null, null]; // Para los 3 huecos de las palabras
-  List<String> draggableLetters = ['U', 'U', 'U']; // Letras arrastrables
+  List<String?> slots = [null, null, null];
+  List<String> draggableLetters = ['U', 'U', 'U'];
   bool isCompleted = false;
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   void checkCompletion() {
     if (slots.every((slot) => slot == 'U')) {
@@ -32,6 +34,10 @@ class _WordCompletionGameState extends State<WordCompletionGame> {
         isCompleted = true;
       });
     }
+  }
+
+  Future<void> playSound(String assetPath) async {
+    await _audioPlayer.play(AssetSource(assetPath));
   }
 
   @override
@@ -48,20 +54,36 @@ class _WordCompletionGameState extends State<WordCompletionGame> {
           },
         ),
         title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 8), // Espacio para bajar la barra
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: LinearProgressIndicator(
-                value: 0.5, // Ajusta según el progreso
+                value: 0.5,
                 backgroundColor: Colors.grey[300],
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
-                minHeight: 8,
+                minHeight: 10, // Barra más gruesa
               ),
             ),
-            SizedBox(height: 16), // Más espacio para bajar el texto
-            Text(
-              'Completa la palabra con la vocal',
-              style: TextStyle(fontSize: 16),
+            SizedBox(height: 12),
+            Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.volume_up, size: 24),
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
+                  onPressed:
+                      () => playSound('audios/VocalU/SELECCIONA LAS IMAGE.m4a'),
+                ),
+                Flexible(
+                  child: Text(
+                    'Completa la palabra con la vocal',
+                    style: TextStyle(fontSize: 14),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -201,7 +223,7 @@ class _WordCompletionGameState extends State<WordCompletionGame> {
                 }).toList(),
           ),
           SizedBox(height: 40),
-          // Botón de flecha (aparece al completar, naranja con flecha blanca)
+          // Botón de flecha
           if (isCompleted)
             ElevatedButton(
               onPressed: () {
@@ -211,13 +233,19 @@ class _WordCompletionGameState extends State<WordCompletionGame> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange, // Fondo naranja
-                foregroundColor: Colors.white, // Icono blanco
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
               ),
               child: Icon(Icons.arrow_forward),
             ),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
   }
 }

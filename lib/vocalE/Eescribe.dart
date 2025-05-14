@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'arrastralaletra.dart'; // Importa el archivo arrastralaletra.dart
+import 'package:audioplayers/audioplayers.dart'; // Importa el paquete audioplayers
+import 'arrastralaletra.dart';
 
 class EscribeEPage extends StatelessWidget {
   const EscribeEPage({super.key});
@@ -24,29 +25,50 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
   String feedbackMessage = 'Dibuja la letra E.';
   bool isUpperCase = true;
 
+  // Agrega el reproductor de audio
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
+  @override
+  void dispose() {
+    _audioPlayer
+        .dispose(); // Libera recursos del reproductor al cerrar la pantalla
+    super.dispose();
+  }
+
+  // Función para reproducir el audio según la letra seleccionada
+  Future<void> _playAudio() async {
+    String audioPath =
+        isUpperCase
+            ? 'audios/VocalE/Escribe en la pizarr.mp3'
+            : 'audios/VocalE/Escribe en la pizarr.mp3';
+    try {
+      await _audioPlayer.play(
+        AssetSource(audioPath.replaceFirst('assets/', '')),
+      );
+    } catch (e) {
+      print('Error al reproducir el audio: $e');
+    }
+  }
+
   // Regiones clave para la "E" mayúscula
   List<Rect> getKeyRegionsForUpperCaseE(Size canvasSize) {
     double width = canvasSize.width;
     double height = canvasSize.height;
-    double margin = 20.0; // Margen de tolerancia
+    double margin = 20.0;
 
     return [
-      // Trazo vertical principal: desde (0.3w, 0.2h) a (0.3w, 0.8h)
       Rect.fromPoints(
         Offset(0.3 * width - margin, 0.2 * height - margin),
         Offset(0.3 * width + margin, 0.8 * height + margin),
       ),
-      // Trazo horizontal superior: desde (0.3w, 0.2h) a (0.7w, 0.2h)
       Rect.fromPoints(
         Offset(0.3 * width - margin, 0.2 * height - margin),
         Offset(0.7 * width + margin, 0.2 * height + margin),
       ),
-      // Trazo horizontal medio: desde (0.3w, 0.5h) a (0.6w, 0.5h)
       Rect.fromPoints(
         Offset(0.3 * width - margin, 0.5 * height - margin),
         Offset(0.6 * width + margin, 0.5 * height + margin),
       ),
-      // Trazo horizontal inferior: desde (0.3w, 0.8h) a (0.7w, 0.8h)
       Rect.fromPoints(
         Offset(0.3 * width - margin, 0.8 * height - margin),
         Offset(0.7 * width + margin, 0.8 * height + margin),
@@ -58,16 +80,14 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
   List<Rect> getKeyRegionsForLowerCaseE(Size canvasSize) {
     double width = canvasSize.width;
     double height = canvasSize.height;
-    double margin = 20.0; // Margen de tolerancia
+    double margin = 20.0;
 
     return [
-      // Trazo curvo (óvalo abierto)
       Rect.fromCenter(
         center: Offset(0.5 * width, 0.5 * height),
         width: 0.3 * width + 2 * margin,
         height: 0.3 * height + 2 * margin,
       ),
-      // Trazo horizontal central
       Rect.fromPoints(
         Offset(0.35 * width - margin, 0.5 * height - margin),
         Offset(0.65 * width + margin, 0.5 * height + margin),
@@ -100,7 +120,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
       }
     }
 
-    // Requerir al menos 15 puntos en cada región para considerarla cubierta
     bool allRegionsCovered = pointsInRegion.every((count) => count >= 15);
 
     setState(() {
@@ -119,7 +138,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Barra superior
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 16.0,
@@ -133,7 +151,7 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                       color: Color.fromARGB(255, 0, 0, 0),
                     ),
                     onPressed: () {
-                      Navigator.pop(context); // Volver a la pantalla anterior
+                      Navigator.pop(context);
                     },
                   ),
                   Expanded(
@@ -153,12 +171,16 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
               ),
             ),
 
-            // Instrucción
+            // Instrucción con ícono de bocina interactivo
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  const Icon(Icons.volume_up, color: Colors.black),
+                  IconButton(
+                    icon: const Icon(Icons.volume_up, color: Colors.black),
+                    onPressed:
+                        _playAudio, // Llama a la función para reproducir el audio
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'Escribe la letra ${isUpperCase ? "E" : "e"}',
@@ -194,7 +216,7 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
               ),
             ),
 
-            // Botón para alternar entre E y e
+            // Botones para alternar entre E y e
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
@@ -258,7 +280,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                       ),
                       child: Stack(
                         children: [
-                          // Área de dibujo
                           Positioned.fill(
                             child: GestureDetector(
                               onPanUpdate: (details) {
@@ -292,7 +313,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                               ),
                             ),
                           ),
-                          // Lápiz
                           if (currentPencilPos != null)
                             Positioned(
                               left: currentPencilPos!.dx - 12,
@@ -345,13 +365,10 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
-                      // Navega a la pantalla definida en arrastralaletra.dart
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder:
-                              (context) =>
-                                  DragLetterScreen(), // Asegúrate de que este sea el nombre correcto del widget
+                          builder: (context) => DragLetterScreen(),
                         ),
                       );
                     },

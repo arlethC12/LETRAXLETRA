@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'pvocales.dart';
 import 'main.dart';
+import 'Continuara.dart'; // Import Continuara.dart
 
 class Niveles extends StatelessWidget {
   final String characterImagePath;
@@ -161,6 +162,7 @@ class HomeScreen extends StatelessWidget {
         child: AppBar(
           backgroundColor: const Color.fromARGB(255, 189, 162, 139),
           elevation: 0,
+          automaticallyImplyLeading: false,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -242,6 +244,7 @@ class HomeScreen extends StatelessWidget {
                           (context) => VowelsScreen(
                             characterImagePath: characterImagePath,
                             username: username,
+                            token: '',
                           ),
                     ),
                   );
@@ -368,11 +371,24 @@ class HomeScreen extends StatelessWidget {
         ],
         onTap: (index) {
           if (index == 2) {
+            // Home button: Navigate to Niveles screen
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder:
                     (context) => Niveles(
+                      characterImagePath: characterImagePath,
+                      username: username,
+                    ),
+              ),
+            );
+          } else if (index == 0 || index == 1 || index == 3 || index == 4) {
+            // boca.jpg (0), micro.jpg (1), nota.jpg (3), juego.png (4): Navigate to Continuara screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => Continuara(
                       characterImagePath: characterImagePath,
                       username: username,
                     ),

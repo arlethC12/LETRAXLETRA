@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'package:letra_x_letra/vocalO/Nivel4.dart'; // Importa el archivo Nivel4.dart
-import 'package:letra_x_letra/vocalO/memorama.dart'; // Importa palabra.dart (contiene PalabraScreen)
+import 'package:letra_x_letra/vocalO/Nivel4.dart';
+import 'package:letra_x_letra/vocalO/memorama.dart';
+import 'package:audioplayers/audioplayers.dart'; // Importar audioplayers
 
 void main() {
   runApp(BurbujaOScreen());
@@ -25,6 +26,7 @@ class _BubbleScreenState extends State<BubbleScreen>
   int poppedOs = 0;
   int totalOs = 0;
   late AnimationController _floatController;
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Controlador de audio
 
   @override
   void initState() {
@@ -92,7 +94,19 @@ class _BubbleScreenState extends State<BubbleScreen>
   @override
   void dispose() {
     _floatController.dispose();
+    _audioPlayer.dispose(); // Liberar recursos del reproductor
     super.dispose();
+  }
+
+  // Función para reproducir el audio
+  Future<void> _playSound() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalO/explota las burbujas (1).m4a'),
+      ); // Ruta del archivo de audio
+    } catch (e) {
+      print('Error al reproducir el audio: $e');
+    }
   }
 
   void popBubble(int index) {
@@ -155,7 +169,6 @@ class _BubbleScreenState extends State<BubbleScreen>
                   IconButton(
                     icon: Icon(Icons.close, color: Colors.black, size: 30),
                     onPressed: () {
-                      // Navegar a la pantalla de palabra.dart
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => Oso()),
@@ -186,7 +199,11 @@ class _BubbleScreenState extends State<BubbleScreen>
               left: 20,
               child: Row(
                 children: [
-                  Icon(Icons.volume_up, color: Colors.black, size: 24),
+                  IconButton(
+                    icon: Icon(Icons.volume_up, color: Colors.black, size: 24),
+                    onPressed:
+                        _playSound, // Llamar a la función para reproducir el audio
+                  ),
                   SizedBox(width: 8),
                   Text(
                     'Explota las burbujas de la letra o',
@@ -239,7 +256,6 @@ class _BubbleScreenState extends State<BubbleScreen>
                 right: 20,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Navegación a Nivel4Screen
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => Nivel4Screen()),

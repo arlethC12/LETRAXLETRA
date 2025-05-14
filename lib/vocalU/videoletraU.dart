@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:letra_x_letra/vocalU/Uescribe.dart'; // Importación ajustada para Oescribe.dart
+import 'package:audioplayers/audioplayers.dart'; // Importar audioplayers
+import 'package:letra_x_letra/vocalU/Uescribe.dart';
 
 class VocalUPage extends StatelessWidget {
   const VocalUPage({
@@ -26,16 +27,21 @@ class _WriteScreenState extends State<WriteScreen> {
   late VideoPlayerController _videoController;
   late Future<void> _initializeVideoPlayerFuture;
   bool _isVideoCompleted = false;
+  late AudioPlayer _audioPlayer; // Controlador para el audio
 
   @override
   void initState() {
     super.initState();
+    // Inicializar controlador de video
     _videoController = VideoPlayerController.asset(
       'assets/videos/videoletraU.mp4',
     );
     _initializeVideoPlayerFuture = _videoController.initialize();
     _videoController.setLooping(false);
     _videoController.addListener(_videoListener);
+
+    // Inicializar controlador de audio
+    _audioPlayer = AudioPlayer();
   }
 
   void _videoListener() {
@@ -51,7 +57,19 @@ class _WriteScreenState extends State<WriteScreen> {
   void dispose() {
     _videoController.removeListener(_videoListener);
     _videoController.dispose();
+    _audioPlayer.dispose(); // Liberar recursos del audio
     super.dispose();
+  }
+
+  // Función para reproducir el sonido
+  Future<void> _playSound() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalU/Da pley en el video .m4a'),
+      );
+    } catch (e) {
+      print('Error al reproducir el sonido: $e');
+    }
   }
 
   @override
@@ -64,14 +82,14 @@ class _WriteScreenState extends State<WriteScreen> {
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.black87, size: 30),
           onPressed: () {
-            print('Close button pressed'); // Debug print
-            Navigator.pop(context); // Should navigate back to pvocales.dart
+            print('Close button pressed');
+            Navigator.pop(context);
           },
         ),
         title: ClipRRect(
           borderRadius: BorderRadius.circular(12),
           child: LinearProgressIndicator(
-            value: 0.1, // Ajusta este valor si es necesario
+            value: 0.1,
             backgroundColor: Colors.grey[300],
             valueColor: const AlwaysStoppedAnimation<Color>(Colors.orange),
             minHeight: 8,
@@ -93,9 +111,8 @@ class _WriteScreenState extends State<WriteScreen> {
                       color: Colors.black87,
                       size: 40,
                     ),
-                    onPressed: () {
-                      // Función para reproducir sonido si deseas agregarla
-                    },
+                    onPressed:
+                        _playSound, // Llamar a la función para reproducir el sonido
                   ),
                   const Text(
                     'Aprende como se escribe la letra U',

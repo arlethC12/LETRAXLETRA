@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'package:letra_x_letra/vocalU/Nivel5.dart'; // Importa el archivo Nivel5.dart
-import 'package:letra_x_letra/vocalU/llenaU.dart'; // Importa llenaU.dart
+import 'package:letra_x_letra/vocalU/Nivel5.dart';
+import 'package:letra_x_letra/vocalU/llenaU.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 void main() {
   runApp(BurbujaUScreen());
@@ -25,6 +26,7 @@ class _BubbleScreenState extends State<BubbleScreen>
   int poppedUs = 0;
   int totalUs = 0;
   late AnimationController _floatController;
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -92,7 +94,14 @@ class _BubbleScreenState extends State<BubbleScreen>
   @override
   void dispose() {
     _floatController.dispose();
+    _audioPlayer.dispose();
     super.dispose();
+  }
+
+  void _playAudio() async {
+    await _audioPlayer.play(
+      AssetSource('audios/VocalU/Explota las burbujas.m4a'),
+    ); // Asegúrate de tener este archivo en assets/audios
   }
 
   void popBubble(int index) {
@@ -155,7 +164,6 @@ class _BubbleScreenState extends State<BubbleScreen>
                   IconButton(
                     icon: Icon(Icons.close, color: Colors.black, size: 30),
                     onPressed: () {
-                      // Navegar a la pantalla de llenaU.dart
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => llenaU()),
@@ -186,7 +194,10 @@ class _BubbleScreenState extends State<BubbleScreen>
               left: 20,
               child: Row(
                 children: [
-                  Icon(Icons.volume_up, color: Colors.black, size: 24),
+                  IconButton(
+                    icon: Icon(Icons.volume_up, color: Colors.black, size: 24),
+                    onPressed: _playAudio,
+                  ),
                   SizedBox(width: 8),
                   Text(
                     'Explota las burbujas de la letra u',
@@ -239,7 +250,6 @@ class _BubbleScreenState extends State<BubbleScreen>
                 right: 20,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Navegación a Nivel5Screen
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => Nivel5Screen()),

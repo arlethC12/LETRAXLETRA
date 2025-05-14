@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:audioplayers/audioplayers.dart'; // Importa el paquete de audioplayers
 import 'Eescribe.dart'; // Asegúrate de que esta importación sea correcta
 
 class VocalEPage extends StatelessWidget {
@@ -26,6 +27,8 @@ class _WriteScreenState extends State<WriteScreen> {
   late VideoPlayerController _videoController;
   late Future<void> _initializeVideoPlayerFuture;
   bool _isVideoCompleted = false;
+  final AudioPlayer _audioPlayer =
+      AudioPlayer(); // Instancia del reproductor de audio
 
   @override
   void initState() {
@@ -47,10 +50,21 @@ class _WriteScreenState extends State<WriteScreen> {
     }
   }
 
+  void _playAudio() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalE/Da play en el video .mp3'),
+      ); // Ruta del archivo de audio
+    } catch (e) {
+      print('Error al reproducir el audio: $e');
+    }
+  }
+
   @override
   void dispose() {
     _videoController.removeListener(_videoListener);
     _videoController.dispose();
+    _audioPlayer.dispose(); // Libera los recursos del reproductor de audio
     super.dispose();
   }
 
@@ -103,9 +117,8 @@ class _WriteScreenState extends State<WriteScreen> {
                       color: Colors.black87,
                       size: 40,
                     ),
-                    onPressed: () {
-                      // Función para reproducir sonido si deseas agregarla
-                    },
+                    onPressed:
+                        _playAudio, // Llama a la función para reproducir el audio
                   ),
                   const Text(
                     'Aprende como se escribe la letra E',

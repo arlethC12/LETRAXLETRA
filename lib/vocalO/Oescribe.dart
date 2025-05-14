@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:letra_x_letra/vocalO/seleccionaimagen.dart'; // Importa seleccionaimagen.dart
-import 'package:letra_x_letra/vocalO/videovocalO.dart'; // Importa videovocalO.dart
+import 'package:letra_x_letra/vocalO/seleccionaimagen.dart';
+import 'package:letra_x_letra/vocalO/videovocalO.dart';
+import 'package:audioplayers/audioplayers.dart'; // Importar audioplayers
 
 void main() {
   runApp(const OescribePage());
 }
 
-// Definimos una clase raíz para gestionar el MaterialApp
 class OescribePage extends StatelessWidget {
   const OescribePage({super.key});
 
@@ -32,63 +32,72 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
   bool isValid = false;
   String feedbackMessage = 'Dibuja la letra O.';
   bool isUpperCase = true;
-  bool isUpperCaseCompleted = false; // Track uppercase O completion
-  bool isLowerCaseCompleted = false; // Track lowercase o completion
+  bool isUpperCaseCompleted = false;
+  bool isLowerCaseCompleted = false;
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Instancia de AudioPlayer
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose(); // Liberar recursos del audio
+    super.dispose();
+  }
+
+  // Función para reproducir el audio
+  Future<void> _playAudio() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalO/Escribe la letra o.m4a'),
+      );
+    } catch (e) {
+      print('Error al reproducir el audio: $e');
+    }
+  }
 
   // Regiones clave para la "O" mayúscula
   List<Rect> getKeyRegionsForUpperCaseO(Size canvasSize) {
     double width = canvasSize.width;
     double height = canvasSize.height;
-    double margin = 25.0; // Margen de tolerancia
+    double margin = 25.0;
     double centerX = 0.5 * width;
     double centerY = 0.5 * height;
-    double radius = 0.35 * width; // Radio aproximado de la O mayúscula
+    double radius = 0.35 * width;
 
-    // Dividimos el círculo en 8 regiones rectangulares alrededor de la circunferencia
     return [
-      // Superior
       Rect.fromCenter(
         center: Offset(centerX, centerY - radius),
         width: 0.2 * width + 2 * margin,
         height: 0.2 * height + 2 * margin,
       ),
-      // Superior-derecha
       Rect.fromCenter(
         center: Offset(centerX + radius * 0.707, centerY - radius * 0.707),
         width: 0.2 * width + 2 * margin,
         height: 0.2 * height + 2 * margin,
       ),
-      // Derecha
       Rect.fromCenter(
         center: Offset(centerX + radius, centerY),
         width: 0.2 * width + 2 * margin,
         height: 0.2 * height + 2 * margin,
       ),
-      // Inferior-derecha
       Rect.fromCenter(
         center: Offset(centerX + radius * 0.707, centerY + radius * 0.707),
         width: 0.2 * width + 2 * margin,
         height: 0.2 * height + 2 * margin,
       ),
-      // Inferior
       Rect.fromCenter(
         center: Offset(centerX, centerY + radius),
         width: 0.2 * width + 2 * margin,
         height: 0.2 * height + 2 * margin,
       ),
-      // Inferior-izquierda
       Rect.fromCenter(
         center: Offset(centerX - radius * 0.707, centerY + radius * 0.707),
         width: 0.2 * width + 2 * margin,
         height: 0.2 * height + 2 * margin,
       ),
-      // Izquierda
       Rect.fromCenter(
         center: Offset(centerX - radius, centerY),
         width: 0.2 * width + 2 * margin,
         height: 0.2 * height + 2 * margin,
       ),
-      // Superior-izquierda
       Rect.fromCenter(
         center: Offset(centerX - radius * 0.707, centerY - radius * 0.707),
         width: 0.2 * width + 2 * margin,
@@ -101,56 +110,47 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
   List<Rect> getKeyRegionsForLowerCaseO(Size canvasSize) {
     double width = canvasSize.width;
     double height = canvasSize.height;
-    double margin = 20.0; // Margen de tolerancia
+    double margin = 20.0;
     double centerX = 0.5 * width;
-    double centerY = 0.55 * height; // Ligeramente más abajo para minúscula
-    double radius = 0.25 * width; // Radio más pequeño para la o minúscula
+    double centerY = 0.55 * height;
+    double radius = 0.25 * width;
 
-    // Dividimos el círculo en 8 regiones rectangulares
     return [
-      // Superior
       Rect.fromCenter(
         center: Offset(centerX, centerY - radius),
         width: 0.15 * width + 2 * margin,
         height: 0.15 * height + 2 * margin,
       ),
-      // Superior-derecha
       Rect.fromCenter(
         center: Offset(centerX + radius * 0.707, centerY - radius * 0.707),
         width: 0.15 * width + 2 * margin,
         height: 0.15 * height + 2 * margin,
       ),
-      // Derecha
       Rect.fromCenter(
         center: Offset(centerX + radius, centerY),
         width: 0.15 * width + 2 * margin,
         height: 0.15 * height + 2 * margin,
       ),
-      // Inferior-derecha
       Rect.fromCenter(
         center: Offset(centerX + radius * 0.707, centerY + radius * 0.707),
         width: 0.15 * width + 2 * margin,
         height: 0.15 * height + 2 * margin,
       ),
-      // Inferior
       Rect.fromCenter(
         center: Offset(centerX, centerY + radius),
         width: 0.15 * width + 2 * margin,
         height: 0.15 * height + 2 * margin,
       ),
-      // Inferior-izquierda
       Rect.fromCenter(
         center: Offset(centerX - radius * 0.707, centerY + radius * 0.707),
         width: 0.15 * width + 2 * margin,
         height: 0.15 * height + 2 * margin,
       ),
-      // Izquierda
       Rect.fromCenter(
         center: Offset(centerX - radius, centerY),
         width: 0.15 * width + 2 * margin,
         height: 0.15 * height + 2 * margin,
       ),
-      // Superior-izquierda
       Rect.fromCenter(
         center: Offset(centerX - radius * 0.707, centerY - radius * 0.707),
         width: 0.15 * width + 2 * margin,
@@ -184,7 +184,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
       }
     }
 
-    // Requerir al menos 10 puntos en cada región para considerarlas cubiertas
     bool allRegionsCovered = true;
     for (int i = 0; i < pointsInRegion.length; i++) {
       if (pointsInRegion[i] < 10) {
@@ -233,7 +232,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                       color: Color.fromARGB(255, 0, 0, 0),
                     ),
                     onPressed: () {
-                      // Navegar a la pantalla de videovocalO.dart
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -273,7 +271,14 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  const Icon(Icons.volume_up, color: Colors.black),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.volume_up,
+                      color: Colors.black,
+                      size: 24,
+                    ),
+                    onPressed: _playAudio, // Llamar a la función de audio
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'Escribe la letra ${isUpperCase ? "O" : "o"}',
@@ -461,7 +466,6 @@ class _LetterTracingScreenState extends State<LetterTracingScreen> {
                   if (isLessonCompleted)
                     ElevatedButton.icon(
                       onPressed: () {
-                        // Navegar a la pantalla de seleccionaimagen.dart
                         Navigator.push(
                           context,
                           MaterialPageRoute(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart'; // Importar audioplayers
 import 'package:letra_x_letra/vocalU/Uescribe.dart';
 import 'package:letra_x_letra/vocalU/unepalabra.dart';
 
@@ -10,7 +11,7 @@ class imagsel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // Remove debug banner
+      debugShowCheckedModeBanner: false,
       home: SelectionScreen(),
     );
   }
@@ -23,19 +24,21 @@ class SelectionScreen extends StatefulWidget {
 
 class _SelectionScreenState extends State<SelectionScreen> {
   final List<String> emojis = [
-    '🧸', // Teddy bear
-    '😊', // Smiling face
-    '👸', // Princess
-    '🦄', // Unicorn (selectable)
-    '🍇', // Grapes (Uva, selectable)
-    '✨', // Sparkles
-    '1️⃣', // Number 1 (Número 1, selectable)
-    '🙃', // Upside-down face (selectable)
-    '💅', // Nails (Uñas, selectable)
+    '🧸',
+    '😊',
+    '👸',
+    '🦄',
+    '🍇',
+    '✨',
+    '1️⃣',
+    '🙃',
+    '💅',
   ];
 
   List<bool> selected = List.filled(9, false);
-  final int totalSelectable = 4; // 🦄, 🍇, 1️⃣, 💅
+  final int totalSelectable = 4;
+  final AudioPlayer _audioPlayer =
+      AudioPlayer(); // Instancia del reproductor de audio
 
   bool isSelectable(String emoji) {
     return emoji == '🦄' || emoji == '🍇' || emoji == '1️⃣' || emoji == '💅';
@@ -49,13 +52,30 @@ class _SelectionScreenState extends State<SelectionScreen> {
     return getSelectedCount() == totalSelectable;
   }
 
+  // Función para reproducir el audio
+  Future<void> playAudio() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalU/SELECCIONA LAS IMAGE.m4a'),
+      );
+    } catch (e) {
+      print("Error al reproducir el audio: $e");
+    }
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose(); // Liberar recursos del reproductor
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            // Top bar with X and progress
+            // Top bar con X y progreso
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 16.0,
@@ -69,7 +89,7 @@ class _SelectionScreenState extends State<SelectionScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => UescribePage()),
-                      ); // Handle close action
+                      );
                     },
                   ),
                   Expanded(
@@ -94,16 +114,36 @@ class _SelectionScreenState extends State<SelectionScreen> {
                 ],
               ),
             ),
-            // Title
+            // Título con ícono de bocina y audio
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Selecciona las imágenes que empiecen con la letra U',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: playAudio,
+                    child: Icon(
+                      Icons.volume_up,
+                      size: 30,
+                      color: const Color.fromARGB(255, 17, 17, 16),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      'Selecciona las imágenes que empiecen con la letra U',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
             ),
-            // Large orange "U"
+            // Letra U grande
             Text(
               'U',
               style: TextStyle(
@@ -113,7 +153,7 @@ class _SelectionScreenState extends State<SelectionScreen> {
               ),
             ),
             SizedBox(height: 20),
-            // Grid of emojis
+            // Grid de emojis
             Expanded(
               child: GridView.builder(
                 padding: EdgeInsets.all(16),
@@ -157,13 +197,13 @@ class _SelectionScreenState extends State<SelectionScreen> {
                 },
               ),
             ),
-            // Right arrow button when all are selected
+            // Botón de flecha derecha cuando se seleccionan todos
             if (allSelected())
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange, // Button color
+                    backgroundColor: Colors.orange,
                     shape: CircleBorder(),
                     padding: EdgeInsets.all(16),
                   ),
@@ -171,11 +211,11 @@ class _SelectionScreenState extends State<SelectionScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => unepla()),
-                    ); // Handle next action
+                    );
                   },
                   child: Icon(
-                    Icons.arrow_forward, // Right arrow
-                    color: Colors.white, // Arrow color
+                    Icons.arrow_forward,
+                    color: Colors.white,
                     size: 40,
                   ),
                 ),

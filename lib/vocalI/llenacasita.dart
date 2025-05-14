@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:letra_x_letra/vocalI/pintai.dart'; // Importa pintai.dart (contiene ColorPuzzleScreen)
+import 'package:letra_x_letra/vocalI/pintai.dart'; // Importa pintai.dart
 import 'package:letra_x_letra/vocalI/rompecabesa.dart'; // Importa rompecabesa.dart
+import 'package:audioplayers/audioplayers.dart'; // Importa audioplayers
 
 void main() {
   runApp(LlenaCasitaScreen());
@@ -9,10 +10,7 @@ void main() {
 class LlenaCasitaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false, // Remove DEBUG label
-      home: GameScreen(),
-    );
+    return MaterialApp(debugShowCheckedModeBanner: false, home: GameScreen());
   }
 }
 
@@ -28,9 +26,29 @@ class _GameScreenState extends State<GameScreen> {
   ); // 2 ventanas, inicialmente vacías
   int filledWindows = 0; // Contador de ventanas llenas
   double progress = 0.0; // Progreso de la barra (0 a 1)
+  late AudioPlayer _audioPlayer; // Reproductor de audio
 
   // Lista de emojis que comienzan con "I"
-  List<String> validEmojis = ['💉', '🧲', '⛪']; // Inyección, Imán y Iglesia
+  List<String> validEmojis = ['💉', '🧲', '⛪']; // Inyección, Imán, Iglesia
+
+  @override
+  void initState() {
+    super.initState();
+    _audioPlayer = AudioPlayer(); // Inicializa el reproductor de audio
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose(); // Libera recursos del reproductor
+    super.dispose();
+  }
+
+  // Función para reproducir el audio
+  Future<void> _playAudio() async {
+    await _audioPlayer.play(
+      AssetSource('audios/VocalI/Selecciona la imagen.m4a'),
+    );
+  }
 
   // Función para manejar cuando se selecciona un emoji
   void selectEmoji(String emoji) {
@@ -38,7 +56,6 @@ class _GameScreenState extends State<GameScreen> {
       return; // Solo emojis que comienzan con "I"
 
     setState(() {
-      // Buscar la primera ventana vacía
       for (int i = 0; i < windows.length; i++) {
         if (windows[i] == null) {
           windows[i] = emoji;
@@ -55,7 +72,6 @@ class _GameScreenState extends State<GameScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Fondo de la pantalla
           Container(
             color: Colors.white,
             child: Column(
@@ -67,12 +83,8 @@ class _GameScreenState extends State<GameScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        icon: Icon(
-                          Icons.close,
-                          color: const Color.fromARGB(255, 0, 0, 0),
-                        ),
+                        icon: Icon(Icons.close, color: Colors.black),
                         onPressed: () {
-                          // Navegar a la pantalla de pintai.dart
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -85,14 +97,12 @@ class _GameScreenState extends State<GameScreen> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(
-                              20,
-                            ), // Bordes circulares
+                            borderRadius: BorderRadius.circular(20),
                             child: LinearProgressIndicator(
                               value: progress,
                               backgroundColor: Colors.grey[300],
-                              color: Colors.orange, // Color naranja
-                              minHeight: 10, // Altura de la barra
+                              color: Colors.orange,
+                              minHeight: 10,
                             ),
                           ),
                         ),
@@ -100,19 +110,33 @@ class _GameScreenState extends State<GameScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 40), // Más espacio para bajar la casa
-                // Texto de instrucción
-                Text(
-                  'Selecciona la imagen que empiece con la letra I y ponla en la casa',
-                  style: TextStyle(fontSize: 18),
-                  textAlign: TextAlign.center,
+                SizedBox(height: 40),
+                // Ícono de bocina y texto de instrucción
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.volume_up, color: Colors.black),
+                        onPressed:
+                            _playAudio, // Reproduce el audio al presionar
+                      ),
+                      Expanded(
+                        child: Text(
+                          'Toca imágenes con la letra I y colócalas en la casa',
+                          style: TextStyle(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                SizedBox(height: 45), // Más espacio para bajar la casa
+                SizedBox(height: 45),
                 // Casa con ventanas
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    // Techo de la casa
                     Positioned(
                       top: -8,
                       child: CustomPaint(
@@ -120,7 +144,6 @@ class _GameScreenState extends State<GameScreen> {
                         painter: RoofPainter(),
                       ),
                     ),
-                    // Cuerpo de la casa
                     Container(
                       margin: EdgeInsets.only(top: 38),
                       width: 200,
@@ -128,7 +151,6 @@ class _GameScreenState extends State<GameScreen> {
                       color: Colors.purple[200],
                       child: Stack(
                         children: [
-                          // Puerta con corazón
                           Positioned(
                             bottom: 10,
                             left: 80,
@@ -144,7 +166,6 @@ class _GameScreenState extends State<GameScreen> {
                               ),
                             ),
                           ),
-                          // Ventanas cuadradas
                           Positioned(
                             top: 20,
                             left: 20,
@@ -186,10 +207,10 @@ class _GameScreenState extends State<GameScreen> {
               ],
             ),
           ),
-          // Botón naranja con flecha blanca (aparece al llenar todas las ventanas)
+          // Botón naranja con flecha blanca
           if (filledWindows == windows.length)
             Positioned(
-              bottom: 20.0, // Valor corregido
+              bottom: 20.0,
               right: 20,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -198,7 +219,6 @@ class _GameScreenState extends State<GameScreen> {
                   padding: EdgeInsets.all(20),
                 ),
                 onPressed: () {
-                  // Navegar a la pantalla de rompecabesa.dart
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -255,17 +275,12 @@ class WindowPane extends StatelessWidget {
         color: isFilled ? Colors.grey[200] : Colors.white,
         border: Border.all(color: Colors.black),
       ),
-      child: Center(
-        child: Text(
-          emoji ?? '',
-          style: TextStyle(fontSize: 30), // Tamaño más grande para emojis
-        ),
-      ),
+      child: Center(child: Text(emoji ?? '', style: TextStyle(fontSize: 30))),
     );
   }
 }
 
-// Pintor para el tejado de la casa (Techo triangular)
+// Pintor para el tejado de la casa
 class RoofPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {

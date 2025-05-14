@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart'; // Importa el paquete audioplayers
 import 'package:letra_x_letra/vocalI/llenacasita.dart'; // Importa llenacasita.dart
 import 'package:letra_x_letra/vocalI/Iescribe.dart'; // Importa Iescribe.dart
 
@@ -17,6 +18,7 @@ class _ColorPuzzleScreenState extends State<ColorPuzzleScreen>
     with SingleTickerProviderStateMixin {
   Map<int, bool> painted = {};
   bool showNextButton = false;
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Instancia de AudioPlayer
 
   // Ahora toda la estructura está bien: "I" en el centro, "i" en los costados
   final List<String> letters = [
@@ -46,6 +48,23 @@ class _ColorPuzzleScreenState extends State<ColorPuzzleScreen>
     'i',
     'i',
   ];
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose(); // Libera los recursos del reproductor
+    super.dispose();
+  }
+
+  // Función para reproducir el audio
+  Future<void> _playAudio() async {
+    try {
+      await _audioPlayer.play(
+        AssetSource('audios/VocalI/Colorea la letra I m (1).m4a'),
+      );
+    } catch (e) {
+      print('Error al reproducir el audio: $e');
+    }
+  }
 
   void paintLetter(int index) {
     setState(() {
@@ -100,13 +119,36 @@ class _ColorPuzzleScreenState extends State<ColorPuzzleScreen>
               ),
             ),
             SizedBox(height: 10),
-            // Texto de instrucciones
+            // Texto de instrucciones con ícono de bocina
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                "Colorea la letra I mayúscula y la letra i minúscula según corresponda su color",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.volume_up,
+                      color: Colors.black,
+                      size: 24,
+                    ),
+                    onPressed: _playAudio, // Reproduce el audio al presionar
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      "Colorea la letra I mayúscula y la letra i minúscula según corresponda su color",
+                      style: TextStyle(
+                        fontSize: 14, // Reducido para mejor ajuste
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2, // Permite hasta 2 líneas
+                      overflow:
+                          TextOverflow.ellipsis, // Maneja el desbordamiento
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 25),
