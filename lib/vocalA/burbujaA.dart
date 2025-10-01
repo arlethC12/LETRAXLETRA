@@ -109,37 +109,11 @@ class _BubbleScreenState extends State<BubbleScreen>
   }
 
   Color getBorderColor(String letter) {
-    switch (letter.toLowerCase()) {
-      case 'a':
-        return Colors.red;
-      case 'i':
-        return Colors.blue;
-      case 'o':
-        return Colors.purple;
-      case 'e':
-        return Colors.green;
-      case 'u':
-        return Colors.orange;
-      default:
-        return Colors.black;
-    }
+    return Colors.black; // Uniform border color for all letters
   }
 
   Color getTextColor(String letter) {
-    switch (letter.toLowerCase()) {
-      case 'a':
-        return Colors.red.shade700;
-      case 'i':
-        return Colors.blue.shade700;
-      case 'o':
-        return Colors.purple.shade700;
-      case 'e':
-        return Colors.green.shade700;
-      case 'u':
-        return Colors.orange.shade700;
-      default:
-        return Colors.black;
-    }
+    return Colors.black; // Uniform text color for all letters
   }
 
   @override
@@ -398,12 +372,6 @@ class _BubbleWidgetState extends State<BubbleWidget>
                         blurRadius: 8,
                         offset: Offset(3, 3),
                       ),
-                      if (widget.letter.toLowerCase() == 'a')
-                        BoxShadow(
-                          color: Colors.red.withOpacity(0.4),
-                          blurRadius: 10,
-                          spreadRadius: 2,
-                        ),
                     ],
                   ),
                   child: Center(

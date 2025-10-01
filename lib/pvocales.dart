@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:letra_x_letra/vocalU/videoletraU.dart';
+import 'package:letra_x_letra/Juegos/juego.dart';
 import 'dart:async';
 import 'vocalA/vocala.dart';
 import 'vocalE/aprendevocale.dart';
@@ -102,7 +103,7 @@ class _VowelsScreenState extends State<VowelsScreen>
       try {
         final response = await http
             .get(
-              Uri.parse('http://192.168.1.69:3000/materias/1'),
+              Uri.parse('http://192.168.1.38:3000/materias/1'),
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ${widget.token}',
@@ -204,7 +205,7 @@ class _VowelsScreenState extends State<VowelsScreen>
             final response = await http
                 .get(
                   Uri.parse(
-                    'http://192.168.1.69:3000/lecciones/nombre/$encodedTitle',
+                    'http://192.168.1.38:3000/lecciones/nombre/$encodedTitle',
                   ),
                   headers: {'Content-Type': 'application/json'},
                 )
@@ -565,18 +566,33 @@ class _VowelsScreenState extends State<VowelsScreen>
               label: '',
             ),
             BottomNavigationBarItem(
-              icon: Image.asset(
-                'assets/juego.png',
-                height:
-                    ResponsiveValue<double>(
-                      context,
-                      defaultValue: size.height * 0.05,
-                      conditionalValues: const [
-                        Condition.equals(name: MOBILE, value: 35.0),
-                        Condition.equals(name: TABLET, value: 40.0),
-                        Condition.equals(name: DESKTOP, value: 50.0),
-                      ],
-                    ).value,
+              icon: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => Juego(
+                            characterImagePath: widget.characterImagePath,
+                            username: widget.username,
+                            token: widget.token,
+                          ),
+                    ),
+                  );
+                },
+                child: Image.asset(
+                  'assets/juego.png',
+                  height:
+                      ResponsiveValue<double>(
+                        context,
+                        defaultValue: size.height * 0.05,
+                        conditionalValues: const [
+                          Condition.equals(name: MOBILE, value: 35.0),
+                          Condition.equals(name: TABLET, value: 40.0),
+                          Condition.equals(name: DESKTOP, value: 50.0),
+                        ],
+                      ).value,
+                ),
               ),
               label: '',
             ),
@@ -596,7 +612,7 @@ class _VowelsScreenState extends State<VowelsScreen>
                       ),
                 ),
               );
-            } else if (index == 0 || index == 1 || index == 3 || index == 4) {
+            } else if (index == 0 || index == 1 || index == 3) {
               print(
                 'VowelsScreen: Navigating to Continuara with - characterImagePath: ${widget.characterImagePath}, username: ${widget.username}',
               );
@@ -607,6 +623,21 @@ class _VowelsScreenState extends State<VowelsScreen>
                       (context) => Continuara(
                         characterImagePath: widget.characterImagePath,
                         username: widget.username,
+                      ),
+                ),
+              );
+            } else if (index == 4) {
+              print(
+                'VowelsScreen: Navigating to Juego with - characterImagePath: ${widget.characterImagePath}, username: ${widget.username}, token: ${widget.token}',
+              );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) => Juego(
+                        characterImagePath: widget.characterImagePath,
+                        username: widget.username,
+                        token: widget.token,
                       ),
                 ),
               );

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'pvocales.dart';
 import 'main.dart';
-import 'Continuara.dart'; // Import Continuara.dart
+import 'Continuara.dart';
 
 class Niveles extends StatelessWidget {
   final String characterImagePath;
@@ -35,7 +35,6 @@ class HomeScreen extends StatelessWidget {
     required this.username,
   }) : super(key: key);
 
-  // Show logout confirmation dialog and handle logout
   Future<void> _handleLogout(BuildContext context) async {
     final bool? confirm = await showDialog<bool>(
       context: context,
@@ -61,14 +60,12 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
-  // Logout function to call the API and clear token
   Future<void> _logout(BuildContext context) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
 
       if (token == null) {
-        // No token found, proceed to main screen
         _navigateToMain(context);
         return;
       }
@@ -79,34 +76,36 @@ class HomeScreen extends StatelessWidget {
       );
 
       if (response.statusCode == 200) {
-        // Clear token on successful logout
         await prefs.remove('auth_token');
         _navigateToMain(context);
       } else {
-        // Show error message
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Error al cerrar sesión')));
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Error al cerrar sesión')),
+          );
+        }
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Error del servidor')));
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Error del servidor')));
+      }
     }
   }
 
-  // Navigate to main screen
   void _navigateToMain(BuildContext context) {
-    Navigator.pushReplacement(
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const MyApp()),
+      (route) => false,
     );
   }
 
-  // Show popup menu for profile options
   void _showProfileMenu(BuildContext context, Offset position) {
-    final RenderBox overlay =
-        Overlay.of(context)!.context.findRenderObject() as RenderBox;
+    final RenderBox? overlay =
+        Overlay.of(context)?.context.findRenderObject() as RenderBox?;
+    if (overlay == null) return;
     showMenu(
       context: context,
       position: RelativeRect.fromLTRB(
@@ -127,8 +126,7 @@ class HomeScreen extends StatelessWidget {
       ],
     ).then((String? value) async {
       if (value == 'edit_profile') {
-        // Navigate to edit profile screen
-        // Add your navigation logic here
+        // Add navigation logic here
       } else if (value == 'logout') {
         await _handleLogout(context);
       }
@@ -137,27 +135,40 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final responsive = ResponsiveBreakpoints.of(context);
     final size = MediaQuery.of(context).size;
-    final isMobile = ResponsiveBreakpoints.of(context).isMobile;
-    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
-    final double padding =
-        size.width * (isMobile ? 0.05 : (isTablet ? 0.06 : 0.07));
-    final double spacing =
-        size.height * (isMobile ? 0.02 : (isTablet ? 0.03 : 0.04));
+    final isMobile = responsive.isMobile;
+    final isTablet = responsive.isTablet;
+    final scale =
+        isMobile
+            ? 1.0
+            : isTablet
+            ? 1.2
+            : 1.5;
+    final padding =
+        size.width *
+        (isMobile
+            ? 0.05
+            : isTablet
+            ? 0.06
+            : 0.07);
+    final spacing =
+        size.height *
+        (isMobile
+            ? 0.02
+            : isTablet
+            ? 0.03
+            : 0.04);
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(
-          ResponsiveValue<double>(
-            context,
-            defaultValue: size.height * 0.08,
-            conditionalValues: const [
-              Condition.equals(name: MOBILE, value: 50.0),
-              Condition.equals(name: TABLET, value: 60.0),
-              Condition.equals(name: DESKTOP, value: 70.0),
-            ],
-          ).value,
+          isMobile
+              ? 50.0
+              : isTablet
+              ? 60.0
+              : 70.0,
         ),
         child: AppBar(
           backgroundColor: const Color.fromARGB(255, 189, 162, 139),
@@ -174,15 +185,11 @@ class HomeScreen extends StatelessWidget {
                     },
                     child: CircleAvatar(
                       radius:
-                          ResponsiveValue<double>(
-                            context,
-                            defaultValue: size.width * 0.05,
-                            conditionalValues: const [
-                              Condition.equals(name: MOBILE, value: 20.0),
-                              Condition.equals(name: TABLET, value: 25.0),
-                              Condition.equals(name: DESKTOP, value: 30.0),
-                            ],
-                          ).value,
+                          isMobile
+                              ? 20.0
+                              : isTablet
+                              ? 25.0
+                              : 30.0,
                       backgroundImage: AssetImage(
                         characterImagePath.isNotEmpty &&
                                 characterImagePath.contains('assets/')
@@ -193,30 +200,22 @@ class HomeScreen extends StatelessWidget {
                   ),
                   SizedBox(
                     width:
-                        ResponsiveValue<double>(
-                          context,
-                          defaultValue: size.width * 0.03,
-                          conditionalValues: const [
-                            Condition.equals(name: MOBILE, value: 8.0),
-                            Condition.equals(name: TABLET, value: 10.0),
-                            Condition.equals(name: DESKTOP, value: 12.0),
-                          ],
-                        ).value,
+                        isMobile
+                            ? 8.0
+                            : isTablet
+                            ? 10.0
+                            : 12.0,
                   ),
                   Text(
                     username,
                     style: TextStyle(
                       color: Colors.black,
                       fontSize:
-                          ResponsiveValue<double>(
-                            context,
-                            defaultValue: size.width * 0.045,
-                            conditionalValues: const [
-                              Condition.equals(name: MOBILE, value: 15.0),
-                              Condition.equals(name: TABLET, value: 16.0),
-                              Condition.equals(name: DESKTOP, value: 18.0),
-                            ],
-                          ).value,
+                          isMobile
+                              ? 15.0
+                              : isTablet
+                              ? 16.0
+                              : 18.0,
                     ),
                   ),
                 ],
@@ -292,15 +291,12 @@ class HomeScreen extends StatelessWidget {
             icon: Image.asset(
               'assets/boca.jpg',
               height:
-                  ResponsiveValue<double>(
-                    context,
-                    defaultValue: size.height * 0.05,
-                    conditionalValues: const [
-                      Condition.equals(name: MOBILE, value: 30.0),
-                      Condition.equals(name: TABLET, value: 30.0),
-                      Condition.equals(name: DESKTOP, value: 35.0),
-                    ],
-                  ).value,
+                  isMobile
+                      ? 30.0
+                      : isTablet
+                      ? 30.0
+                      : 35.0,
+              fit: BoxFit.contain,
             ),
             label: '',
           ),
@@ -308,15 +304,12 @@ class HomeScreen extends StatelessWidget {
             icon: Image.asset(
               'assets/micro.jpg',
               height:
-                  ResponsiveValue<double>(
-                    context,
-                    defaultValue: size.height * 0.05,
-                    conditionalValues: const [
-                      Condition.equals(name: MOBILE, value: 30.0),
-                      Condition.equals(name: TABLET, value: 30.0),
-                      Condition.equals(name: DESKTOP, value: 35.0),
-                    ],
-                  ).value,
+                  isMobile
+                      ? 30.0
+                      : isTablet
+                      ? 30.0
+                      : 35.0,
+              fit: BoxFit.contain,
             ),
             label: '',
           ),
@@ -324,15 +317,12 @@ class HomeScreen extends StatelessWidget {
             icon: Image.asset(
               'assets/home.jpg',
               height:
-                  ResponsiveValue<double>(
-                    context,
-                    defaultValue: size.height * 0.05,
-                    conditionalValues: const [
-                      Condition.equals(name: MOBILE, value: 30.0),
-                      Condition.equals(name: TABLET, value: 30.0),
-                      Condition.equals(name: DESKTOP, value: 35.0),
-                    ],
-                  ).value,
+                  isMobile
+                      ? 30.0
+                      : isTablet
+                      ? 30.0
+                      : 35.0,
+              fit: BoxFit.contain,
             ),
             label: '',
           ),
@@ -340,15 +330,12 @@ class HomeScreen extends StatelessWidget {
             icon: Image.asset(
               'assets/nota.jpg',
               height:
-                  ResponsiveValue<double>(
-                    context,
-                    defaultValue: size.height * 0.05,
-                    conditionalValues: const [
-                      Condition.equals(name: MOBILE, value: 30.0),
-                      Condition.equals(name: TABLET, value: 30.0),
-                      Condition.equals(name: DESKTOP, value: 35.0),
-                    ],
-                  ).value,
+                  isMobile
+                      ? 30.0
+                      : isTablet
+                      ? 30.0
+                      : 35.0,
+              fit: BoxFit.contain,
             ),
             label: '',
           ),
@@ -356,22 +343,18 @@ class HomeScreen extends StatelessWidget {
             icon: Image.asset(
               'assets/juego.png',
               height:
-                  ResponsiveValue<double>(
-                    context,
-                    defaultValue: size.height * 0.05,
-                    conditionalValues: const [
-                      Condition.equals(name: MOBILE, value: 30.0),
-                      Condition.equals(name: TABLET, value: 30.0),
-                      Condition.equals(name: DESKTOP, value: 35.0),
-                    ],
-                  ).value,
+                  isMobile
+                      ? 30.0
+                      : isTablet
+                      ? 30.0
+                      : 35.0,
+              fit: BoxFit.contain,
             ),
             label: '',
           ),
         ],
         onTap: (index) {
           if (index == 2) {
-            // Home button: Navigate to Niveles screen
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -383,7 +366,6 @@ class HomeScreen extends StatelessWidget {
               ),
             );
           } else if (index == 0 || index == 1 || index == 3 || index == 4) {
-            // boca.jpg (0), micro.jpg (1), nota.jpg (3), juego.png (4): Navigate to Continuara screen
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -408,11 +390,17 @@ class HomeScreen extends StatelessWidget {
     bool isLocked,
     VoidCallback? onTap,
   ) {
+    final responsive = ResponsiveBreakpoints.of(context);
     final size = MediaQuery.of(context).size;
-    final isMobile = ResponsiveBreakpoints.of(context).isMobile;
-    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
-    final double imageSize =
-        size.width * (isMobile ? 0.35 : (isTablet ? 0.4 : 0.45));
+    final isMobile = responsive.isMobile;
+    final isTablet = responsive.isTablet;
+    final imageSize =
+        size.width *
+        (isMobile
+            ? 0.35
+            : isTablet
+            ? 0.4
+            : 0.45);
 
     return GestureDetector(
       onTap:
@@ -438,27 +426,19 @@ class HomeScreen extends StatelessWidget {
               : onTap,
       child: Container(
         height:
-            ResponsiveValue<double>(
-              context,
-              defaultValue: size.height * 0.20,
-              conditionalValues: const [
-                Condition.equals(name: MOBILE, value: 160.0),
-                Condition.equals(name: TABLET, value: 180.0),
-                Condition.equals(name: DESKTOP, value: 200.0),
-              ],
-            ).value,
+            isMobile
+                ? 160.0
+                : isTablet
+                ? 180.0
+                : 200.0,
         decoration: BoxDecoration(
           color: const Color(0xFFFFC107),
           borderRadius: BorderRadius.circular(
-            ResponsiveValue<double>(
-              context,
-              defaultValue: size.width * 0.03,
-              conditionalValues: const [
-                Condition.equals(name: MOBILE, value: 10.0),
-                Condition.equals(name: TABLET, value: 15.0),
-                Condition.equals(name: DESKTOP, value: 20.0),
-              ],
-            ).value,
+            isMobile
+                ? 10.0
+                : isTablet
+                ? 15.0
+                : 20.0,
           ),
         ),
         child: Row(
@@ -468,17 +448,13 @@ class HomeScreen extends StatelessWidget {
                 Icons.volume_up,
                 color: Colors.black,
                 size:
-                    ResponsiveValue<double>(
-                      context,
-                      defaultValue: size.width * 0.08,
-                      conditionalValues: const [
-                        Condition.equals(name: MOBILE, value: 25.0),
-                        Condition.equals(name: TABLET, value: 30.0),
-                        Condition.equals(name: DESKTOP, value: 35.0),
-                      ],
-                    ).value,
+                    isMobile
+                        ? 25.0
+                        : isTablet
+                        ? 30.0
+                        : 35.0,
               ),
-              onPressed: () {}, // Add audio playback if needed
+              onPressed: () {},
             ),
             Expanded(
               child: Column(
@@ -489,65 +465,45 @@ class HomeScreen extends StatelessWidget {
                     title,
                     style: TextStyle(
                       fontSize:
-                          ResponsiveValue<double>(
-                            context,
-                            defaultValue: size.width * 0.09,
-                            conditionalValues: const [
-                              Condition.equals(name: MOBILE, value: 20.0),
-                              Condition.equals(name: TABLET, value: 24.0),
-                              Condition.equals(name: DESKTOP, value: 28.0),
-                            ],
-                          ).value,
+                          isMobile
+                              ? 20.0
+                              : isTablet
+                              ? 24.0
+                              : 28.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
                   SizedBox(
                     height:
-                        ResponsiveValue<double>(
-                          context,
-                          defaultValue: size.height * 0.01,
-                          conditionalValues: const [
-                            Condition.equals(name: MOBILE, value: 5.0),
-                            Condition.equals(name: TABLET, value: 8.0),
-                            Condition.equals(name: DESKTOP, value: 10.0),
-                          ],
-                        ).value,
+                        isMobile
+                            ? 5.0
+                            : isTablet
+                            ? 8.0
+                            : 10.0,
                   ),
                   Center(
                     child: Container(
                       width:
-                          ResponsiveValue<double>(
-                            context,
-                            defaultValue: size.width * 0.35,
-                            conditionalValues: const [
-                              Condition.equals(name: MOBILE, value: 120.0),
-                              Condition.equals(name: TABLET, value: 150.0),
-                              Condition.equals(name: DESKTOP, value: 180.0),
-                            ],
-                          ).value,
+                          isMobile
+                              ? 120.0
+                              : isTablet
+                              ? 150.0
+                              : 180.0,
                       height:
-                          ResponsiveValue<double>(
-                            context,
-                            defaultValue: size.height * 0.06,
-                            conditionalValues: const [
-                              Condition.equals(name: MOBILE, value: 40.0),
-                              Condition.equals(name: TABLET, value: 50.0),
-                              Condition.equals(name: DESKTOP, value: 60.0),
-                            ],
-                          ).value,
+                          isMobile
+                              ? 40.0
+                              : isTablet
+                              ? 50.0
+                              : 60.0,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(
-                          ResponsiveValue<double>(
-                            context,
-                            defaultValue: size.width * 0.5,
-                            conditionalValues: const [
-                              Condition.equals(name: MOBILE, value: 20.0),
-                              Condition.equals(name: TABLET, value: 25.0),
-                              Condition.equals(name: DESKTOP, value: 30.0),
-                            ],
-                          ).value,
+                          isMobile
+                              ? 20.0
+                              : isTablet
+                              ? 25.0
+                              : 30.0,
                         ),
                         boxShadow: [
                           BoxShadow(
@@ -564,24 +520,11 @@ class HomeScreen extends StatelessWidget {
                                 ? Image.asset(
                                   'assets/candado.png',
                                   height:
-                                      ResponsiveValue<double>(
-                                        context,
-                                        defaultValue: size.height * 0.06,
-                                        conditionalValues: const [
-                                          Condition.equals(
-                                            name: MOBILE,
-                                            value: 30.0,
-                                          ),
-                                          Condition.equals(
-                                            name: TABLET,
-                                            value: 35.0,
-                                          ),
-                                          Condition.equals(
-                                            name: DESKTOP,
-                                            value: 40.0,
-                                          ),
-                                        ],
-                                      ).value,
+                                      isMobile
+                                          ? 30.0
+                                          : isTablet
+                                          ? 35.0
+                                          : 40.0,
                                   fit: BoxFit.contain,
                                 )
                                 : Text(
@@ -590,24 +533,11 @@ class HomeScreen extends StatelessWidget {
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black,
                                     fontSize:
-                                        ResponsiveValue<double>(
-                                          context,
-                                          defaultValue: size.width * 0.04,
-                                          conditionalValues: const [
-                                            Condition.equals(
-                                              name: MOBILE,
-                                              value: 14.0,
-                                            ),
-                                            Condition.equals(
-                                              name: TABLET,
-                                              value: 16.0,
-                                            ),
-                                            Condition.equals(
-                                              name: DESKTOP,
-                                              value: 18.0,
-                                            ),
-                                          ],
-                                        ).value,
+                                        isMobile
+                                            ? 14.0
+                                            : isTablet
+                                            ? 16.0
+                                            : 18.0,
                                   ),
                                 ),
                       ),
@@ -618,15 +548,11 @@ class HomeScreen extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.all(
-                ResponsiveValue<double>(
-                  context,
-                  defaultValue: size.width * 0.02,
-                  conditionalValues: const [
-                    Condition.equals(name: MOBILE, value: 5.0),
-                    Condition.equals(name: TABLET, value: 8.0),
-                    Condition.equals(name: DESKTOP, value: 10.0),
-                  ],
-                ).value,
+                isMobile
+                    ? 5.0
+                    : isTablet
+                    ? 8.0
+                    : 10.0,
               ),
               child: Image.asset(
                 imagePath,

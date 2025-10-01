@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart'; // Added for audio playback
 import 'burbujaA.dart'; // Importación del archivo burbujaA
 import 'caritaselet.dart'; // Importación del archivo caritaselet
+import 'dart:math'; // Added for shuffling
 
 void main() {
   runApp(UnirimagScreen());
@@ -32,9 +33,17 @@ class _MatchingScreenState extends State<MatchingScreen> {
     {'emoji': '🐿️', 'word': 'ardilla'},
   ];
 
+  late List<Map<String, String>> shuffledWords; // List to hold shuffled words
   Map<int, int> connections = {};
   int? selectedEmojiIndex;
   final AudioPlayer _audioPlayer = AudioPlayer(); // Added for audio playback
+
+  @override
+  void initState() {
+    super.initState();
+    // Shuffle the words list when the state is initialized
+    shuffledWords = List.from(items)..shuffle(Random());
+  }
 
   @override
   void dispose() {
@@ -131,7 +140,11 @@ class _MatchingScreenState extends State<MatchingScreen> {
                 children: [
                   CustomPaint(
                     size: Size.infinite,
-                    painter: LinePainter(connections: connections),
+                    painter: LinePainter(
+                      connections: connections,
+                      items: items,
+                      shuffledWords: shuffledWords,
+                    ),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -158,15 +171,23 @@ class _MatchingScreenState extends State<MatchingScreen> {
                       ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(items.length, (index) {
+                        children: List.generate(shuffledWords.length, (index) {
                           return GestureDetector(
                             onTap: () {
                               setState(() {
-                                if (selectedEmojiIndex != null &&
-                                    items[selectedEmojiIndex!]['word'] ==
-                                        items[index]['word']) {
-                                  connections[selectedEmojiIndex!] = index;
-                                  selectedEmojiIndex = null;
+                                if (selectedEmojiIndex != null) {
+                                  // Find the index of the word in the original items list
+                                  int wordIndex = items.indexWhere(
+                                    (item) =>
+                                        item['word'] ==
+                                        shuffledWords[index]['word'],
+                                  );
+                                  if (items[selectedEmojiIndex!]['word'] ==
+                                      shuffledWords[index]['word']) {
+                                    connections[selectedEmojiIndex!] =
+                                        wordIndex;
+                                    selectedEmojiIndex = null;
+                                  }
                                 }
                               });
                             },
@@ -174,7 +195,7 @@ class _MatchingScreenState extends State<MatchingScreen> {
                               alignment: Alignment.center,
                               padding: const EdgeInsets.all(16),
                               child: Text(
-                                items[index]['word']!,
+                                shuffledWords[index]['word']!,
                                 style: const TextStyle(
                                   fontSize: 18,
                                   color: Colors.black,
@@ -225,8 +246,14 @@ class _MatchingScreenState extends State<MatchingScreen> {
 
 class LinePainter extends CustomPainter {
   final Map<int, int> connections;
+  final List<Map<String, String>> items;
+  final List<Map<String, String>> shuffledWords;
 
-  LinePainter({required this.connections});
+  LinePainter({
+    required this.connections,
+    required this.items,
+    required this.shuffledWords,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -241,9 +268,13 @@ class LinePainter extends CustomPainter {
         size.width * 0.25, // Coordenadas aproximadas para emojis
         size.height * (0.15 + emojiIndex * 0.18),
       );
+      // Find the index of the word in the shuffledWords list
+      int shuffledWordIndex = shuffledWords.indexWhere(
+        (item) => item['word'] == items[wordIndex]['word'],
+      );
       final wordOffset = Offset(
         size.width * 0.75, // Coordenadas aproximadas para palabras
-        size.height * (0.15 + wordIndex * 0.18),
+        size.height * (0.15 + shuffledWordIndex * 0.18),
       );
 
       canvas.drawLine(emojiOffset, wordOffset, paint);
