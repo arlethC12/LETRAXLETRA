@@ -205,7 +205,7 @@ class _VowelsScreenState extends State<VowelsScreen>
             final response = await http
                 .get(
                   Uri.parse(
-                    'http://192.168.1.38:3000/lecciones/nombre/$encodedTitle',
+                    'http://10.33.25.63:3000/lecciones/nombre/$encodedTitle',
                   ),
                   headers: {'Content-Type': 'application/json'},
                 )

@@ -179,7 +179,9 @@ flutter:
     - assets/letraI.jpg
     - assets/letraO.jpg
     - assets/letraU.jpg
+    - assets/atrapaletra.png
     - assets/jaguiprog.png
+    - assets/hojas.png
     - assets/audios/Regis.mp3
     - assets/audios/dinombre.mp3
     - assets/audios/edad.mp3
@@ -224,6 +226,7 @@ flutter:
     - assets/videos/videoletraO.mp4
     - assets/videos/videoletraU.mp4
     - assets/audios/continu.mp3
+    
 
 
   
