@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:letra_x_letra/niveles.dart';
 import 'spell_vowels_game.dart';
 import 'connect_vowels_game.dart';
 import 'order_vowels_game.dart';
@@ -8,8 +9,8 @@ import 'catch_letters_game.dart';
 void main() {
   runApp(
     Juego(
-      characterImagePath: 'assets/hojas.png',
-      username: 'Jugador',
+      characterImagePath: 'assets/tiger.png',
+      username: 'Arleth',
       token: 'default_token',
     ),
   );
@@ -31,7 +32,10 @@ class Juego extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Aprendamos Jugando',
-      theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'Comic Sans MS'),
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+        fontFamily: 'Comic Sans MS',
+      ),
       debugShowCheckedModeBanner: false,
       home: MiniGamesSection(
         characterImagePath: characterImagePath,
@@ -96,7 +100,7 @@ class _MiniGamesSectionState extends State<MiniGamesSection>
             Text('¡Ganaste una estrella! Total: $rewards ✨'),
           ],
         ),
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.green[700],
         duration: Duration(seconds: 2),
       ),
     );
@@ -104,124 +108,242 @@ class _MiniGamesSectionState extends State<MiniGamesSection>
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      backgroundColor: Colors.lightBlue[50],
-      appBar: AppBar(
-        title: Text('¡Hola, ${widget.username}! 🎮 Aprendamos Jugando'),
-        backgroundColor: Colors.orange,
-        elevation: 0,
-        actions: [
-          AnimatedBuilder(
-            animation: _bounceAnimation,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _bounceAnimation.value,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/jungle.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Stack(
+          children: [
+            // Add jaguar paw print accents as a background effect
+            for (int i = 0; i < 10; i++)
+              Positioned(
+                left: Random().nextDouble() * size.width,
+                top: Random().nextDouble() * size.height * 0.7,
+                child: Opacity(
+                  opacity: 0.3,
+                  child: Image.asset(
+                    'assets/huellas.png', // Ensure this asset exists
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            Column(
+              children: [
+                AppBar(
+                  automaticallyImplyLeading: false,
+                  title: Row(
                     children: [
-                      Icon(Icons.star, color: Colors.yellow, size: 24),
-                      SizedBox(width: 4),
+                      CircleAvatar(
+                        backgroundImage: AssetImage(widget.characterImagePath),
+                        radius: 16,
+                      ),
+                      SizedBox(width: 8),
                       Text(
-                        '$rewards',
+                        widget.username,
                         style: TextStyle(
                           fontSize: 18,
+                          color: Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
+                  backgroundColor: Color.fromARGB(255, 189, 162, 139),
+                  elevation: 0,
+                  actions: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.star, color: Colors.yellow, size: 24),
+                          SizedBox(width: 4),
+                          Text(
+                            '$rewards',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          // Multiple small leaf images scattered as background
-          for (int i = 0; i < 20; i++) // Adjust number for density
-            Positioned(
-              left: Random().nextDouble() * MediaQuery.of(context).size.width,
-              top: Random().nextDouble() * MediaQuery.of(context).size.height,
-              child: Opacity(
-                opacity: 0.5,
-                child: Image.asset(
-                  widget.characterImagePath,
-                  width: 50, // Small size for leaf effect
-                  height: 50,
-                  fit: BoxFit.cover,
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 50.0),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _buildAnimatedCircleCard(
+                                    title: '🅰️ Deletrea las Vocales',
+                                    color: const Color.fromARGB(255, 0, 145, 7),
+                                    icon: Icons.keyboard,
+                                    onTap:
+                                        () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => SpellVowelsGame(
+                                                  onComplete: addReward,
+                                                ),
+                                          ),
+                                        ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 40),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _buildAnimatedCircleCard(
+                                    title: '🔗 Une las Vocales',
+                                    color: const Color.fromARGB(255, 0, 145, 7),
+                                    icon: Icons.link,
+                                    onTap:
+                                        () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => ConnectVowelsGame(
+                                                  onComplete: addReward,
+                                                ),
+                                          ),
+                                        ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 40),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _buildAnimatedCircleCard(
+                                    title: '📝 Ordena las Vocales',
+                                    color: const Color.fromARGB(255, 0, 145, 7),
+                                    icon: Icons.sort,
+                                    onTap:
+                                        () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => OrderVowelsGame(
+                                                  onComplete: addReward,
+                                                ),
+                                          ),
+                                        ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 40),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _buildAnimatedCircleCard(
+                                    title: '🕸️ Atrapa las Letras',
+                                    color: const Color.fromARGB(255, 0, 145, 7),
+                                    icon: Icons.touch_app,
+                                    onTap:
+                                        () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => CatchLettersGame(
+                                                  onComplete: addReward,
+                                                ),
+                                          ),
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          GridView.count(
-            crossAxisCount: 2,
-            padding: const EdgeInsets.all(16.0),
-            crossAxisSpacing: 16.0,
-            mainAxisSpacing: 16.0,
-            children: [
-              _buildAnimatedCard(
-                title: '🅰️ Deletrea las Vocales',
-                color: Colors.pinkAccent,
-                icon: Icons.keyboard,
-                onTap:
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => SpellVowelsGame(onComplete: addReward),
-                      ),
-                    ),
-              ),
-              _buildAnimatedCard(
-                title: '🔗 Une las Vocales',
-                color: Colors.green,
-                icon: Icons.link,
-                onTap:
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) =>
-                                ConnectVowelsGame(onComplete: addReward),
-                      ),
-                    ),
-              ),
-              _buildAnimatedCard(
-                title: '📝 Ordena las Vocales',
-                color: Colors.orange,
-                icon: Icons.sort,
-                onTap:
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => OrderVowelsGame(onComplete: addReward),
-                      ),
-                    ),
-              ),
-              _buildAnimatedCard(
-                title: '🕸️ Atrapa las Letras',
-                color: Colors.purple,
-                icon: Icons.touch_app,
-                onTap:
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) =>
-                                CatchLettersGame(onComplete: addReward),
-                      ),
-                    ),
-              ),
-            ],
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black,
+        currentIndex: 2,
+        items: [
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/boca.jpg', height: size.height * 0.05),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/micro.jpg', height: size.height * 0.05),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/home.jpg', height: size.height * 0.05),
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Image.asset('assets/nota.jpg', height: size.height * 0.05),
+            label: '',
           ),
         ],
+        onTap: (index) {
+          if (index == 2) {
+            print(
+              'VowelsScreen: Navigating to Niveles with - characterImagePath: ${widget.characterImagePath}, username: ${widget.username}',
+            );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => Niveles(
+                      characterImagePath: widget.characterImagePath,
+                      username: widget.username,
+                    ),
+              ),
+            );
+          } else {
+            print(
+              'VowelsScreen: Navigating to Juego with - characterImagePath: ${widget.characterImagePath}, username: ${widget.username}',
+            );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => Juego(
+                      characterImagePath: widget.characterImagePath,
+                      username: widget.username,
+                      token: widget.token,
+                    ),
+              ),
+            );
+          }
+        },
       ),
     );
   }
 
-  Widget _buildAnimatedCard({
+  Widget _buildAnimatedCircleCard({
     required String title,
     required Color color,
     required IconData icon,
@@ -231,30 +353,32 @@ class _MiniGamesSectionState extends State<MiniGamesSection>
       duration: Duration(milliseconds: 300),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Card(
-          elevation: 8,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          color: color.withOpacity(0.9),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(icon, size: 40, color: Colors.white),
-                SizedBox(height: 8),
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+        child: ClipOval(
+          child: Container(
+            width: 150,
+            height: 150,
+            decoration: BoxDecoration(
+              color: color,
+              border: Border.all(color: Colors.green[800]!, width: 2),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, size: 40, color: Colors.white),
+                  SizedBox(height: 8),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

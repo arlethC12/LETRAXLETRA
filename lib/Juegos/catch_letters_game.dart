@@ -16,6 +16,7 @@ class _CatchLettersGameState extends State<CatchLettersGame>
   final List<String> letters = ['A', 'E', 'I', 'O', 'U'];
   final Random random = Random();
   List<Letter> fallingLetters = [];
+  List<Map<String, dynamic>> caughtLetterPositions = [];
   double jaguarX = 0.5;
   int score = 0;
   final int goal = 10;
@@ -26,26 +27,28 @@ class _CatchLettersGameState extends State<CatchLettersGame>
   int timeLeft = gameTime;
   Timer? _gameTimer;
   late AnimationController _catchAnimationController;
+  late AnimationController _bounceController;
 
   @override
   void initState() {
     super.initState();
     try {
-      _fallController = AnimationController(
-        vsync: this,
-        duration: Duration(seconds: 3),
-      )..repeat();
+      _fallController =
+          AnimationController(vsync: this, duration: Duration(seconds: 4))
+            ..addListener(_checkCatch) // Check collisions on animation update
+            ..repeat();
       _catchAnimationController = AnimationController(
         vsync: this,
         duration: Duration(milliseconds: 300),
       );
+      _bounceController = AnimationController(
+        vsync: this,
+        duration: Duration(milliseconds: 500),
+      )..repeat(reverse: true);
       _spawnTimer = Timer.periodic(
-        Duration(milliseconds: 1500),
+        Duration(milliseconds: 1200),
         (_) => _spawnLetter(),
       );
-      _fallController.addListener(() {
-        if (mounted) setState(() {});
-      });
     } catch (e) {
       print('Initialization error: $e');
     }
@@ -54,17 +57,15 @@ class _CatchLettersGameState extends State<CatchLettersGame>
 
   void _startTimer() {
     _gameTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (mounted) {
-        setState(() {
-          timeLeft--;
-          if (timeLeft <= 0) {
-            timer.cancel();
-            gameOver = true;
-            _spawnTimer.cancel();
-            _fallController.stop();
-          }
-        });
-      }
+      setState(() {
+        timeLeft--;
+        if (timeLeft <= 0) {
+          timer.cancel();
+          gameOver = true;
+          _spawnTimer.cancel();
+          _fallController.stop();
+        }
+      });
     });
   }
 
@@ -74,60 +75,102 @@ class _CatchLettersGameState extends State<CatchLettersGame>
     _spawnTimer.cancel();
     _gameTimer?.cancel();
     _catchAnimationController.dispose();
+    _bounceController.dispose();
+    for (var pos in caughtLetterPositions) {
+      pos['controller']?.dispose();
+    }
     super.dispose();
   }
 
   void _spawnLetter() {
-    if (fallingLetters.length < 5 && !gameOver && !gameWon && mounted) {
-      fallingLetters.add(
-        Letter(
-          letter: letters[random.nextInt(letters.length)],
-          x: random.nextDouble(),
-          animation: _fallController,
-        ),
-      );
+    if (fallingLetters.length < 6 && !gameOver && !gameWon) {
+      setState(() {
+        fallingLetters.add(
+          Letter(
+            letter: letters[random.nextInt(letters.length)],
+            x: random.nextDouble(),
+            animation: _fallController,
+          ),
+        );
+      });
     }
   }
 
   void _restart() {
-    if (mounted) {
-      setState(() {
-        fallingLetters = [];
-        jaguarX = 0.5;
-        score = 0;
-        gameWon = false;
-        gameOver = false;
-        timeLeft = gameTime;
-      });
-      _gameTimer?.cancel();
-      _startTimer();
-      _fallController.repeat();
-      _spawnTimer = Timer.periodic(
-        Duration(milliseconds: 1500),
-        (_) => _spawnLetter(),
-      );
-    }
+    setState(() {
+      fallingLetters = [];
+      caughtLetterPositions = [];
+      jaguarX = 0.5;
+      score = 0;
+      gameWon = false;
+      gameOver = false;
+      timeLeft = gameTime;
+    });
+    _gameTimer?.cancel();
+    _startTimer();
+    _fallController.repeat();
+    _spawnTimer = Timer.periodic(
+      Duration(milliseconds: 1200),
+      (_) => _spawnLetter(),
+    );
   }
 
   void _updateJaguarPosition(DragUpdateDetails details) {
-    if (mounted) {
-      setState(() {
-        jaguarX += details.delta.dx / MediaQuery.of(context).size.width;
-        jaguarX = jaguarX.clamp(0.0, 1.0);
-      });
-    }
+    setState(() {
+      jaguarX += details.delta.dx / MediaQuery.of(context).size.width;
+      jaguarX = jaguarX.clamp(0.0, 1.0);
+    });
   }
 
   void _checkCatch() {
-    if (mounted) {
+    if (!mounted) return; // Prevent updates if widget is disposed
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final jaguarWidth = 150 / screenWidth;
+    final jaguarY = 0.85;
+    final letterSize = 32 / screenWidth;
+
+    setState(() {
       fallingLetters.removeWhere((letter) {
-        if (letter.x > jaguarX - 0.1 &&
-            letter.x < jaguarX + 0.1 &&
-            letter.animation.value > 0.9) {
-          _catchAnimationController.forward(from: 0).then((_) {
-            if (mounted) _catchAnimationController.reverse();
+        double letterY = letter.animation.value * 0.85;
+        double letterX = letter.x;
+
+        bool isCaught =
+            letterX > jaguarX - jaguarWidth / 2 - letterSize &&
+            letterX < jaguarX + jaguarWidth / 2 + letterSize &&
+            letterY >= jaguarY - 0.05 &&
+            letterY <= jaguarY + 0.05;
+
+        if (isCaught) {
+          print('Caught letter ${letter.letter} at x: $letterX, y: $letterY');
+          score++;
+
+          // create controller variable so we can reference and dispose it later
+          final AnimationController controller = AnimationController(
+            vsync: this,
+            duration: Duration(milliseconds: 500),
+          );
+
+          // add the position + controller to the list
+          caughtLetterPositions.add({
+            'x': letterX * screenWidth,
+            'y': letterY * screenHeight,
+            'controller': controller,
           });
-          setState(() => score++);
+
+          // start the animation and remove/ dispose the controller when done
+          controller.forward().then((_) {
+            setState(() {
+              caughtLetterPositions.removeWhere(
+                (p) => p['controller'] == controller,
+              );
+            });
+            controller.dispose();
+          });
+
+          _catchAnimationController.forward(from: 0).then((_) {
+            _catchAnimationController.reverse();
+          });
           if (score >= goal) {
             gameWon = true;
             widget.onComplete();
@@ -137,14 +180,13 @@ class _CatchLettersGameState extends State<CatchLettersGame>
           }
           return true;
         }
-        return letter.animation.value > 1.0;
+        return letterY > 0.9;
       });
-    }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    _checkCatch();
     if (gameOver || gameWon) {
       return Scaffold(
         backgroundColor: Colors.purple[50],
@@ -153,14 +195,23 @@ class _CatchLettersGameState extends State<CatchLettersGame>
           backgroundColor: Colors.purple,
         ),
         body: Center(
-          child: Text(
-            gameWon
-                ? '¡Ganaste! Puntos: $score 🎉'
-                : '¡Tiempo agotado! Puntos: $score',
-            style: TextStyle(
-              fontSize: 24,
-              color: gameWon ? Colors.green : Colors.red,
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                gameWon
+                    ? '¡Ganaste! Letras atrapadas: $score 🎉'
+                    : '¡Tiempo agotado! Letras atrapadas: $score',
+                style: TextStyle(
+                  fontSize: 24,
+                  color: gameWon ? Colors.green : Colors.red,
+                ),
+              ),
+              ElevatedButton(
+                onPressed: _restart,
+                child: Text('Jugar de nuevo'),
+              ),
+            ],
           ),
         ),
       );
@@ -180,34 +231,49 @@ class _CatchLettersGameState extends State<CatchLettersGame>
       ),
       body: Stack(
         children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.green[200]!, Colors.purple[100]!],
+              ),
+            ),
+          ),
           ...fallingLetters.map(
             (letter) => Positioned(
               left: letter.x * MediaQuery.of(context).size.width,
-              top: letter.animation.value * MediaQuery.of(context).size.height,
+              top:
+                  letter.animation.value *
+                  0.85 *
+                  MediaQuery.of(context).size.height,
               child: AnimatedBuilder(
-                animation: letter.animation,
+                animation: _bounceController,
                 builder: (context, child) {
-                  return Opacity(
-                    opacity: 1 - letter.animation.value * 0.5,
-                    child: Container(
-                      padding: EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.3),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.blue.withOpacity(0.2),
-                            blurRadius: 10,
-                            spreadRadius: 2,
+                  return Transform.scale(
+                    scale: 1 + sin(_bounceController.value * 2 * pi) * 0.1,
+                    child: Opacity(
+                      opacity: 1 - letter.animation.value * 0.5,
+                      child: Container(
+                        padding: EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withOpacity(0.4),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.blue.withOpacity(0.3),
+                              blurRadius: 10,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          letter.letter,
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
-                        ],
-                      ),
-                      child: Text(
-                        letter.letter,
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -216,8 +282,31 @@ class _CatchLettersGameState extends State<CatchLettersGame>
               ),
             ),
           ),
+          ...caughtLetterPositions.map(
+            (pos) => Positioned(
+              left: pos['x'],
+              top: pos['y'],
+              child: AnimatedBuilder(
+                animation: pos['controller'],
+                builder: (context, child) {
+                  final value = (pos['controller'].value as double);
+                  return Opacity(
+                    opacity: 1.0 - value,
+                    child: Transform.scale(
+                      scale: 1.0 + value * 0.5,
+                      child: Icon(
+                        Icons.check_circle,
+                        size: 40,
+                        color: Colors.green,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
           Positioned(
-            bottom: 50,
+            bottom: 20,
             left: jaguarX * (MediaQuery.of(context).size.width - 150),
             child: GestureDetector(
               onHorizontalDragUpdate: _updateJaguarPosition,
@@ -248,24 +337,47 @@ class _CatchLettersGameState extends State<CatchLettersGame>
           Positioned(
             top: 100,
             left: 20,
-            child: Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.purple[100],
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                'Puntos: $score 🐆',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+            child: AnimatedBuilder(
+              animation: _catchAnimationController,
+              builder: (context, child) {
+                return Transform.scale(
+                  scale: 1 + _catchAnimationController.value * 0.1,
+                  child: Container(
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.purple[200],
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.purple.withOpacity(0.3),
+                          blurRadius: 5,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      'Letras atrapadas: $score',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
           Positioned(
-            bottom: 150,
+            bottom: 180,
             right: 20,
             child: Text(
-              '¡Arrastra al jaguar para atrapar! 🎣',
-              style: TextStyle(fontSize: 16, color: Colors.purple[800]),
+              '¡Desliza al jaguar y atrapa! 🎉',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.purple[800],
+                fontStyle: FontStyle.italic,
+              ),
             ),
           ),
         ],

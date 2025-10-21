@@ -93,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.38:3000/usuario/login'),
+        Uri.parse('http://192.168.1.35:3000/usuario/login'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'password': _controller.text.trim()}),
       );
@@ -134,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.1.38:3000/usuario'),
+        Uri.parse('http://192.168.1.35:3000/usuario'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'nombre': widget.nombre.trim(),

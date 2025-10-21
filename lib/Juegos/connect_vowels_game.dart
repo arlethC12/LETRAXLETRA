@@ -12,14 +12,10 @@ class ConnectVowelsGame extends BaseGame {
 class _ConnectVowelsGameState extends State<ConnectVowelsGame>
     with SingleTickerProviderStateMixin {
   final List<String> vowels = ['A', 'E', 'I', 'O', 'U'];
-  final List<String> initialImages = ['🍎', '🐘', '🍦', '🍊', '🦄'];
-  final List<String> alternativeImages = [
-    '🔴',
-    '🔵',
-    '⚪',
-    '🟡',
-    '🟣',
-  ]; // New figures
+  // Updated initial images to match vowels with examples
+  final List<String> initialImages = ['🌳', '🐘', '⛪', '👂', '🦄'];
+  // Updated alternative images with different representations
+  final List<String> alternativeImages = ['🌳', '🐘', '⛪', '👂', '🦄'];
   final List<Color> colors = [
     Colors.red,
     Colors.blue,
