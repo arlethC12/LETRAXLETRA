@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:letra_x_letra/recovoz.dart';
+import 'package:letra_x_letra/voces.dart';
+import 'package:letra_x_letra/escritura.dart'; // NUEVO
+import 'package:letra_x_letra/Juegos/juego.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'pvocales.dart';
 import 'main.dart';
-import 'Continuara.dart';
 
 class Niveles extends StatelessWidget {
   final String characterImagePath;
@@ -104,7 +107,7 @@ class HomeScreen extends StatelessWidget {
 
   void _showProfileMenu(BuildContext context, Offset position) {
     final RenderBox? overlay =
-        Overlay.of(context)?.context.findRenderObject() as RenderBox?;
+        Overlay.of(context).context.findRenderObject() as RenderBox?;
     if (overlay == null) return;
     showMenu(
       context: context,
@@ -139,12 +142,6 @@ class HomeScreen extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final isMobile = responsive.isMobile;
     final isTablet = responsive.isTablet;
-    final scale =
-        isMobile
-            ? 1.0
-            : isTablet
-            ? 1.2
-            : 1.5;
     final padding =
         size.width *
         (isMobile
@@ -285,7 +282,7 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.black,
-        currentIndex: 2,
+        currentIndex: 2, // Home activo
         items: [
           BottomNavigationBarItem(
             icon: Image.asset(
@@ -354,7 +351,9 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
         onTap: (index) {
+          // NUEVA LÓGICA DE NAVEGACIÓN
           if (index == 2) {
+            // Home → recarga Niveles
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -365,14 +364,54 @@ class HomeScreen extends StatelessWidget {
                     ),
               ),
             );
-          } else if (index == 0 || index == 1 || index == 3 || index == 4) {
+          } else if (index == 0) {
+            // Boca → Voces
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder:
-                    (context) => Continuara(
+                    (context) => Voces(
                       characterImagePath: characterImagePath,
                       username: username,
+                    ),
+              ),
+            );
+          } else if (index == 1) {
+            // Micrófono → Reconocimiento de Voz
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => ReconocimientoVoz(
+                      characterImagePath: characterImagePath,
+                      username: username,
+                      token: '',
+                    ),
+              ),
+            );
+          } else if (index == 3) {
+            // Nota → Escritura
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => Escritura(
+                      characterImagePath: characterImagePath,
+                      username: username,
+                      token: '',
+                    ),
+              ),
+            );
+          } else if (index == 4) {
+            // Juego → Juego
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => Juego(
+                      characterImagePath: characterImagePath,
+                      username: username,
+                      token: '',
                     ),
               ),
             );

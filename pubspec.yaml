@@ -173,6 +173,7 @@ flutter:
     - assets/caminajaguar.jpg
     - assets/letraE.jpg
     - assets/elote.jpg
+    - assets/bird.png
     - assets/elefante.jpg
     - assets/estrella.jpg
     - assets/escalera.jpg
@@ -231,6 +232,13 @@ flutter:
     - assets/videos/videoletraO.mp4
     - assets/videos/videoletraU.mp4
     - assets/audios/continu.mp3
+    - assets/audios/a.mp3
+    - assets/audios/e.mp3
+    - assets/audios/i.mp3 
+    - assets/audios/o.mp3
+    - assets/audios/U.mp3
+    - assets/audios/correcto.mp3
+    - assets/audios/incorrecto.mp3
     
 
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letra_x_letra/modulo1exam/leccion1.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:letra_x_letra/vocalU/videoletraU.dart';
 import 'package:letra_x_letra/Juegos/juego.dart';
@@ -103,7 +104,7 @@ class _VowelsScreenState extends State<VowelsScreen>
       try {
         final response = await http
             .get(
-              Uri.parse('http://192.168.1.35:3000/materias/1'),
+              Uri.parse('http://10.33.26.63:3000/materias/1'),
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ${widget.token}',
@@ -205,7 +206,7 @@ class _VowelsScreenState extends State<VowelsScreen>
             final response = await http
                 .get(
                   Uri.parse(
-                    'http://192.168.1.35:3000/lecciones/nombre/$encodedTitle',
+                    'http://10.33.26.63:3000/lecciones/nombre/$encodedTitle',
                   ),
                   headers: {'Content-Type': 'application/json'},
                 )
@@ -960,7 +961,7 @@ class _VowelsScreenState extends State<VowelsScreen>
                       username: widget.username,
                     );
                   } else if (path == "assets/vocales.jpg") {
-                    targetPage = Continuara(
+                    targetPage = Leccion1(
                       characterImagePath: widget.characterImagePath,
                       username: widget.username,
                     );
