@@ -1,10 +1,10 @@
 # letra_x_letra
 
-A new Flutter project.
+Aplicacion movil para android.
 
 ## Getting Started
-
-This project is a starting point for a Flutter application.
+Este proyecto consta de una aplicacion movil para el aprendizaje continuo para niños de nivel prescolar.
+para ello se utilizaron herramientas como flutter y una base de datos en posgressql.
 
 A few resources to get you started if this is your first Flutter project:
 
