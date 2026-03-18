@@ -420,9 +420,11 @@ Para contribuir al proyecto:
 
 Este proyecto está bajo licencia [Especificar Licencia - ej: MIT, Apache 2.0].
 
-## 👨‍💻 Autor
+## 👨‍💻 Autores
 
-**Arletth Domínguez** - [GitHub](https://github.com/arlethC12)
+**Arletth Castro** - [GitHub](https://github.com/arlethC12)
+**Areli Díaz** - [GitHub](https://github.com/AreliJMZ)
+**Ariadna Domínguez** - [GitHub](https://github.com/AriadnaYD)
 
 ---
 
