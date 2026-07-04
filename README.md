@@ -422,7 +422,7 @@ Este proyecto está bajo licencia [Especificar Licencia - ej: MIT, Apache 2.0].
 
 ## 👨‍💻 Autores
 
-**Arletth Castro** - [GitHub](https://github.com/arlethC12)
+**Arleth Castro** - [GitHub](https://github.com/arlethC12)
 **Areli Díaz** - [GitHub](https://github.com/AreliJMZ)
 **Ariadna Domínguez** - [GitHub](https://github.com/AriadnaYD)
 
